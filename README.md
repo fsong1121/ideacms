@@ -18,6 +18,8 @@
 ```
 </div>
 
+### 主要功能
+![输入图片说明](https://www.ideacms.net/upload/pic/goods/663df202bcb2a.png)
 
 ### 如何参与项目
 非常欢迎您对IdeaCMS的开发作出贡献！你可以选择以下方式向IdeaCMS贡献：
