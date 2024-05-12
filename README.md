@@ -35,6 +35,14 @@ MySQL 5.6+
 账号：cx  
 密码：cx321  
 
+### 交流咨询
+
+<p align="center">
+<img src="https://www.ideacms.net/statics/index/images/wechat.png" width="200" />
+<img src="https://www.ideacms.net/statics/index/images/qq_pic1.png" width="200" />
+<img src="https://www.ideacms.net/statics/index/images/mp_pic1.png" width="200" />
+</p>
+
 ### 主要功能
 
 ### 参与项目
