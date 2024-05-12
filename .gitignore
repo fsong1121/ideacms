@@ -1,6 +1,4 @@
 .DS_Store
 *.log
-*.lock
 .idea
 .env
-runtime
