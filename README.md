@@ -37,6 +37,7 @@ MySQL 5.6+
 
 ### 交流咨询
 
+官方网站：https://www.ideacms.net
 <p>
 <img src="https://www.ideacms.net/statics/index/images/wechat.png" width="240" />
 <img src="https://www.ideacms.net/statics/index/images/qq_pic1.png" width="240" style:"margin:0 20px;" />
@@ -44,6 +45,14 @@ MySQL 5.6+
 </p>
 
 ### 主要功能
+
+<img src="https://www.ideacms.net/statics/index/images/gn.png" />
+
+### 界面展示
+
+### 特别说明
+
+IdeaCMS商城系统免费版也可用于商业使用，请保留我们的版权信息哦。我们商业授权也是很便宜的，还望各位大力支持！另：免费版不含Uniapp前端源码，请须知！
 
 ### 参与项目
 非常欢迎您对IdeaCMS的开发作出贡献！你可以选择以下方式向IdeaCMS贡献：
