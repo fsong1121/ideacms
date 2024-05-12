@@ -1,5 +1,5 @@
 <p align="center">
-![输入图片说明](ideacms_logo_b.png)
+<img src="https://www.ideacms.net/statics/index/images/logo_b.png" width="400" />
 </p>
 
 <div align="center">
