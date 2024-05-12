@@ -50,11 +50,11 @@ MySQL 5.6+
 
 ### 界面展示
 <p>
-<img src="https://www.ideacms.net/statics/index/images/gitee/1.jpg" width="19.8%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/2.jpg" width="19.8%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/3.jpg" width="19.8%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/4.jpg" width="19.8%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/5.jpg" width="19.8%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/1.jpg" width="19.2%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/2.jpg" width="19.2%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/3.jpg" width="19.2%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/4.jpg" width="19.2%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/5.jpg" width="19.2%" />
 </p>
 <p>
 <img src="https://www.ideacms.net/statics/index/images/gitee/6.jpg" width="20%" />
