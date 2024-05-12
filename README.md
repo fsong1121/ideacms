@@ -49,6 +49,27 @@ MySQL 5.6+
 <img src="https://www.ideacms.net/statics/index/images/gn.png" />
 
 ### 界面展示
+<p>
+<img src="https://www.ideacms.net/statics/index/images/gitee/1.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/2.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/3.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/4.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/5.jpg" width="20%" />
+</p>
+<p>
+<img src="https://www.ideacms.net/statics/index/images/gitee/6.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/7.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/8.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/9.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/10.jpg" width="20%" />
+</p>
+<p>
+<img src="https://www.ideacms.net/statics/index/images/gitee/11.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/12.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/13.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/14.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/15.jpg" width="20%" />
+</p>
 
 ### 特别说明
 
