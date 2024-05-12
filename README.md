@@ -24,18 +24,16 @@ IdeaCMS商城系统（好铺商城）基于Thinkphp8+Uniapp+Layui2.9+Vue打造�
 
 ### 运行环境
 
-Nignx/Apache/IIS
-PHP 8.0+
-MySQL 5.6+
-
+Nignx/Apache/IIS  
+PHP 8.0+  
+MySQL 5.6+  
 
 ### 体验地址
 
-前端：https://b2c.ideacms.cn
-后台：https://b2c.ideacms.cn/admin
-账号：cx
-密码：cx321
-
+前端：https://b2c.ideacms.cn  
+后台：https://b2c.ideacms.cn/admin  
+账号：cx  
+密码：cx321  
 
 ### 主要功能
 
