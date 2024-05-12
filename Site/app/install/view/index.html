@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>IdeaCMS商城系统安装向导</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+  <link href="{__STATIC__}/iconfont/iconfont.css" rel="stylesheet">
+  <style>
+    body {
+      /*
+      background: #7e8be9;
+      */
+    }
+    .m_ctr {
+      margin: 0 auto;
+      width: 800px;
+      height: auto;
+      padding: 20px;
+      box-sizing: border-box;
+      background: #fff;
+      border-radius: 16px;
+      font-size: 16px;
+      line-height: 26px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    .m_title {
+      margin: 0 auto 10px;
+      width: 100%;
+      height: 48px;
+      line-height: 48px;
+      border-bottom: 1px #f2f2f2 solid;
+      color: #333;
+      font-size: 16px;
+    }
+    .btn_ctr {
+      margin: 0 auto;
+      width: 600px;
+      height: auto;
+      padding: 20px 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+    .btn {
+      margin: 0 10px;
+      width: auto;
+      height: 40px;
+      line-height: 40px;
+      border-radius: 20px;
+      padding: 0 20px;
+      color: #fff;
+      background: #00bc9b;
+      font-size: 16px;
+      cursor: pointer;
+      border: 0;
+    }
+    /*步骤条*/
+    ul {
+      margin: 0 auto;
+      padding: 30px 0 50px 0;
+      width: 600px;
+      list-style: none;  /* 取消默认样式 */
+      display: flex; /* 使用flex */
+      counter-reset: steps;
+    }
+    ul li {
+       flex-grow: 1;
+       display: flex;
+       justify-content: center;
+       position: relative;
+       align-items: center;
+    }
+    ul li::before {
+      width: 30px;  /* 步骤圆的宽 */
+      height: 30px; /* 步骤圆的高 */
+      background: #bcbcbc; /* 里面的小圆 */
+      box-shadow: 0 0 0 5px #bcbcbc, 0 0 0 10px transparent; /* 两层投影 改变投影颜色就可以实现步骤的不同状态 这里默认未完成状态 */
+      border-radius: 50%; /* 设置形状为原型 */
+      margin: 10px; /* 没有设置margin的话，会位置不正确，因为投影不占用位置，而这里投影确实需要占用，所以手动给margin */
+      display: block; /* 需要设置为块级 不然不生效*/
+      counter-increment: steps; /* 使 steps 自增 */
+      content: counter(steps); /* 修改content的内容为steps的值 */
+      /* 使 步骤数字水平垂直居中，并设置字号 */
+      display: flex;
+      color: white;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    ul li:nth-child(n+2):after {
+      content: '';
+      height: 3px;
+      width: 100%;
+      background: #bcbcbc;
+      position: absolute;
+      left: -50%;
+    }
+    ul li div {
+       color: black;
+    }
+    ul li div {
+       color: inherit;
+       position: absolute;
+       bottom: -30px;
+       left: 50%;
+       transform: translateX(-50%);
+    }
+    ul li.active:nth-child(n+2)::after {
+      background: #00bc9b;
+    }
+    ul li.active::before {
+       background: #00bc9b;
+       box-shadow: 0 0 0 5px rgb(255 255 255), 0 0 0 10px #00bc9b;
+    }
+    table {
+      margin: 0 auto;
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    table tr th,table tr td {
+      width: 33.33333333%;
+      height: 40px;
+      line-height: 40px;
+      border: 1px #f2f2f2 solid;
+      text-align: center;
+    }
+    table tr th {
+      background: #f8f8f8;
+    }
+    td .span_yes {
+      color: #00bc9b;
+    }
+    td .span_no {
+      color: #f35044;
+    }
+    .success_ctr,.fail_ctr {
+      margin: 0 auto;
+      margin-top: 20px;
+      width: 80px;
+      height: 80px;
+      line-height: 80px;
+      border-radius: 40px;
+      background: #00bc9b;
+      color: #fff;
+      font-size: 44px;
+      text-align: center;
+    }
+    .fail_ctr {
+      background: #f35044;
+    }
+    .success_title {
+      margin: 0 auto;
+      padding-bottom: 10px;
+      width: 100%;
+      height: 60px;
+      line-height: 60px;
+      color: #333;
+      font-size: 18px;
+      text-align: center;
+    }
+    .install_title {
+      margin: 0 auto;
+      width: 100%;
+      line-height: 60px;
+      text-align: center;
+      font-size: 18px;
+      color: #333;
+    }
+    .install_progress {
+      margin: 0 auto;
+      padding: 10px 0;
+      width: 80%;
+      height: auto;
+    }
+    .install_ctt {
+      margin: 0 auto;
+      width: 80%;
+      height: auto;
+      line-height: 26px;
+      font-size: 14px;
+      color: #333;
+      padding-top: 10px;
+    }
+    .layui-form-label {
+      width: 120px !important;
+    }
+    .layui-input-inline {
+      width: 260px !important;
+    }
+  </style>
+</head>
+<body>
+  <ul>
+    <!-- 第一步 -->
+    <li class="active">
+      <div>安装协议</div>
+    </li>
+    <!-- 第二步 -->
+    <li {gt name="$step" value="1"}class="active"{/gt}>
+      <div>环境检测</div>
+    </li>
+    <!-- 第三步 -->
+    <li {gt name="$step" value="2"}class="active"{/gt}>
+      <div>参数配置</div>
+    </li>
+    <!-- 第四步 -->
+    <li {gt name="$step" value="3"}class="active"{/gt}>
+      <div>安装结果</div>
+    </li>
+  </ul>
+  <input type="hidden" id="msg" value="{$msg}">
+  {eq name="$step" value="1"}
+  <div class="m_ctr">
+    <p>欢迎使用IdeaCMS商城系统！在您安装、使用本软件之前，请仔细阅读以下条款和条件。如果您不同意这些条款和条件，请不要安装使用本软件。安装使用本软件的行为将被视为您已经接受了这些条款和条件，并同意遵守这些条款和条件。</p>
+    <br/>
+    <p>1. 本软件是开源软件，授权许可遵循Apache 2.0，您必须遵守Apache 2.0许可证的规定，包括在修改后的软件中包含Apache 2.0许可证并保留版权声明等。</p>
+    <br/>
+    <p>2. 限制除非根据本许可证明确允许，或者适用法律要求，否则您不得以任何方式出售、出租、分发或以其他方式转让本软件的任何部分。</p>
+    <br/>
+    <p>3. 无论您从何处获得，只要未经商业授权，不得将本软件用于商业用途（企业网站或以盈利为目的经营性网站），否则我们将保留追究的权力。</p>
+    <br/>
+    <p>4. 利用本软件构建的网站的任何信息内容以及导致的任何版权纠纷和法律争议及后果，我们不承担任何责任。</p>
+    <br/>
+    <p>5. 程序的使用（或无法再使用）中所有一般化、特殊化、偶然性或必然性的损坏（包括但不限于数据的丢失，自己或第三方所维护数据的不正确修改，和其他程序协作过程中程序的崩溃等），我们不承担任何责任。</p>
+    <br/>
+    <p>6. 本授权协议适用于IdeaCMS商城系统任何版本，IdeaCMS商城开发团队拥有对本授权协议的最终解释权和修改权。</p>
+  </div>
+  <div class="btn_ctr">
+    <a href="/install/index/index.html?step=2"><div class="btn">同意并继续</div></a>
+  </div>
+  {/eq}
+  {eq name="$step" value="2"}
+  <div class="m_ctr">
+    <div class="m_title">服务器环境</div>
+    <table>
+      <tr>
+        <th>检测项</th>
+        <th>所需环境</th>
+        <th>当前环境</th>
+      </tr>
+      <tr>
+        <td>php版本</td>
+        <td>>=8.0.0</td>
+        <td>{$envArr['php']}</td>
+      </tr>
+      <tr>
+        <td>mysqli</td>
+        <td>开启</td>
+        <td>
+          {eq name="$envArr['mysqli']" value="1"}
+          <span class="span_yes">√</span>
+          {else}
+          <span class="span_no">×</span>
+          {/eq}
+        </td>
+      </tr>
+      <tr>
+        <td>curl</td>
+        <td>开启</td>
+        <td>
+          {eq name="$envArr['curl']" value="1"}
+          <span class="span_yes">√</span>
+          {else}
+          <span class="span_no">×</span>
+          {/eq}
+        </td>
+      </tr>
+      <tr>
+        <td>fileinfo</td>
+        <td>开启</td>
+        <td>
+          {eq name="$envArr['fileinfo']" value="1"}
+          <span class="span_yes">√</span>
+          {else}
+          <span class="span_no">×</span>
+          {/eq}
+        </td>
+      </tr>
+      <tr>
+        <td>GD库</td>
+        <td>开启</td>
+        <td>
+          {eq name="$envArr['gd']" value="1"}
+          <span class="span_yes">√</span>
+          {else}
+          <span class="span_no">×</span>
+          {/eq}
+        </td>
+      </tr>
+    </table>
+    <div class="m_title">目录权限</div>
+    <table>
+      <tr>
+        <th>目录名称</th>
+        <th>所需权限</th>
+        <th>当前状态</th>
+      </tr>
+      <tr>
+        <td>根目录</td>
+        <td>读写权限</td>
+        <td>
+          {eq name="$dirArr[0]" value="1"}
+          <span class="span_yes">√</span>
+          {else}
+          <span class="span_no">×</span>
+          {/eq}
+        </td>
+      </tr>
+      <tr>
+        <td>config目录</td>
+        <td>读写权限</td>
+        <td>
+          {eq name="$dirArr[1]" value="1"}
+          <span class="span_yes">√</span>
+          {else}
+          <span class="span_no">×</span>
+          {/eq}
+        </td>
+      </tr>
+      <tr>
+        <td>runtime目录</td>
+        <td>读写权限</td>
+        <td>
+          {eq name="$dirArr[2]" value="1"}
+          <span class="span_yes">√</span>
+          {else}
+          <span class="span_no">×</span>
+          {/eq}
+        </td>
+      </tr>
+      <tr>
+        <td>public目录</td>
+        <td>读写权限</td>
+        <td>
+          {eq name="$dirArr[3]" value="1"}
+          <span class="span_yes">√</span>
+          {else}
+          <span class="span_no">×</span>
+          {/eq}
+        </td>
+      </tr>
+      <tr>
+        <td>addons目录</td>
+        <td>读写权限</td>
+        <td>
+          {eq name="$dirArr[4]" value="1"}
+          <span class="span_yes">√</span>
+          {else}
+          <span class="span_no">×</span>
+          {/eq}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="btn_ctr">
+    <a href="/install/index/index.html?step=1"><div class="btn">上一步</div></a>
+    <div class="btn" onclick="toStep(3)">下一步</div>
+  </div>
+  {/eq}
+  {eq name="$step" value="3"}
+  <div class="layui-form">
+  <div class="m_ctr">
+    <div class="m_title">Mysql数据库配置</div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">数据库地址：</label>
+      <div class="layui-input-inline">
+        <input type="text" name="db_host" value="127.0.0.1" lay-verify="required" class="layui-input">
+      </div>
+      <div class="layui-form-mid layui-text-em">服务器和数据库同一主机时填写：127.0.0.1</div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">数据库端口：</label>
+      <div class="layui-input-inline">
+        <input type="text" name="db_port" value="3306" lay-verify="required" class="layui-input">
+      </div>
+      <div class="layui-form-mid layui-text-em">一般端口号为3306</div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">数据库名：</label>
+      <div class="layui-input-inline">
+        <input type="text" name="db_name" lay-verify="required" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">数据库账号：</label>
+      <div class="layui-input-inline">
+        <input type="text" name="db_user" lay-verify="required" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">数据库密码：</label>
+      <div class="layui-input-inline">
+        <input type="text" name="db_pass" lay-verify="required" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">表前缀：</label>
+      <div class="layui-input-inline">
+        <input type="text" name="db_prefix" value="idea_" lay-verify="required" class="layui-input">
+      </div>
+    </div>
+
+    <div class="m_title">管理员配置</div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">用户名：</label>
+      <div class="layui-input-inline">
+        <input type="text" name="admin_user" value="admin" lay-verify="required" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">密码：</label>
+      <div class="layui-input-inline">
+        <input type="text" name="admin_pass" value="admin" lay-verify="required" class="layui-input">
+      </div>
+    </div>
+  </div>
+  <div class="btn_ctr">
+    <a href="/install/index/index.html?step=2"><div class="btn">上一步</div></a>
+    <button type="submit" class="btn" lay-submit lay-filter="install">立即安装</button>
+  </div>
+  </div>
+  {/eq}
+  {eq name="$step" value="4"}
+  <div id="resultCtr1">
+    <div class="m_ctr">
+      <div class="install_title">正在安装，请稍后...</div>
+      <div class="install_progress">
+        <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="filter-progress">
+          <div class="layui-progress-bar" lay-percent="0%"></div>
+        </div>
+      </div>
+      <div class="install_ctt" id="install_ctt">
+        开始安装...<br>
+      </div>
+      <input type="hidden" id="progressId" value="0">
+    </div>
+  </div>
+  <div id="resultCtr2" style="display: none;">
+    <div class="m_ctr">
+      <div class="success_ctr">✓</div>
+      <div class="success_title">安装成功</div>
+    </div>
+    <div class="btn_ctr">
+      <a href="/"><div class="btn">商城首页</div></a>
+      <a href="/admin"><div class="btn">商城后台</div></a>
+    </div>
+  </div>
+  <div id="resultCtr3" style="display: none;">
+    <div class="m_ctr">
+      <div class="fail_ctr">✗</div>
+      <div class="success_title" id="fail_info"></div>
+    </div>
+  </div>
+  <script src="{__STATIC__}/jquery/jquery.min.js"></script>
+  <script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+  <script>
+    let msg = $('#msg').val();
+    let param = localStorage.getItem("param");
+    if(param === null) {
+      msg = '参数配置错误';
+    } else {
+      param = JSON.parse(param);
+      if(param.db_host == '') {
+        msg = '数据库地址为空';
+      }
+      if(param.db_port == '') {
+        msg = '数据库端口为空';
+      }
+      if(param.db_name == '') {
+        msg = '数据库名为空';
+      }
+      if(param.db_user == '') {
+        msg = '数据库账号为空';
+      }
+      if(param.db_pass == '') {
+        msg = '数据库密码为空';
+      }
+      if(param.db_prefix == '') {
+        msg = '数据库前缀为空';
+      }
+      if(param.admin_user == '') {
+        msg = '管理员账户为空';
+      }
+      if(param.admin_pass == '') {
+        msg = '管理员密码为空';
+      }
+    }
+    if(msg != '') {
+      $('#resultCtr1').hide();
+      $('#resultCtr2').hide();
+      $('#resultCtr3').show();
+      $('#fail_info').html(msg);
+    } else {
+      //开始安装
+      let element = layui.element;
+      $.ajax({
+        type:"post",
+        url:"{:url('install')}",
+        data: param,
+        dataType:"json",
+        success:function(res){
+          if(res.code == 0){
+            $('#resultCtr1').hide();
+            $('#resultCtr2').show();
+            $('#resultCtr3').hide();
+          }
+          else {
+            $('#resultCtr1').hide();
+            $('#resultCtr2').hide();
+            $('#resultCtr3').show();
+            $('#fail_info').html(res.msg);
+          }
+        }
+      });
+      //定时检测安装进度
+      let tasks = setInterval(function(){
+        $.ajax({
+          type:"get",
+          url:"{:url('progress')}",
+          data: {},
+          dataType:"json",
+          success:function(res){
+            if(res.code == 0){
+              element.progress('filter-progress', res.progress + '%'); // 设置进度
+              let curId = parseInt($('#progressId').val());
+              let data = res.data;
+              if(data.length > curId) {
+                for (let i = curId; i < data.length; i++) {
+                  $('#install_ctt').html($('#install_ctt').html() + data[i]['msg'] + '<br>');
+                }
+              }
+              $('#progressId').val(parseInt(data[data.length-1]['id']) + 1);
+              if(res.progress >= 100) {
+                clearInterval(tasks);
+              }
+            }
+            else {
+              $('#install_ctt').html($('#install_ctt').html() + res.msg + '<br>');
+              clearInterval(tasks);
+            }
+          }
+        });
+      },1000);
+    }
+  </script>
+  {/eq}
+
+</body>
+</html>
+<script src="{__STATIC__}/jquery/jquery.min.js"></script>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+  layui.use(function(){
+    let form = layui.form;
+    // 提交事件
+    form.on('submit(install)', function(data){
+      let field = data.field; // 获取表单字段值
+      //存储表单数据
+      localStorage.setItem("param", JSON.stringify(field));
+      //跳转到安装页
+      location.href='/install/index/index.html?step=4';
+    });
+  });
+  function toStep(id)
+  {
+    let msg = $('#msg').val();
+    if(msg != '') {
+      layer.msg(msg);
+    } else {
+      location.href = '/install/index/index.html?step='+id;
+    }
+  }
+</script>

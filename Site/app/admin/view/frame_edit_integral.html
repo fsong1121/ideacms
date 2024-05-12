@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>调整积分</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+    <style>
+        html {background: #fff;padding-top: 20px;}
+    </style>
+</head>
+<body>
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 调整数量：</label>
+            <div class="layui-input-inline w150">
+                <input type="number" name="m_fee" lay-verify="required|number" lay-reqText="请输入调整数量" placeholder="调整数量" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">负数表示减少</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">调整原因：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="m_info" placeholder="调整原因" class="layui-input">
+            </div>
+        </div>
+        <input type="hidden" name="m_uid" value="{$user_id}">
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit lay-filter="LAY-submit" id="LAY-submit" value="确认">
+        </div>
+    </div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>

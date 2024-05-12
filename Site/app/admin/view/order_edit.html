@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>订单详情</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+	<style>
+		html {
+			background: #fff;
+			padding: 20px;
+			box-sizing: border-box
+		}
+		.layui-table tbody td {
+			height: 22px;
+			line-height: 22px;
+		}
+		.goods tbody td {
+			height: 44px !important;
+		}
+		td img {
+			width: 44px !important;
+			height: 44px !important;
+		}
+	</style>
+</head>
+<body>
+    <div class="layui-form">
+		<div class="layui-form-item">
+			<div class="m_ctr"><strong>基本信息</strong></div>
+			<div class="m_ctr">
+				<table class="layui-table">
+					<colgroup>
+						<col width="10%">
+						<col width="23%">
+						<col width="10%">
+						<col width="23%">
+						<col width="10%">
+						<col>
+					</colgroup>
+					<tbody>
+					<tr>
+						<td align="right"><span>订单ID:</span></td>
+						<td>
+							{$data.id} [{$data.order_type_title}]
+						</td>
+						<td align="right"><span>订单号:</span></td>
+						<td>{$data.order_sn}</td>
+						<td align="right"><span>会员/ID:</span></td>
+						<td>{:getUserLevel($data.user_id)['uid']}/{$data.user_id}</td>
+					</tr>
+					<tr>
+						<td align="right"><span>订单状态:</span></td>
+						<td>
+							{$data.order_state}({$data.terminal})
+							{gt name="$data->getData('order_state')" value="1"}
+								{gt name="$data.refund_state" value="0"}
+							    <span class="layui-red">(退款中)</span>
+								{/gt}
+							{/gt}
+						</td>
+						<td align="right"><span>下单时间:</span></td>
+						<td>{$data.add_date}</td>
+						<td align="right"><span>物流信息:</span></td>
+						<td>
+							{eq name="$data.express_type" value="2"}
+							无需发货
+							{else}
+							{neq name="$data.express_sn" value=""}{$data.express_title}({$data.express_sn}){/neq}
+							{/eq}
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><span>支付方式:</span></td>
+						<td>{$data.pay_type}</td>
+						<td align="right"><span>支付时间:</span></td>
+						<td>{$data.pay_date}</td>
+						{eq name="$data.order_type" value="integral"}
+						<td align="right"><span>应付积分:</span></td>
+						<td>{$data.exchange_integral}</td>
+						{else}
+						<td align="right"><span>应付金额:</span></td>
+						<td>￥{$data.pay_price}</td>
+						{/eq}
+					</tr>
+					{gt name="$data->getData('order_state')" value="2"}
+					{neq name="$data.express_info" value=""}
+					<tr>
+						<td align="right"><span>发货信息:</span></td>
+						<td colspan="5">{$data.express_info}</td>
+					</tr>
+					{/neq}
+					{/gt}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="layui-form-item">
+			<div class="m_ctr"><strong>收货信息</strong></div>
+			<div class="m_ctr">
+				<table class="layui-table">
+					<colgroup>
+						<col width="10%">
+						<col width="23%">
+						<col width="10%">
+						<col width="23%">
+						<col width="10%">
+						<col>
+					</colgroup>
+					<tbody>
+					<tr>
+						<td align="right"><span>收货人:</span></td>
+						<td>{$data.name}</td>
+						<td align="right"><span>联系电话:</span></td>
+						<td>{$data.tel}</td>
+						<td align="right"><span>配送方式:</span></td>
+						<td>{$data.send_type}</td>
+					</tr>
+					{eq name="$data.send_type" value="自提"}
+					<tr>
+						<td align="right"><span>自提地址:</span></td>
+						<td colspan="3"></td>
+						<td align="right"><span>提货号:</span></td>
+						<td>{$data.pickup_sn}</td>
+					</tr>
+					{else}
+					<tr>
+						<td align="right"><span>收货地址:</span></td>
+						<td colspan="5">{$data.address}</td>
+					</tr>
+					{/eq}
+					<tr>
+						<td align="right"><span>订单备注:</span></td>
+						<td colspan="5">{$data.info}</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="layui-form-item">
+			<div class="m_ctr"><strong>商品信息</strong></div>
+			<div class="m_ctr">
+				<table class="layui-table goods">
+					<colgroup>
+						<col width="80px">
+						<col>
+						<col width="15%">
+						<col width="10%">
+						<col width="10%">
+						<col width="8%">
+					</colgroup>
+					<thead>
+					<tr>
+						<th>图片</th>
+						<th>商品名称</th>
+						<th>商品规格</th>
+						<th>数量</th>
+						{eq name="$data.order_type" value="integral"}
+						<th>商品积分</th>
+						{else}
+						<th>单品价格</th>
+						{/eq}
+						<th>状态</th>
+					</tr>
+					</thead>
+					<tbody>
+					{volist name="$data.goods" id="vo"}
+					<tr>
+						<td><img src="{:getPic(getGoodsInfo($vo.goods_id)['pic'])}"></td>
+						<td>{:getGoodsInfo($vo.goods_id)['title']}</td>
+						<td>{$vo.spec_key_name}</td>
+						<td>{$vo.amount}</td>
+						{eq name="$data.order_type" value="integral"}
+						<td>{$vo.exchange_integral}</td>
+						{else}
+						<td>{$vo.price}</td>
+						{/eq}
+						<td>
+							{eq name="vo.state" value="0"}正常{/eq}
+							{eq name="vo.state" value="1"}退款中{/eq}
+							{eq name="vo.state" value="2"}已退款{/eq}
+						</td>
+					</tr>
+					{/volist}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="layui-form-item">
+			<div class="m_ctr"><strong>费用明细</strong></div>
+			<div class="m_ctr">
+				<table class="layui-table">
+					<colgroup>
+						<col width="11%">
+						<col width="14%">
+						<col width="11%">
+						<col width="14%">
+						<col width="11%">
+						<col width="14%">
+						<col width="11%">
+						<col>
+					</colgroup>
+					<tbody>
+					<tr>
+						<td align="right"><span>会员折扣:</span></td>
+						<td>-{$data.rebate_price}</td>
+						<td align="right"><span>满减优惠:</span></td>
+						<td>-{$data.discount_price}</td>
+						<td align="right"><span>优惠券抵扣:</span></td>
+						<td>-{$data.coupon_price}</td>
+						<td align="right"><span>分佣金额:</span></td>
+						<td>-{$data.user_commission}</td>
+					</tr>
+					<tr>
+						<td align="right"><span>积分抵扣:</span></td>
+						<td>-{$data.exchange_price}</td>
+						<td align="right"><span>运费:</span></td>
+						<td>+{$data.express_price}</td>
+						<td align="right"><span>价格调整:</span></td>
+						<td>{$data.trim_price}</td>
+						<td align="right"><span>退款金额:</span></td>
+						<td>-{$data.refund_price}</td>
+					</tr>
+					<tr>
+						<td colspan="8" align="right">
+							商品总价：¥{$data.price}&emsp;用户支付：¥{$data.pay_price}&emsp;实际到账：¥{:sprintf("%.2f",$data.pay_price - $data.refund_price - $data.user_commission)}
+							{eq name="$data.order_type" value="integral"}&emsp;实付积分：{$data.exchange_integral}{/eq}
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="layui-form-item">
+			<div class="m_ctr"><strong>订单日志</strong></div>
+			<div class="m_ctr">
+				<table class="layui-table goods">
+					<colgroup>
+						<col width="180px">
+						<col>
+						<col width="100px">
+					</colgroup>
+					<thead>
+					<tr>
+						<th>时间</th>
+						<th>订单信息</th>
+						<th>操作者</th>
+					</tr>
+					</thead>
+					<tbody>
+					{volist name="$data.logs" id="vo"}
+					<tr>
+						<td>{$vo.add_date}</td>
+						<td>{$vo.info}</td>
+						<td>
+							{eq name="vo.type" value="1"}
+							会员
+							{else}
+							商家
+							{/eq}
+						</td>
+					</tr>
+					{/volist}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>

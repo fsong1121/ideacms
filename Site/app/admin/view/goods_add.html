@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>添加商品</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="layui-fluid">
+	<form class="layui-form fairy-form" style="padding-bottom: 45px;">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<div class="layui-tab layui-tab-brief">
+					<ul class="layui-tab-title">
+						<li class="layui-this">基本内容</li>
+						<li>规格运费</li>
+						<li>选填内容</li>
+						<div class="close_btn" onclick="history.go(-1);">×</div>
+					</ul>
+					<div class="layui-tab-content">
+						<div class="layui-tab-item layui-show">
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> 商品类型：</label>
+								<div class="layui-input-block">
+									<div class="goods_type_on" id="type0" onclick="changeType(0);">
+										普通商品<br><span>(物流发货)</span>
+										<i class="layui-icon layui-icon-success"></i>
+									</div>
+									<div class="goods_type" id="type1" onclick="changeType(1);" style="display: none;">
+										卡密/网盘<br><span>(自动发货)</span>
+										<i class="layui-icon layui-icon-success"></i>
+									</div>
+									<div class="goods_type" id="type2" onclick="changeType(2);">
+										虚拟商品<br><span>(无需发货)</span>
+										<i class="layui-icon layui-icon-success"></i>
+									</div>
+								</div>
+								<input type="hidden" id="m_type" name="m_type" value="0">
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> 所属分类：</label>
+								<div class="layui-input-inline w400">
+									<select name="m_cat" lay-verify="required">
+										<option value="">请选择分类</option>
+										{volist name="catList" id="cat"}
+										<option value="{$cat.id}">{gt name="$cat.deep" value="1"}{gt name="$cat.deep" value="2"}&ensp;{/gt}&ensp;└&ensp;{/gt}{$cat.title}</option>
+										{/volist}
+									</select>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> 商品标题：</label>
+								<div class="layui-input-inline w400">
+									<input type="text" name="m_title" lay-verify="required" placeholder="请输入标题" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux">商品标题</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">副标题：</label>
+								<div class="layui-input-inline w400">
+									<input type="text" name="m_subtitle" placeholder="请输入副标题" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux">如：促销语</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">商品编码：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="m_spu" placeholder="请输入商品编码" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux">商品SPU</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">所属品牌：</label>
+								<div class="layui-input-inline">
+									<select name="m_brand">
+										<option value="">请选择品牌</option>
+										{volist name="brandList" id="brand"}
+										<option value="{$brand.id}">{$brand.title}</option>
+										{/volist}
+									</select>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">单位：</label>
+								<div class="layui-input-inline">
+									<select name="m_unit">
+										<option value="">请选择单位</option>
+										{volist name="unitList" id="vo"}
+										<option value="{$vo.title}">{$vo.title}</option>
+										{/volist}
+									</select>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> 商品图片：</label>
+								<div class="layui-input-block">
+									<div id="slide_ctr"></div>
+									<div class="upload_btn" id="upload_btn"></div>
+								</div>
+								<div style="float: left;width: 100%;color:#999;padding-left: 136px;box-sizing: border-box;">建议尺寸：800*800，可拖拽改变图片顺序，默认首张图为主图。</div>
+								<input type="hidden" id="pic_index" value="0">
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">商品描述：</label>
+								<div class="layui-input-block">
+									<textarea id="editor"></textarea>
+									<textarea id="m_info" name="m_info" style="display: none;"></textarea>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">服务承诺：</label>
+								<div class="layui-input-block">
+									{volist name="serviceList" id="vo"}
+									<input type="checkbox" name="m_service[]" title="{$vo.title}" value="{$vo.id}" lay-skin="primary">
+									{/volist}
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">是否上架：</label>
+								<div class="layui-input-inline">
+									<input type="checkbox" name="m_sale" value="1" checked lay-skin="switch" lay-text="是|否">
+								</div>
+							</div>
+						</div>
+						<div class="layui-tab-item">
+							<!--商品规格选项-->
+							<div id="fairy-is-attribute"></div>
+							<!--商品类型选择-->
+							<div id="fairy-product-type"></div>
+							<!--商品规格表-->
+							<div id="fairy-spec-table"></div>
+							<!--商品库存表-->
+							<div id="fairy-sku-table"></div>
+							<input type="hidden" id="spec_id" value="99">
+							<input type="hidden" id="spec_item_id" value="99">
+
+							<div id="span_express">
+							<div class="layui-form-item">
+								<label class="layui-form-label">运费设置：</label>
+								<div class="layui-input-inline w180">
+									<select name="m_express_type" lay-filter="express_type">
+										<option value="0">包邮</option>
+										<option value="1">固定运费</option>
+										<option value="2">运费模板</option>
+									</select>
+								</div>
+							</div>
+							<div class="layui-form-item" id="span_express_price" style="display: none;">
+								<label class="layui-form-label">固定运费：</label>
+								<div class="layui-input-inline w180">
+									<input type="text" name="m_express_price" lay-verify="number" value="0.00" placeholder="请输入固定运费" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-form-item" id="span_express_template" style="display: none;">
+								<label class="layui-form-label">运费模板：</label>
+								<div class="layui-input-inline w180">
+									<select name="m_express_template">
+										<option value="">请选择运费模板</option>
+										{volist name="expressTemplateList" id="vo"}
+										<option value="{$vo.id}">{$vo.title}</option>
+										{/volist}
+									</select>
+								</div>
+							</div>
+							</div>
+						</div>
+						<div class="layui-tab-item">
+							<div class="layui-form-item">
+								<label class="layui-form-label">佣金：</label>
+								<div class="layui-input-inline w120">
+									<input type="text" name="m_commission" lay-verify="number" value="0.00" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux">元，可精确两位小数</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">积分：</label>
+								<div class="layui-input-inline w120">
+									<input type="number" name="m_integral" lay-verify="number" value="0" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux">购买赠送积分</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">成长值：</label>
+								<div class="layui-input-inline w120">
+									<input type="number" name="m_growth" lay-verify="number" value="0" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux">购买赠送成长值</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">原始销量：</label>
+								<div class="layui-input-inline w120">
+									<input type="number" name="m_initial_sales" lay-verify="number" value="0" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">人气：</label>
+								<div class="layui-input-inline w120">
+									<input type="number" name="m_hits" lay-verify="number" value="0" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">排序：</label>
+								<div class="layui-input-inline w120">
+									<input type="number" name="m_px" lay-verify="number" value="1" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux">越大越靠前</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">其他属性：</label>
+								<div class="layui-input-block">
+									<input type="checkbox" name="m_top" title="推荐" value="1" lay-skin="primary">
+									<input type="checkbox" name="m_new" title="新品" value="1" lay-skin="primary">
+									<input type="checkbox" name="m_hot" title="热卖" value="1" lay-skin="primary">
+									<input type="checkbox" name="m_full_free" title="参与满额包邮" value="1" lay-skin="primary">
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">关键词：</label>
+								<div class="layui-input-inline w400">
+									<input type="text" name="m_keys" placeholder="请输入关键词" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">SEO描述：</label>
+								<div class="layui-input-inline w400">
+									<input type="text" name="m_des" placeholder="请输入SEO描述" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">包装售后：</label>
+								<div class="layui-input-block">
+									<textarea name="m_other_info" placeholder="请输入包装售后" class="layui-textarea"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="m_footer">
+			<button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-submit">提交</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+    </form>
+</div>
+</body>
+</html>
+<script src="{__STATIC__}/jquery/jquery.min.js"></script>
+<script src="{__STATIC__}/ckeditor5/ckeditor.js"></script>
+<script src="{__STATIC__}/ckeditor5/upload.js"></script>
+<script src="{__STATIC__}/sortable/Sortable.min.js"></script>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+	ClassicEditor
+			.create(document.querySelector('#editor'), {
+				placeholder:"在这里输入或粘贴内容",
+				extraPlugins: [ MyCustomUploadAdapterPlugin ]
+			})
+			.then(editor => {
+				window.editor = editor;
+				//监听内容变化
+				editor.model.document.on('change:data', function () {
+					document.getElementById("m_info").value = editor.getData();
+				});
+			})
+			.catch(error => {
+				console.error(error);
+			});
+
+	function MyCustomUploadAdapterPlugin( editor ) {
+		editor.plugins.get( 'FileRepository' ).createUploadAdapter = ( loader ) => {
+			// 在这里将URL配置为后端上载脚本
+			let url = "{:url('upload/index')}?dir=goods";
+			return new MyUploadAdapter( loader,url );
+		};
+	}
+
+	layui.config({
+		base: '{__STATIC__}/layuiAdmin/' // 静态资源所在路径
+	}).use(['index','form','upload','skuTable'], function(){
+		let $ = layui.$;
+		let layer = layui.layer;
+		let form = layui.form;
+		let upload = layui.upload;
+		let skuTable = layui.skuTable;
+
+		/* 监听select */
+		form.on('select(express_type)',function (data) {
+			if(data.value==0){
+				$("#span_express_template").hide();
+				$("#span_express_price").hide();
+			}
+			else if(data.value==1) {
+				$("#span_express_template").hide();
+				$("#span_express_price").show();
+			}
+			else {
+				$("#span_express_template").show();
+				$("#span_express_price").hide();
+			}
+		});
+		//商品相册
+		upload.render({
+			elem: '#upload_btn'
+			,url: "{:url('upload/index')}"
+			,data: {
+				dir: 'goods'
+			}
+			,accept: 'images'
+			,multiple: true
+			,before: function () {
+				layer.load();
+			}
+			,done: function(res){
+				layer.closeAll();
+				console.log(res);
+				var index = $('#pic_index').val();
+				if(res.code == 0) {
+					$('#slide_ctr').append("<div class='slide_ctr' id='span_slide"+index+"'><img src='"+res.data.src+"'><div class='pic_del' onClick=\"delPic('"+index+"')\"><i class='layui-icon layui-icon-delete'></i></div><input type='hidden' name='m_slide[]' value='"+res.data.file+"'></div>");
+					$('#pic_index').val(index+1);
+				}
+				else {
+					layer.msg(res.msg);
+				}
+			}
+			,error: function(){
+				layer.closeAll();
+				layer.msg('请求异常');
+			}
+		});
+
+		//多规格
+		var skuTableObj = skuTable.render({
+			isAttributeElemId: 'fairy-is-attribute',
+			productTypeElemId: 'fairy-product-type',
+			specTableElemId: 'fairy-spec-table',
+			skuTableElemId: 'fairy-sku-table',
+			//商品规格模式 0单规格 1多规格
+			mode: 0,
+			//是否开启sku表行合并
+			rowspan: true,
+			//图片上传接口
+			uploadUrl: "{:url('upload/index')}?dir=goods",
+			//获取规格模板接口
+			productTypeUrl: "{:url('goods/getGoodsSpec')}",
+			//获取规格模板下的规格接口
+			attrSpecUrl: "{:url('goods/getGoodsSpecItem')}",
+			//创建规格接口
+			specCreateUrl: "{:url('goods/specCreate')}",
+			//删除规格接口
+			specDeleteUrl: "{:url('goods/specDelete')}",
+			//创建规格值接口
+			specValueCreateUrl: "{:url('goods/specValueCreate')}",
+			//删除规格值接口
+			specValueDeleteUrl: "{:url('goods/specValueDelete')}",
+		});
+
+		/* 监听提交 */
+		form.on('submit(LAY-submit)', function(data){
+			let field = data.field; //获取提交的字段
+			let m_spec = skuTableObj.getSpec();
+			let m_pic = '';
+			let m_slide = [];
+			let m_service = [];
+			let m_item_picture = [];
+			let	m_item_price = [];
+			let	m_item_market_price = [];
+			let	m_item_cost_price = [];
+			let	m_item_stock = [];
+			let	m_item_sku = [];
+			let	m_item_weight = [];
+			let	m_item_volume = [];
+			let	m_item_spec_key = [];
+			let	m_item_spec_key_name = [];
+			$.each(field, function(key, val) {
+				if(key.indexOf("m_slide") != -1){
+					m_slide.push(val);
+				}
+				if(key.indexOf("m_service") != -1){
+					m_service.push(val);
+				}
+				if(key.indexOf("picture") != -1){
+					m_item_picture.push(val);
+				}
+				if(key.indexOf("site_price") != -1){
+					m_item_price.push(val);
+				}
+				if(key.indexOf("market_price") != -1){
+					m_item_market_price.push(val);
+				}
+				if(key.indexOf("cost_price") != -1){
+					m_item_cost_price.push(val);
+				}
+				if(key.indexOf("stock") != -1){
+					m_item_stock.push(val);
+				}
+				if(key.indexOf("sku") != -1){
+					m_item_sku.push(val);
+				}
+				if(key.indexOf("weight") != -1){
+					m_item_weight.push(val);
+				}
+				if(key.indexOf("volume") != -1){
+					m_item_volume.push(val);
+				}
+				if(key.indexOf("specKey") != -1){
+					m_item_spec_key.push(val);
+				}
+				if(key.indexOf("specName") != -1){
+					m_item_spec_key_name.push(val);
+				}
+			});
+			if(m_slide.length == 0) {
+				layer.msg('请至少上传一张图片');
+				return false;
+			}
+			m_pic = m_slide[0].toLowerCase();
+			m_slide = m_slide.toString();
+			m_service = m_service.toString();
+			m_item_picture = m_item_picture.toString();
+			m_item_price = m_item_price.toString();
+			m_item_market_price = m_item_market_price.toString();
+			m_item_cost_price = m_item_cost_price.toString();
+			m_item_sku = m_item_sku.toString();
+			m_item_stock = m_item_stock.toString();
+			m_item_weight = m_item_weight.toString();
+			m_item_volume = m_item_volume.toString();
+			m_item_spec_key = m_item_spec_key.toString();
+			m_item_spec_key_name = m_item_spec_key_name.toString();
+			if(m_item_price == '') {
+				layer.msg('请选择规格');
+				return false;
+			}
+			let m_sale = field.hasOwnProperty('m_sale') ? field.m_sale : 0;
+			let m_top = field.hasOwnProperty('m_top') ? field.m_top : 0;
+			let m_new = field.hasOwnProperty('m_new') ? field.m_new : 0;
+			let m_hot = field.hasOwnProperty('m_hot') ? field.m_hot : 0;
+			let m_full_free = field.hasOwnProperty('m_full_free') ? field.m_full_free : 0;
+			let m_brand = field.m_brand == '' ? 0 : field.m_brand;
+			let m_express_template = field.m_express_template == '' ? 0 : field.m_express_template;
+
+			$.ajax({
+				type: "post",
+				url: "save.html",
+				data: {
+					m_type: field.m_type,
+					m_title: field.m_title,
+					m_subtitle: field.m_subtitle,
+					m_spu: field.m_spu,
+					m_cat: field.m_cat,
+					m_brand: m_brand,
+					m_supplier: 0,
+					m_unit: field.m_unit,
+					m_pic: m_pic,
+					m_multi_spec: field.is_attribute,
+					m_spec_str: m_spec,
+					m_item_picture: m_item_picture,
+					m_item_price: m_item_price,
+					m_item_market_price: m_item_market_price,
+					m_item_cost_price: m_item_cost_price,
+					m_item_stock: m_item_stock,
+					m_item_sku: m_item_sku,
+					m_item_weight: m_item_weight,
+					m_item_volume: m_item_volume,
+					m_item_spec_key: m_item_spec_key,
+					m_item_spec_key_name: m_item_spec_key_name,
+					m_express_type: field.m_express_type,
+					m_express_price: field.m_express_price,
+					m_express_template: m_express_template,
+					m_service: m_service,
+					m_info: field.m_info,
+					m_commission: field.m_commission,
+					m_integral: field.m_integral,
+					m_growth: field.m_growth,
+					m_initial_sales: field.m_initial_sales,
+					m_other_info: field.m_other_info,
+					m_hits: field.m_hits,
+					m_px: field.m_px,
+					m_keys: field.m_keys,
+					m_des: field.m_des,
+					m_slide: m_slide,
+					m_sale:m_sale,
+					m_top:m_top,
+					m_new: m_new,
+					m_hot: m_hot,
+					m_full_free: m_full_free
+				},
+				dataType: "json",
+				beforeSend: function () {
+					layer.load(1);
+				},
+				success: function (res) {
+					layer.closeAll(); //关闭弹层
+					if (res.code == 0) {
+						layer.msg('添加成功', {
+							time: 2000
+						}, function () {
+							location.href = "index.html";
+						});
+					} else {
+						layer.msg(res.msg);
+					}
+				}
+			});
+			return false;
+
+		});
+	});
+	//切换类型
+	function changeType(id) {
+		$('#type0').attr('class','goods_type');
+		$('#type1').attr('class','goods_type');
+		$('#type2').attr('class','goods_type');
+		$('#type'+id).attr('class','goods_type_on');
+		$('#m_type').val(id);
+		if(id == 0) {
+			$("#span_express").show();
+		} else {
+			$("#span_express").hide();
+		}
+	}
+	//删除相册
+	function delPic(p0){
+		$("#span_slide"+p0).remove();
+	}
+	//幻灯片拖拽
+	Sortable.create(document.getElementById('slide_ctr'), {
+		animation: 150, //动画参数
+	});
+</script>

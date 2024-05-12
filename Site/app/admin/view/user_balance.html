@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>余额明细</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+</head>
+<body>
+	<div class="layui-fluid">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<div style="padding-bottom: 10px;">
+					<div class="layui-table-title">余额明细</div>
+					<div class="layui-form search_ctr">
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="keys" placeholder="输入用户名/手机/昵称查询" class="layui-input">
+								</div>
+								<button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-search">查询</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<table id="LAY-table" lay-filter="LAY-table"></table>
+				<script type="text/html" id="fee">
+					{{#  if(d.fee > 0){ }}
+					<span class="layui-red">+{{d.fee}}</span>
+					{{#  } else { }}
+					<span class="layui-gray">{{d.fee}}</span>
+					{{#  } }}
+				</script>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+	layui.config({
+		base: '{__STATIC__}/layuiAdmin/' // 静态资源所在路径
+	}).use(['index', 'table', 'form'], function(){
+		let table = layui.table;
+		let form = layui.form;
+
+		//初始化列表
+		table.render({
+			elem: '#LAY-table'
+			,url: "{:url('getList')}"
+			,cols: [[
+				{field: 'id', width: 80, title: 'ID', sort: true}
+				,{field: 'user_id', width:200, title: '会员[编号]'}
+				,{field: 'fee', width: 150, title: '数量', templet: '#fee'}
+				,{field: 'account_fee', width: 150, title: '余额'}
+				,{field: 'info', minWidth: 200, title: '描述'}
+				,{field: 'add_date', width: 180, title: '时间'}
+			]]
+			,page: true
+			,limit: 20
+			,height: 'full-100'
+			,text: {none: '暂无相关数据'}
+		});
+
+		//监听搜索
+		form.on('submit(LAY-search)', function(data){
+			let field = data.field;
+			//执行重载
+			table.reload('LAY-table', {
+				url: "{:url('getList')}"
+				,where: field
+				,page: {
+					curr: 1 //重新从第 1 页开始
+				}
+			});
+		});
+
+	});
+</script>

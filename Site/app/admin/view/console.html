@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>控制台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/console.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="home_ctr">
+        <div class="m_ctr">
+            <div class="home_top_ctr" style="margin-left: 0;">
+                <div class="home_top_title">总销售额</div>
+                <div class="home_top_num">¥ {:number_format($salesData['total'])}</div>
+                <div class="home_top_day">
+                    <div class="fl">环比昨日{:number_format($salesData['comparedYesterday'])}%</div>
+                    {lt name="$salesData['comparedYesterday']" value="0"}
+                    <div class="triangle-down" style="margin-top: 18px;"></div>
+                    {else}
+                    <div class="triangle-up" style="margin-top: 18px;"></div>
+                    {/lt}
+                    <div class="fl">&ensp;&ensp;环比上周{:number_format($salesData['comparedLastWeek'])}%</div>
+                    {lt name="$salesData['comparedLastWeek']" value="0"}
+                    <div class="triangle-down" style="margin-top: 18px;"></div>
+                    {else}
+                    <div class="triangle-up" style="margin-top: 18px;"></div>
+                    {/lt}
+                </div>
+                <div class="home_top_month">今日销售额 ¥ {:number_format($salesData['today'])}</div>
+            </div>
+            <div class="home_top_ctr">
+                <div class="home_top_title">总访问量</div>
+                <div class="home_top_num">{:number_format($visitData['total'])}</div>
+                <div class="home_top_pic" id="top2"></div>
+                <div class="home_top_month">
+                    <div class="fl">今日 {:number_format($visitData['today'])}&ensp;&ensp;环比昨日{:number_format($visitData['comparedYesterday'])}%</div>
+                    {lt name="$visitData['comparedYesterday']" value="0"}
+                    <div class="triangle-down"></div>
+                    {else}
+                    <div class="triangle-up"></div>
+                    {/lt}
+                </div>
+            </div>
+            <div class="home_top_ctr home_top_span">
+                <div class="home_top_title">总订单量</div>
+                <div class="home_top_num">{:number_format($orderData['total'])}</div>
+                <div class="home_top_pic" id="top3"></div>
+                <div class="home_top_month">
+                    <div class="fl">今日 {:number_format($orderData['today'])}&ensp;&ensp;环比昨日{:number_format($orderData['comparedYesterday'])}%</div>
+                    {lt name="$orderData['comparedYesterday']" value="0"}
+                    <div class="triangle-down"></div>
+                    {else}
+                    <div class="triangle-up"></div>
+                    {/lt}
+                </div>
+            </div>
+            <div class="home_top_ctr">
+                <div class="home_top_title">总会员数</div>
+                <div class="home_top_num">{:number_format($userData['total'])}</div>
+                <div class="home_top_pic" id="top4"></div>
+                <div class="home_top_month">
+                    <div class="fl">今日 {:number_format($userData['today'])}&ensp;&ensp;环比昨日{:number_format($userData['comparedYesterday'])}%</div>
+                    {lt name="$userData['comparedYesterday']" value="0"}
+                    <div class="triangle-down"></div>
+                    {else}
+                    <div class="triangle-up"></div>
+                    {/lt}
+                </div>
+            </div>
+        </div>
+        <div class="m_ctr">
+            <div class="home_left">
+                <div class="home_title">销售统计</div>
+                <div class="home_ctt" id="main" style="height: 400px;">
+                </div>
+            </div>
+            <div class="home_right">
+                <div class="home_title">登录日志</div>
+                <div class="home_ctt" style="height: 400px;">
+                    {volist name="logList" id="vo"}
+                    <div class="home_log_ctr">
+                        <div class="home_log_txt1">
+                            <div class="fl"><span>{$vo.uid}</span></div>
+                            <div class="fr">{$vo.add_date}</div>
+                        </div>
+                        <div class="home_log_txt2">
+                            <div class="fl">{$vo.ip}</div>
+                            <div class="fr">{$vo.info}</div>
+                        </div>
+                    </div>
+                    {/volist}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script src="{__STATIC__}/echarts/echarts.min.js"></script>
+<script>
+    layui.use(function (){
+        let $ = layui.$;
+
+        //访问量
+        let top2Dom = document.getElementById('top2');
+        let top2Chart = echarts.init(top2Dom);
+        let option2 = {
+            grid: {
+                left: '0',
+                right: '0',
+                bottom: '0',
+                top: '0',
+                // grid 区域是否包含坐标轴的刻度标签
+                containLabel: false
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    boundaryGap: false,
+                    show: true
+                }
+            ],
+            yAxis: [
+                {
+                    show: false,
+                    axisLine:{
+                        show:false
+                    },
+                    axisTick:{
+                        show:false
+                    },
+                    splitLine:{
+                        show:false
+                    }
+                }
+            ],
+            series: [
+                {
+                    type: 'line',
+                    stack: 'Total',
+                    smooth: true,
+                    lineStyle: {
+                        normal: {
+                            width: 1,
+                            color: '#a158dd', // 折线线条颜色:红色
+                        },
+                    },
+                    showSymbol: false,
+                    areaStyle: {
+                        opacity: 0.8,
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {
+                                offset: 0,
+                                color: 'rgb(167, 99, 223)'
+                            },
+                            {
+                                offset: 1,
+                                color: 'rgb(249, 245, 253)'
+                            }
+                        ])
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: [7, 5, 4, 2, 4, 7, 5, 6, 5, 9, 6, 3, 2, 5, 3]
+                },
+            ]
+        };
+
+        option2 && top2Chart.setOption(option2);
+
+        //订单量
+        let top3Dom = document.getElementById('top3');
+        let top3Chart = echarts.init(top3Dom);
+        let option3 = {
+            grid: {
+                left: '0',
+                right: '0',
+                bottom: '0',
+                top: '0',
+                // grid 区域是否包含坐标轴的刻度标签
+                containLabel: false
+            },
+            xAxis: {
+                show: false,
+                type: 'category'
+            },
+            yAxis: {
+                show: false,
+                type: 'value'
+            },
+            series: [
+                {
+                    itemStyle: {
+                        color: '#768ef2'
+                    },
+                    data: [7, 5, 4, 2, 4, 7, 5, 6, 5, 9, 6, 3, 2, 5, 3],
+                    type: 'bar',
+                    // 柱状图宽度
+                    // barWidth: 10
+                }
+            ]
+        };
+
+        option3 && top3Chart.setOption(option3);
+
+        //会员数
+        let top4Dom = document.getElementById('top4');
+        let top4Chart = echarts.init(top4Dom);
+        let option4 = {
+            grid: {
+                left: '0',
+                right: '0',
+                bottom: '0',
+                top: '0',
+                containLabel: false
+            },
+            xAxis: {
+                show: false,
+                type: 'value',
+                boundaryGap: false
+            },
+            yAxis: {
+                show: false,
+                type: 'category',
+                data: ['Brazil']
+            },
+            series: [
+                {
+                    type: 'bar',
+                    data: [18203],
+                    stack: 'sear',
+                    itemStyle: {
+                        color: '#2ec2c4'
+                    },
+                    barWidth: 10
+                },
+                {
+                    type: 'bar',
+                    data: [6000],
+                    stack: 'sear',
+                    itemStyle: {
+                        color: '#EEEEEE'
+                    },
+                    barWidth: 10
+                },
+                {
+                    type: 'custom',
+                    stack: '总量',
+                    data: [100],
+                    renderItem: (params, api) => {
+                        const value = api.value(0)
+                        const endPoint = api.coord([value, 0])
+
+                        return {
+                            type: 'group',
+                            position: endPoint,
+                            children: [{
+                                type: 'path',
+                                shape: {
+                                    d: 'M1024 255.996 511.971 767.909 0 255.996 1024 255.996z',
+                                    x: 260,
+                                    y: -20,
+                                    width: 10,
+                                    height: 10,
+                                    layout: 'cover'
+                                },
+                                style: {
+                                    fill: '#2ec2c4'
+                                }
+                            }, {
+                                type: 'path',
+                                shape: {
+                                    d: 'M0 767.909l512.029-511.913L1024 767.909 0 767.909z',
+                                    x: 260,
+                                    y: 10,
+                                    width: 10,
+                                    height: 10,
+                                    layout: 'cover'
+                                },
+                                style: {
+                                    fill: '#2ec2c4'
+                                }
+                            }]
+                        }
+                    }
+                }
+            ]
+        };
+
+        option4 && top4Chart.setOption(option4);
+
+        //七日销量
+        let chartDom = document.getElementById('main');
+        let myChart = echarts.init(chartDom);
+        let option = {
+            title: {
+                text: '一周GMV',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['7日GMV']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: []
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name: '销售金额',
+                    type: 'line',
+                    stack: 'Total',
+                    data: []
+                }
+            ]
+        };
+        //初始图
+        $(function(){
+            $.ajax({
+                type:"post",
+                url:"{:url('admin/Console/getSaleData')}",
+                data: {
+                    start_date:getDay(-6),
+                    end_date:getDay(0),
+                },
+                dataType:"json",
+                beforeSend: function () {
+                    layer.load(1);
+                },
+                success:function(res){
+                    layer.closeAll(); //关闭弹层
+                    console.log(res);
+                    option.xAxis.data = res.title;
+                    option.series[0].data = res.data;
+
+                    option && myChart.setOption(option);
+                }
+            });
+        });
+
+    });
+
+    function getDay(day){
+        let today = new Date();
+        let targetday_milliseconds=today.getTime() + 1000*60*60*24*day;
+        today.setTime(targetday_milliseconds); //注意，这行是关键代码
+        let tYear = today.getFullYear();
+        let tMonth = today.getMonth();
+        let tDate = today.getDate();
+        tMonth = doHandleMonth(tMonth + 1);
+        tDate = doHandleMonth(tDate);
+        return tYear+"-"+tMonth+"-"+tDate;
+    }
+
+    function doHandleMonth(month){
+        let m = month;
+        if(month.toString().length == 1){
+            m = "0" + month;
+        }
+        return m;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>添加优惠券</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+    <style>
+        html {background: #fff;padding-top: 20px;}
+    </style>
+</head>
+<body>
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 名称：</label>
+            <div class="layui-input-inline" style="width: 334px;">
+                <input type="text" name="m_title" lay-verify="required" placeholder="请输入名称" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">如：满100减10</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 消费满：</label>
+            <div class="layui-input-inline w150">
+                <input type="text" name="m_min_price" lay-verify="number" value="0.00" placeholder="请输入消费门槛" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">减</div>
+            <div class="layui-input-inline w150">
+                <input type="text" name="m_cut_price" lay-verify="number" value="0.00" placeholder="请输入优惠金额" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">元</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 发放数量：</label>
+            <div class="layui-input-inline w150">
+                <input type="number" name="m_amount" lay-verify="number" value="1" placeholder="请输入发放数量" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">发放数量为正整数</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 领取上限：</label>
+            <div class="layui-input-inline w150">
+                <input type="number" name="m_per_amount" lay-verify="number" value="0" placeholder="请输入领取上限" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">每人最多领取数量，0为不限</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 活动时间：</label>
+            <div class="layui-input-inline w150">
+                <input type="text" class="layui-input" lay-verify="required" name="b_date" id="b_date" placeholder="开始时间" autocomplete="off">
+            </div>
+            <div class="layui-form-mid">
+                -
+            </div>
+            <div class="layui-input-inline w150">
+                <input type="text" class="layui-input" lay-verify="required" name="e_date" id="e_date" placeholder="结束时间" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">有效时间：</label>
+            <div class="layui-input-inline w150">
+                <select name="m_use_time">
+                    <option value="0" selected>不限</option>
+                    <option value="86400">1天</option>
+                    <option value="172800">2天</option>
+                    <option value="259200">3天</option>
+                    <option value="345600">4天</option>
+                    <option value="432000">5天</option>
+                    <option value="518400">6天</option>
+                    <option value="604800">7天</option>
+                    <option value="1209600">14天</option>
+                    <option value="2592000">30天</option>
+                </select>
+            </div>
+            <div class="layui-form-mid layui-word-aux">领取后这么久有效，不限表示至结束时间。</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">使用范围：</label>
+            <div class="layui-input-inline w150">
+                <select name="m_use_type" lay-filter="m_use_type">
+                    <option value="0" selected>全部商品</option>
+                    <option value="1">指定商品</option>
+                </select>
+            </div>
+            <div class="layui-form-mid layui-word-aux">可指定商品。</div>
+        </div>
+        <div class="layui-form-item" id="span_goods" style="display: none">
+            <label class="layui-form-label">选择商品：</label>
+            <div class="layui-input-block">
+                <div id="goods_ctr"></div>
+                <div class="upload_btn" onclick="select_goods();"></div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">优惠券类型：</label>
+            <div class="layui-input-inline" style="width: 380px;">
+                <input type="radio" name="m_type" value="1" title="内部券">
+                <input type="radio" name="m_type" value="2" title="公开券" checked>
+                <input type="radio" name="m_type" value="3" title="会员券">
+                <input type="radio" name="m_type" value="4" title="线下券">
+            </div>
+            <div class="layui-form-mid layui-word-aux" style="width: 100%;">
+                <label class="layui-form-label">&ensp;</label>
+                <div class="layui-input-inline" style="width: 450px;">
+                    会员券仅vip会员可领。<br>
+                    内部券可用于发放给指定会员或满减送等活动。<br>
+                    线下券添加后需要导入券码，会员在优惠券中心使用券码兑换。
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit lay-filter="LAY-submit" id="LAY-submit" value="确认">
+        </div>
+    </div>
+</body>
+</html>
+
+<script src="{__STATIC__}/jquery/jquery.min.js"></script>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+    layui.use(function(){
+        let $ = layui.$;
+        let laydate = layui.laydate;
+        let form = layui.form;
+
+        laydate.render({
+            elem: '#b_date'
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+
+        laydate.render({
+            elem: '#e_date'
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+
+        /* 监听select */
+        form.on('select(m_use_type)',function (data) {
+            if(data.value==0){
+                $("#span_goods").hide();
+            }
+            else {
+                $("#span_goods").show();
+            }
+        });
+    });
+
+    //选择商品
+    function select_goods() {
+        layer.open({
+            type: 2,
+            title: '选择商品',
+            shadeClose: true,
+            shade: false,
+            area: ['90%', '90%'],
+            content: "{:url('admin/goods/selectGoods')}"
+        });
+    }
+
+    //选择商品后返回处理
+    function call_back(id,title,pic,price) {
+        layer.closeAll('iframe');
+        let flag = 1;
+        let $m_str = '';
+        $m_str = $m_str + '<div class="slide_ctr" id="m_goods'+id+'">';
+        $m_str = $m_str + '<div class="pic_del"><i class="layui-icon layui-icon-delete" onclick="removeGoods('+id+')"></i></div>';
+        $m_str = $m_str + '<img src="'+ pic +'">';
+        $m_str = $m_str + '<div class="slide_title">'+title+'</div>';
+        $m_str = $m_str + '</div>';
+        $m_str = $m_str + '<input type="hidden" name="m_goods[]" value="'+id+'">';
+        let array = $("[name='m_goods[]']");
+        for(let i = 0;i < array.length;i++) {
+            let value = $(array[i]).val();
+            if(id == value){
+                flag = 0;
+                break;
+            }
+        }
+        if(flag) $('#goods_ctr').append($m_str);
+    }
+    //移除商品
+    function removeGoods(id) {
+        $("#m_goods"+id).remove();
+    }
+</script>

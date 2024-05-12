@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>本地应用</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+</head>
+<body>
+	<div class="layui-fluid">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<div style="padding-bottom: 10px;">
+					<div class="layui-table-title">本地应用</div>
+					<div class="layui-form search_ctr">
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="keys" placeholder="输入关键词查询" class="layui-input">
+								</div>
+								<button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-search">查询</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<table id="LAY-table" lay-filter="LAY-table"></table>
+				<script type="text/html" id="install">
+					{{#  if(d.isInstall == 1){ }}
+					{{#  if(d.status == 1){ }}
+					<span class="layui-green">正常</span>
+					{{#  } else { }}
+					<span class="layui-orange">停用</span>
+					{{#  } }}
+					{{#  } else { }}
+					未装
+					{{#  } }}
+				</script>
+				<script type="text/html" id="tableBar">
+					{{#  if(d.isInstall == 0){ }}
+					<a class="link-text" lay-event="install">安装</a>
+					<div class="link-line"></div>
+					<a class="no-link-text">启用</a>
+					<div class="link-line"></div>
+					<a class="no-link-text">停用</a>
+					<div class="link-line"></div>
+					<a class="no-link-text">卸载</a>
+					{{#  } else { }}
+					<a class="no-link-text">安装</a>
+					<div class="link-line"></div>
+					{{#  if(d.status == 0){ }}
+					<a class="link-text" lay-event="up">启用</a>
+					<div class="link-line"></div>
+					<a class="no-link-text">停用</a>
+					{{#  } else { }}
+					<a class="no-link-text">启用</a>
+					<div class="link-line"></div>
+					<a class="link-text" lay-event="down">停用</a>
+					{{#  } }}
+					<div class="link-line"></div>
+					<a class="link-text" lay-event="uninstall">卸载</a>
+					{{#  } }}
+				</script>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+	layui.config({
+		base: '{__STATIC__}/layuiAdmin/' // 静态资源所在路径
+	}).use(['index', 'table', 'form'], function(){
+		let $ = layui.$;
+		let table = layui.table;
+		let form = layui.form;
+
+		//初始化列表
+		table.render({
+			elem: '#LAY-table'
+			,url: "{:url('getList')}"
+			,cols: [[
+				{field: 'title', width:180, title: '名称'}
+				,{field: 'name', width:160, title: '标识'}
+				,{field: 'description', minWidth: 200, title: '描述'}
+				,{field: 'author', width: 140, title: '作者'}
+				,{field: 'version', width: 100, title: '版本'}
+				,{field: 'isInstall', width: 100, title: '状态', templet: '#install', align:'center'}
+				,{title: '操作', width: 200, align:'center', fixed: 'right', toolbar: '#tableBar'}
+			]]
+			,page: true
+			,limit: 20
+			,height: 'full-100'
+			,text: {none: '暂无相关数据'}
+		});
+
+		//监听搜索
+		form.on('submit(LAY-search)', function(data){
+			let field = data.field;
+			//执行重载
+			table.reload('LAY-table', {
+				url: "{:url('getList')}"
+				,where: field
+				,page: {
+					curr: 1 //重新从第 1 页开始
+				}
+			});
+		});
+
+		//表格内操作按钮
+		table.on('tool(LAY-table)', function(obj){
+			let data = obj.data;
+			if(obj.event === 'install'){
+				layer.confirm('确认要安装'+data.title+'吗？', function(index){
+					$.ajax({
+						type:"post",
+						url:"{:url('install')}",
+						data: {
+							m_name:data.name
+						},
+						dataType:"json",
+						beforeSend: function () {
+							layer.load(1);
+						},
+						success:function(res){
+							layer.closeAll();
+							if(res.code == 0){
+								layer.msg('安装成功', {
+									time: 2000
+								}, function(){
+									table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+									parent.refreshNav();
+								});
+							}
+							else {
+								layer.msg(res.msg);
+							}
+						}
+					});
+
+				});
+			} else if(obj.event === 'uninstall'){
+				layer.confirm('卸载将删除数据，确认要卸载'+data.title+'吗？', function(index){
+					$.ajax({
+						type:"post",
+						url:"{:url('uninstall')}",
+						data: {
+							m_name:data.name
+						},
+						dataType:"json",
+						beforeSend: function () {
+							layer.load(1);
+						},
+						success:function(res){
+							layer.closeAll();
+							if(res.code == 0){
+								layer.msg('卸载成功', {
+									time: 2000
+								}, function(){
+									table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+									parent.refreshNav();
+								});
+							}
+							else {
+								layer.msg(res.msg);
+							}
+						}
+					});
+
+				});
+			} else if(obj.event === 'up'){
+				layer.confirm('确认要启用'+data.title+'吗？', function(index){
+					$.ajax({
+						type:"post",
+						url:"{:url('up')}",
+						data: {
+							m_name:data.name
+						},
+						dataType:"json",
+						beforeSend: function () {
+							layer.load(1);
+						},
+						success:function(res){
+							layer.closeAll();
+							if(res.code == 0){
+								layer.msg('启用成功', {
+									time: 2000
+								}, function(){
+									table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+									parent.refreshNav();
+								});
+							}
+							else {
+								layer.msg(res.msg);
+							}
+						}
+					});
+				});
+			} else if(obj.event === 'down'){
+				layer.confirm('确认要停用'+data.title+'吗？', function(index){
+					$.ajax({
+						type:"post",
+						url:"{:url('down')}",
+						data: {
+							m_name:data.name
+						},
+						dataType:"json",
+						beforeSend: function () {
+							layer.load(1);
+						},
+						success:function(res){
+							layer.closeAll();
+							if(res.code == 0){
+								layer.msg('停用成功', {
+									time: 2000
+								}, function(){
+									table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+									parent.refreshNav();
+								});
+							}
+							else {
+								layer.msg(res.msg);
+							}
+						}
+					});
+				});
+			}
+		});
+
+	});
+</script>

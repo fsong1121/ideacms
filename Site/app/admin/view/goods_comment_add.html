@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>添加评价</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+    <style>
+        html {background: #fff;padding-top: 20px;}
+    </style>
+</head>
+<body>
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 选择商品：</label>
+            <div class="layui-input-block">
+                <div id="goods_ctr"></div>
+                <div class="upload_btn" onclick="select_goods();"></div>
+                <input type="hidden" name="m_goods_id" id="m_goods_id" lay-verify="required" lay-reqText="请选择商品">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 会员昵称：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="m_user_name" lay-verify="required" placeholder="请输入会员昵称" lay-reqText="会员昵称为空" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux"></div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 评价内容：</label>
+            <div class="layui-input-block">
+                <textarea name="m_info" lay-verify="required" placeholder="请输入评价内容" lay-reqText="评价内容为空" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">评价图片：</label>
+            <div class="layui-input-block">
+                <div id="slide_ctr"></div>
+                <div class="upload_btn" id="upload_btn"></div>
+                <input type="hidden" id="pic_index" value="0">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">评价时间：</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" value="{:date('Y-m-d H:i:s', time())}" name="m_add_date" id="m_add_date" placeholder="评价时间" autocomplete="off">
+            </div>
+        </div>
+        <input type="hidden" name="m_goods_rate" value="5">
+        <input type="hidden" name="m_express_rate" value="5">
+        <input type="hidden" name="m_service_rate" value="5">
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit lay-filter="LAY-submit" id="LAY-submit" value="确认">
+        </div>
+    </div>
+</body>
+</html>
+<script src="{__STATIC__}/jquery/jquery.min.js"></script>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+    layui.use(function(){
+        let $ = layui.$;
+        let laydate = layui.laydate;
+        let upload = layui.upload;
+
+        laydate.render({
+            elem: '#m_add_date'
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+        //上传
+        upload.render({
+            elem: '#upload_btn'
+            ,url: "{:url('upload/index')}"
+            ,data: {dir: 'comment'}
+            ,accept: 'images'
+            ,before: function () {
+                layer.load();
+            }
+            ,done: function(res){
+                console.log(res);
+                layer.closeAll();
+                let index = $('#pic_index').val();
+                if(res.code == 0) {
+                    $('#slide_ctr').append("<div class='slide_ctr' id='span_slide"+index+"'><img src='"+res.data.src+"'><div class='pic_del' onClick=\"delPic('"+index+"')\"><i class='layui-icon layui-icon-delete'></i></div><input type='hidden' name='m_slide[]' value='"+res.data.file+"'></div>");
+                    $('#pic_index').val(index+1);
+                }
+                else {
+                    layer.msg(res.msg);
+                }
+            }
+            ,error: function(){
+                layer.closeAll();
+                layer.msg('请求异常');
+            }
+        });
+    })
+
+    //删除相册
+    function delPic(p0){
+        $("#span_slide"+p0).remove();
+    }
+
+    //选择商品
+    function select_goods() {
+        layer.open({
+            type: 2,
+            title: '选择商品',
+            shadeClose: true,
+            shade: false,
+            area: ['90%', '90%'],
+            content: "{:url('admin/goods/selectGoods')}"
+        });
+    }
+
+    //选择商品后返回处理
+    function call_back(id,title,pic,price) {
+        layer.closeAll('iframe');
+        let m_str = '';
+        m_str = m_str + '<div class="slide_ctr" id="span_goods'+id+'">';
+        m_str = m_str + '<div class="pic_del"><i class="layui-icon layui-icon-delete" onclick="removeGoods('+id+')"></i></div>';
+        m_str = m_str + '<img src="'+ pic +'">';
+        m_str = m_str + '<div class="slide_title">'+title+'</div>';
+        m_str = m_str + '</div>';
+        $('#m_goods_id').val(id);
+        $('#goods_ctr').html(m_str);
+    }
+    //移除商品
+    function removeGoods(id) {
+        $('#m_goods_id').val('');
+        $("#span_goods"+id).remove();
+    }
+
+</script>

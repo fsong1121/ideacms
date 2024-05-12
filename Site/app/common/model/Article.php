@@ -1,0 +1,51 @@
+<?php
+// +----------------------------------------------------------------------
+// | 专注于产品，坚持小而美，赋能开发者，助力企业发展！
+// +----------------------------------------------------------------------
+// | Copyright (c) 2009~2049 https://www.ideacms.net All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | 程序开源并非等于免费,商业使用务必购买正版授权,以免引起不必要的法律纠纷.
+// +----------------------------------------------------------------------
+namespace app\common\model;
+
+use think\facade\Db;
+
+class Article extends BaseModel
+{
+    /**
+     * 获取图片地址
+     * @param $value
+     * @return string
+     */
+    public function getPicAttr($value) : string
+    {
+        return getPic($value);
+    }
+
+    /**
+     * 获取栏目名称
+     * @param $value
+     * @return string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getCatIdAttr($value) : string
+    {
+        $cat = Db::name('article_category')->where('id',$value)->find();
+        return empty($cat) ? '' : $cat['title'];
+    }
+
+    /**
+     * 获取添加时间
+     * @param $value
+     * @return string
+     */
+    public function getAddDateAttr($value) : string
+    {
+        return empty($value) ? '' : date("Y-m-d H:i:s", $value);
+    }
+
+}

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>领取列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div style="padding-bottom: 10px;">
+                    <button class="layui-btn layui-btn-normal btn-top" data-type="export">导出优惠券</button>
+                    {eq name="$data.type" value="1"}
+                    <button class="layui-btn layui-btn-info btn-top" data-type="give">指定发放</button>
+                    {/eq}
+                    {eq name="$data.type" value="4"}
+                    <button class="layui-btn layui-btn-info btn-top" data-type="import">导入线下券</button>
+                    {/eq}
+                    <div class="layui-form search_ctr">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline w150">
+                                    <select name="k2">
+                                        <option value="">使用状态</option>
+                                        <option value="0">未使用</option>
+                                        <option value="1">已使用</option>
+                                    </select>
+                                </div>
+                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-search">查询</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table id="LAY-table" lay-filter="LAY-table"></table>
+                <script type="text/html" id="state">
+                    {{#  if(d.is_use == 1){ }}
+                    <span class="layui-badge-dot layui-bg-gray"></span>已使用
+                    {{#  } else { }}
+                    <span class="layui-badge-dot layui-bg-blue"></span>未使用
+                    {{#  } }}
+                </script>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '{__STATIC__}/layuiAdmin/' // 静态资源所在路径
+    }).use(['index', 'layer', 'table', 'form'], function(){
+        let $ = layui.$;
+        let layer = layui.layer;
+        let table = layui.table;
+        let form = layui.form;
+
+        //初始化列表
+        table.render({
+            elem: '#LAY-table'
+            ,url: "{:url('getInfoList')}?coupon_id={$data.id}"
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                ,{field: 'id', width: 80, title: 'ID', sort: true}
+                ,{field: 'coupon_sn', width: 200, title: '优惠券编号'}
+                ,{field: 'user_name', minWidth: 200, title: '领取人'}
+                ,{field: 'order_sn', width: 200, title: '使用订单'}
+                ,{field: 'use_date', width: 200, title: '使用时间'}
+                ,{field: 'add_date', width: 200, title: '领取时间'}
+                ,{field: 'is_use', width: 120, title: '状态', align:'center', sort: true, templet: '#state'}
+            ]]
+            ,page: true
+            ,limit: 20
+            ,height: 'full-100'
+            ,text: {none: '暂无相关数据'}
+        });
+
+        //监听搜索
+        form.on('submit(LAY-search)', function(data){
+            let field = data.field;
+            //执行重载
+            table.reload('LAY-table', {
+                url: "{:url('getInfoList')}?coupon_id={$data.id}"
+                ,where: field
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        });
+
+        //头部操作按钮
+        $('.btn-top').on('click', function(){
+            let type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        let active = {
+            give: function(){
+                layer.open({
+                    type: 2
+                    ,title: '发放优惠券'
+                    ,content: "{:url('give')}?coupon_id={$data.id}"
+                    ,maxmin: true
+                    ,area: ['500px', '300px']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        let iframeWindow = window['layui-layer-iframe'+ index];
+                        let submitID = 'LAY-submit';
+                        let submit = layero.find('iframe').contents().find('#'+ submitID);
+
+                        //监听提交
+                        iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+                            let field = data.field; //获取提交的字段
+
+                            //提交 Ajax 成功后，静态更新表格中的数据
+                            $.ajax({
+                                type:"post",
+                                url:"{:url('saveGive')}",
+                                data: {
+                                    user_id:field.m_uid,
+                                    m_coupon_id:field.m_coupon_id
+                                },
+                                dataType:"json",
+                                beforeSend: function () {
+                                    layer.load(1);
+                                },
+                                success:function(res){
+                                    layer.close(layer.index);
+                                    if(res.code == 0){
+                                        layer.closeAll();
+                                        table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+                                    }
+                                    else {
+                                        layer.msg(res.msg);
+                                    }
+                                }
+                            });
+                        });
+                        submit.trigger('click');
+                    }
+                });
+            }
+            ,export: function(){
+                var checkStatus = table.checkStatus('LAY-table')
+                    ,checkData = checkStatus.data //得到选中的数据
+                    ,ids = "0";
+                if(checkData.length === 0){
+                    return layer.msg('请选择数据');
+                }
+                $.each(checkData,function(key,value){
+                    ids = ids + "," + checkData[key]['id'];
+                });
+                layer.confirm('确定导出吗？', function(index) {
+                    layer.closeAll();
+                    location.href = "export.html?coupon_id={$data.id}&m_id=" + ids;
+                });
+            }
+        };
+
+    });
+</script>

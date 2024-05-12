@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>退换列表</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+</head>
+<body>
+	<div class="layui-fluid">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<div style="padding-bottom: 10px;">
+					<button class="layui-btn layui-btn-normal btn-top" data-type="batchAgree">批量通过</button>
+					<button class="layui-btn layui-btn-info btn-top" data-type="batchRefuse">批量驳回</button>
+					<div class="layui-form search_ctr">
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<div class="layui-input-inline w160">
+									<input type="text" name="k3" id="k3" class="layui-input" placeholder="开始时间" autocomplete="off" value="">
+								</div>
+								<div class="layui-form-mid layui-word-aux">-</div>
+								<div class="layui-input-inline w160">
+									<input type="text" name="k4" id="k4" class="layui-input" placeholder="结束时间" autocomplete="off" value="">
+								</div>
+								<div class="layui-input-inline w120">
+									<select name="k2">
+										<option value="">退换状态</option>
+										<option value="-1">已驳回</option>
+										<option value="-2">已取消</option>
+										<option value="0">待处理</option>
+										<option value="1">已成功</option>
+									</select>
+								</div>
+								<button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-search">查询</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<table id="LAY-table" lay-filter="LAY-table"></table>
+				<script type="text/html" id="price">
+					¥{{d.price}} / {{d.integral}}
+				</script>
+				<script type="text/html" id="type">
+					{{#  if(d.type == 1){ }}仅退款{{#  } }}
+					{{#  if(d.type == 2){ }}退货退款{{#  } }}
+					{{#  if(d.type == 3){ }}仅换货{{#  } }}
+				</script>
+				<script type="text/html" id="state">
+					{{#  if(d.state == -1){ }}已驳回{{#  } }}
+					{{#  if(d.state == -2){ }}已取消{{#  } }}
+					{{#  if(d.state == 0){ }}<span class="layui-red">待处理</span>{{#  } }}
+					{{#  if(d.state == 1){ }}<span class="layui-green">已成功</span>{{#  } }}
+				</script>
+				<script type="text/html" id="tableBar">
+					<a class="link-text" lay-event="edit">查看</a>
+					<div class="link-line"></div>
+					{{#  if(d.state == 0){ }}
+					<a class="link-text" lay-event="opt">操作</a>
+					{{#  } else { }}
+					<a class="no-link-text">操作</a>
+					{{#  } }}
+				</script>
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+	layui.config({
+		base: '{__STATIC__}/layuiAdmin/' // 静态资源所在路径
+	}).use(['index', 'layer', 'table', 'form', 'laydate', 'dropdown'], function(){
+		let $ = layui.$;
+		let layer = layui.layer;
+		let table = layui.table;
+		let form = layui.form;
+		let laydate = layui.laydate;
+		let dropdown = layui.dropdown;
+
+		//搜索日期
+		laydate.render({
+			elem: '#k3'
+			,type: 'datetime'
+			,trigger: 'click'
+		});
+
+		laydate.render({
+			elem: '#k4'
+			,type: 'datetime'
+			,trigger: 'click'
+		});
+
+		//初始化列表
+		table.render({
+			elem: '#LAY-table'
+			,url: "{:url('getList')}"
+			,cols: [[
+				{type: 'checkbox', fixed: 'left'}
+				,{field: 'id', width: 80, title: 'ID', sort: true}
+				,{field: 'sn', width:180, title: '退款单号'}
+				,{field: 'order_sn', width: 180, title: '所属订单'}
+				,{field: 'pay_price', width: 100, title: '实付款'}
+				,{field: 'price', width: 130, title: '退款金额/积分', align:'center', templet: '#price'}
+				,{field: 'reason', minWidth: 150, title: '退款原因'}
+				,{field: 'type', width: 100, title: '退款类型', templet: '#type', align:'center'}
+				,{field: 'state', width: 90, title: '状态', templet: '#state', align:'center'}
+				,{field: 'add_date', width: 180, title: '时间'}
+				,{title: '操作', width: 106, align:'center', fixed: 'right', toolbar: '#tableBar'}
+			]]
+			,page: true
+			,limit: 20
+			,height: 'full-100'
+			,text: {none: '暂无相关数据'}
+		});
+
+		//监听搜索
+		form.on('submit(LAY-search)', function(data){
+			let field = data.field;
+			//执行重载
+			table.reload('LAY-table', {
+				url: "{:url('getList')}"
+				,where: field
+				,page: {
+					curr: 1 //重新从第 1 页开始
+				}
+			});
+		});
+
+		//表格内操作按钮
+		table.on('tool(LAY-table)', function(obj){
+			let tableData = obj.data;
+			if(obj.event === 'edit') {
+				layer.open({
+					type: 2
+					,title: '退换详情'
+					,content: "{:url('edit')}?id=" + tableData.id
+					,maxmin: true
+					,area: ['80%', '90%']
+				});
+			} else if(obj.event === 'opt'){
+				// 更多下拉菜单
+				let data = [];
+				if(tableData.state == 0) {
+					//待付款
+					data = [
+						{
+							title: '同意退款',
+							id: 'agree'
+						},
+						{
+							title: '驳回退款',
+							id: 'refuse'
+						}
+					];
+				}
+				dropdown.render({
+					elem: this,
+					show: true, // 外部事件触发即显示
+					data: data,
+					click: function(data){
+						//根据 id 做出不同操作
+						if(data.id === 'agree'){
+							layer.confirm('确定同意退款吗？', function(){
+								$.ajax({
+									type:"post",
+									url:"{:url('agree')}",
+									data: {
+										m_id:tableData.id
+									},
+									dataType:"json",
+									beforeSend: function () {
+										layer.load(1);
+									},
+									success:function(res){
+										layer.closeAll();
+										if(res.code == 0){
+											if(res.msg == 'success') {
+												layer.msg('操作成功', {
+													time: 1500
+												}, function(){
+													table.reloadData('LAY-table',{},true); //数据刷新
+												});
+											} else {
+												layer.msg(res.msg);
+											}
+										} else {
+											layer.msg(res.msg);
+										}
+									}
+								});
+							});
+						}
+						if(data.id === 'refuse'){
+							layer.open({
+								type: 2
+								,title: '驳回退款'
+								,content: "{:url('refuse')}?id=" + tableData.id
+								,maxmin: false
+								,area: ['500px', '280px']
+								,btn: ['确定', '取消']
+								,yes: function(index, layero){
+									let iframeWindow = window['layui-layer-iframe'+ index];
+									let submitID = 'LAY-submit';
+									let submit = layero.find('iframe').contents().find('#'+ submitID);
+
+									//监听提交
+									iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+										let field = data.field; //获取提交的字段
+										$.ajax({
+											type:"post",
+											url:"{:url('saveRefuse')}",
+											data: {
+												m_info:field.m_info,
+												m_id:field.m_id
+											},
+											dataType:"json",
+											beforeSend: function () {
+												layer.load(1);
+											},
+											success:function(res){
+												layer.closeAll();
+												if(res.code == 0){
+													table.reloadData('LAY-table',{},true); //数据刷新
+												}
+												else {
+													layer.msg(res.msg);
+												}
+											}
+										});
+									});
+									submit.trigger('click');
+								}
+							});
+						}
+					},
+					align: 'right', // 右对齐弹出
+					style: 'box-shadow: 1px 1px 10px rgb(0 0 0 / 12%);', //设置额外样式
+					className: 'order_dropdown'
+				})
+			}
+		});
+
+		//头部操作按钮
+		$('.btn-top').on('click', function(){
+			let type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+
+		let active = {
+			batchAgree: function(){
+				let checkStatus = table.checkStatus('LAY-table');
+				let checkData = checkStatus.data //得到选中的数据
+				let ids = "0";
+				if(checkData.length === 0){
+					return layer.msg('请选择数据');
+				}
+				$.each(checkData,function(key,value){
+					ids = ids + "," + checkData[key]['id'];
+				});
+				layer.confirm('确定同意退款吗？', function(index) {
+					$.ajax({
+						type:"post",
+						url:"{:url('agree')}",
+						data: {
+							m_id:ids
+						},
+						dataType:"json",
+						beforeSend: function () {
+							layer.load(1);
+						},
+						success:function(res){
+							layer.closeAll();
+							if(res.code == 0){
+								let msg = res.msg == 'success' ? '操作成功' : res.msg;
+								layer.msg(msg, {
+									time: 2000
+								}, function(){
+									table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+								});
+							}
+							else {
+								layer.msg(res.msg);
+							}
+						}
+					});
+				});
+			}
+			,batchRefuse: function(){
+				let checkStatus = table.checkStatus('LAY-table');
+				let checkData = checkStatus.data //得到选中的数据
+				let ids = "0";
+				if(checkData.length === 0){
+					return layer.msg('请选择数据');
+				}
+				$.each(checkData,function(key,value){
+					ids = ids + "," + checkData[key]['id'];
+				});
+				layer.open({
+					type: 2
+					,title: '批量驳回退款'
+					,content: "{:url('refuse')}?id=" + ids
+					,maxmin: false
+					,area: ['500px', '280px']
+					,btn: ['确定', '取消']
+					,yes: function(index, layero){
+						let iframeWindow = window['layui-layer-iframe'+ index];
+						let submitID = 'LAY-submit';
+						let submit = layero.find('iframe').contents().find('#'+ submitID);
+
+						//监听提交
+						iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+							let field = data.field; //获取提交的字段
+							$.ajax({
+								type:"post",
+								url:"{:url('saveRefuse')}",
+								data: {
+									m_info:field.m_info,
+									m_id:field.m_id
+								},
+								dataType:"json",
+								beforeSend: function () {
+									layer.load(1);
+								},
+								success:function(res){
+									layer.closeAll();
+									if(res.code == 0){
+										let msg = res.msg == 'success' ? '操作成功' : res.msg;
+										layer.msg(msg, {
+											time: 2000
+										}, function(){
+											table.reloadData('LAY-table',{},true); //数据刷新
+										});
+									}
+									else {
+										layer.msg(res.msg);
+									}
+								}
+							});
+						});
+						submit.trigger('click');
+					}
+				});
+			}
+		};
+
+	});
+</script>

@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{:config('site.title')}</title>
+	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet" type="text/css" />
+	<link href="{__STATIC__}/layuiAdmin/style/login.css" rel="stylesheet" type="text/css" />
+	<link href="{__STATIC__}/iconfont/iconfont.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div class="login_ctr">
+		<div class="login_ctt">
+			<div class="login_title">商城后台管理中心<span><br>综合信息管理平台</span></div>
+			<form class="layui-form">
+				<div class="login_cell">
+					<div class="login_ico"><i class="iconfont icon-contact"></i></div>
+					<input type="text" placeholder="输入账号" name="uid" class="login_input" lay-verify="required" lay-reqText="账号为空">
+				</div>
+				<div class="login_cell">
+					<div class="login_ico"><i class="iconfont icon-unlock"></i></div>
+					<input type="password" placeholder="输入密码" name="pwd" class="login_input" lay-verify="required" lay-reqText="密码为空">
+				</div>
+				<div class="login_cell">
+					<div class="login_ico"><i class="iconfont icon-safe"></i></div>
+					<input type="text" placeholder="输入验证码" name="captcha" class="login_input yzm" lay-verify="required" lay-reqText="验证码为空">
+					<div class="yzm_pic"><img id="captcha" src="{:captcha_src()}" alt="验证码" title="点击刷新验证码"></div>
+				</div>
+				<input type="button" lay-submit lay-filter="LAY-submit" id="LAY-submit" class="login_btn" value="登 录">
+			</form>
+		</div>
+	</div>
+	<div class="login_copy">Copyright © 2022-2050 {:config('site.company')} All Rights Reserved  <a href="http://beian.miit.gov.cn/" target="_blank">{:config('site.record')}</a></div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+	layui.use(function(){
+		let $ = layui.$;
+		let form = layui.form;
+
+		$(function(){
+			//验证码
+			$("#captcha").click(function () {
+				$(this).attr("src","{:captcha_src()}?t="+new Date().getTime())
+			});
+		});
+
+		//提交按钮绑定回车
+		$("input").keydown(function(event){
+			if (event.keyCode == 13) {
+				document.getElementById("LAY-submit").click();
+			}
+		});
+		//提交
+		form.on('submit(LAY-submit)', function(data){
+			let field = data.field;
+			$.ajax({
+				type:"post",
+				url:"{:url('admin/login/login')}",
+				data: {
+					m_uid:field.uid,
+					m_pwd:field.pwd,
+					m_code:field.captcha
+				},
+				dataType:"json",
+				beforeSend: function () {
+					layer.load(1);
+				},
+				success:function(res){
+					layer.closeAll(); //关闭弹层
+					if(res.code == 0){
+						parent.location.href="{:url('admin/index/index')}";
+					}
+					else {
+						layer.msg(unescape(res.msg));
+						$("#captcha").attr("src","{:captcha_src()}?t="+new Date().getTime());
+					}
+				}
+			});
+
+		});
+	})
+</script>

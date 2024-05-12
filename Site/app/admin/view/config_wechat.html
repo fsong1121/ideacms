@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>微信设置</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="layui-fluid">
+	<form class="layui-form" style="padding-bottom: 45px;">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<div class="layui-tab layui-tab-brief">
+					<ul class="layui-tab-title">
+						<li class="layui-this">公众号设置</li>
+						<li>小程序设置</li>
+					</ul>
+					<div class="layui-tab-content">
+						<div class="layui-tab-item layui-show">
+							<div class="layui-form-item">
+								<label class="layui-form-label">公众号名称：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="m_title" placeholder="请输入公众号名称" class="layui-input" value="{$wechat.mp.title}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">服务号后台获取</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> AppID：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="m_appid" lay-verify="required" placeholder="请输入AppID" class="layui-input" value="{$wechat.mp.appid}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">服务号开发配置中获取</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> AppSecret：</label>
+								<div class="layui-input-inline w300">
+									<input type="text" name="m_appsecret" lay-verify="required" placeholder="请输入AppSecret" class="layui-input" value="{$wechat.mp.appsecret}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">服务号开发配置中获取</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">&ensp;</label>
+								<div class="layui-form-mid layui-word-aux">可用于PC及H5端微信登录、支付及发送公众号模板消息等</div>
+							</div>
+						</div>
+						<div class="layui-tab-item">
+							<div class="layui-form-item">
+								<label class="layui-form-label">小程序名称：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="m_miniapp_title" placeholder="请输入小程序名称" class="layui-input" value="{$wechat.miniapp.title}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">小程序后台获取</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> AppID：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="m_miniapp_appid" lay-verify="required" placeholder="请输入AppID" class="layui-input" value="{$wechat.miniapp.appid}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">小程序开发管理中获取</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> AppSecret：</label>
+								<div class="layui-input-inline w300">
+									<input type="text" name="m_miniapp_appsecret" lay-verify="required" placeholder="请输入AppSecret" class="layui-input" value="{$wechat.miniapp.appsecret}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">小程序开发管理中获取</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">自动发货：</label>
+								<div class="layui-input-inline w50">
+									<input type="checkbox" name="m_auto_send" value="1" lay-text="是|否" {eq name="$wechat.miniapp.auto_send" value="1"}checked{/eq} lay-skin="switch">
+								</div>
+								<div class="layui-form-mid layui-word-aux">需要上传发货信息的请选择</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="m_footer">
+			<button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-submit">提交</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+    </form>
+</div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+	layui.config({
+		base: '{__STATIC__}/layuiAdmin/' // 静态资源所在路径
+	}).use(['index','form'], function(){
+		let $ = layui.$;
+		let layer = layui.layer;
+		let form = layui.form;
+
+		/* 监听提交 */
+		form.on('submit(LAY-submit)', function(data){
+			let field = data.field; //获取提交的字段
+			let auto_send = field.hasOwnProperty('m_auto_send') ? field.m_auto_send : 0;
+			$.ajax({
+				type:"post",
+				url:"saveWechat.html",
+				data: {
+					m_title:field.m_title,
+					m_appid:field.m_appid,
+					m_appsecret:field.m_appsecret,
+					m_miniapp_title:field.m_miniapp_title,
+					m_miniapp_appid:field.m_miniapp_appid,
+					m_miniapp_appsecret:field.m_miniapp_appsecret,
+					m_auto_send:auto_send
+				},
+				dataType:"json",
+				beforeSend: function () {
+					layer.load(1);
+				},
+				success:function(res){
+					layer.closeAll(); //关闭弹层
+					if(res.code == 0){
+						layer.msg('修改成功', {
+							time: 2000
+						}, function(){
+							location.reload();
+						});
+					}
+					else {
+						layer.msg(res.msg);
+					}
+				}
+			});
+			return false;
+		});
+	});
+</script>

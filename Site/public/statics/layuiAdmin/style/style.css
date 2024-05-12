@@ -1,0 +1,509 @@
+/*自定义样式表*/
+html {
+    background: #f1f2f5;
+}
+.m_footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 99999;
+    width: 100%;
+    height: 50px;
+    padding-top: 10px;
+    text-align: center;
+    background: #fcfcfc;
+    border-top: 1px #eee solid;
+    box-shadow: 0 0 5px #eee;
+}
+.m_ctr {
+    float: left;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+/*自定义layui样式*/
+/*左侧上角logo*/
+.layadmin-side-shrink .layui-layout-admin .layui-logo{
+    background-image: url('./imgs/logo.png');
+}
+/*右侧内容选项按钮背景*/
+.layadmin-pagetabs .layui-tab-title li.layui-this{
+    background-color: #f5f5f5 !important;
+}
+/*input，textarea获取焦点*/
+.layui-input:focus,.layui-textarea:focus{
+    border-color:#1890ff!important;
+    box-shadow:0 0 0 2px rgba(186,231,255,.3)
+}
+.layui-form-danger+.layui-form-select .layui-input,.layui-form-danger:focus{
+    border-color:#ff5722!important;box-shadow:0 0 0 2px rgba(255,87,34,.08)
+}
+/*灰色按钮*/
+.layui-btn-info{
+    background: #f2f3f5;
+    color:#666;
+}
+.layui-btn-info:hover{
+    background: #e5e6eb;
+    color:#666;
+    opacity:1;
+    filter:alpha(opacity=100);
+}
+/*右侧圆角框*/
+.layui-card {
+    border-radius: 6px !important;
+}
+/*表头*/
+.layui-table th {
+    background: url('./images/lm_bg.gif') repeat-x left bottom #fff;
+    font-weight: bold;
+    color: #333;
+}
+/*表格选中*/
+.layui-table-checked{
+    background-color:#fff !important;
+}
+.layui-table-checked.layui-table-click,.layui-table-checked.layui-table-hover{
+    background-color:#f8f8f8 !important;
+}
+.layui-form-checkbox[lay-skin=primary]>.layui-icon-indeterminate{
+    border-color:#1890ff !important;
+}
+.layui-form-checkbox[lay-skin=primary]>.layui-icon-indeterminate:before{
+    background-color:#1890ff !important;
+}
+.layui-table-cell-c:hover {
+    border-color:#1890ff
+}
+/*table行高*/
+.layui-table td {
+    height: 46px;
+    line-height: 46px;
+}
+.layui-table td img {
+    width: auto;
+    height: 100%;
+    max-height: 60px;
+    cursor: pointer;
+}
+.layui-table .pic {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.layui-table .pic img {
+    width: 100%;
+    height: 100%;
+}
+.layui-table .show_pic {
+    display: none;
+}
+.layui-table .show_pic img {
+    width:auto;
+    height:auto;
+    max-width:500px;
+    max-height:500px;
+}
+/*表格中编辑删除按钮*/
+.set-btn .layui-btn+.layui-btn {
+    margin-left: 5px;
+}
+/*颜色*/
+.layui-normal,.layui-gray {
+    color: #cacdd3!important;
+}
+.layui-processing,.layui-blue {
+    color: #1890ff!important;
+}
+.layui-success,.layui-green {
+    color: #00b444!important;
+}
+.layui-warning,.layui-orange {
+    color: #fc862b!important;
+}
+.layui-danger,.layui-red {
+    color: #f35044!important;
+}
+.layui-gold {
+    color: #f2bf44!important;
+}
+.layui-lime {
+    color: #95dd4b!important;
+}
+.layui-cyan {
+    color: #24c6c8!important;
+}
+.layui-purple {
+    color: #7f1ac9!important;
+}
+.layui-magenta {
+    color: #f63f99!important;
+}
+
+/*操作按钮*/
+.layui-table .link-text,.layui-table .no-link-text {
+    float: left;
+    color:#1890ff;
+    cursor: pointer;
+}
+
+.layui-table .no-link-text {
+    color: #999;
+}
+
+.layui-table .link-text:hover,.layui-table .no-link-text:hover {
+    opacity:.8;
+    filter:alpha(opacity=80);
+}
+
+.layui-table .link-line {
+    float: left;
+    margin: 8px 8px 0;
+    width: 1px;
+    height: 12px;
+    background: #ddd;
+}
+
+.layui-table-title {
+    margin-top: 6px;
+    height:32px;
+    line-height:32px;
+    font-size:16px;
+    cursor:pointer;
+    display:inline-block
+}
+
+/*状态点*/
+.layui-table .layui-badge-dot {
+    top: -1px;
+    right: 5px;
+    width: 6px;
+    height: 6px;
+}
+
+.layui-bg-gray {
+    background-color: #cacdd3!important;
+}
+.layui-bg-blue {
+    background-color: #1890ff!important;
+}
+.layui-bg-green {
+    background-color: #00b444!important;
+}
+.layui-bg-orange {
+    background-color: #fc862b!important;
+}
+.layui-bg-red {
+    background-color: #f35044!important;
+}
+.layui-bg-gold {
+    background-color: #f2bf44!important;
+}
+.layui-bg-lime {
+    background-color: #95dd4b!important;
+}
+.layui-bg-cyan {
+    background-color: #24c6c8!important;
+}
+.layui-bg-purple {
+    background-color: #7f1ac9!important;
+}
+.layui-bg-magenta {
+    background-color: #f63f99!important;
+}
+
+/*分页*/
+.layui-laypage a:hover{
+    color:#1890ff;
+}
+.layui-laypage .layui-laypage-curr .layui-laypage-em {
+    background-color:#1890ff;
+}
+.layui-laypage input:focus,.layui-laypage select:focus {
+    border-color:#1890ff!important
+}
+/*按钮*/
+.layui-btn-normal {
+    background-color:#1890ff;
+}
+.layui-btn-primary:hover {
+    border-color:#1890ff;
+    color:#1890ff
+}
+.btn-top {
+    padding: 0 12px;
+}
+/*开关*/
+.layui-form-onswitch {
+    border-color:#1890ff;
+    background-color:#1890ff
+}
+/*复选框*/
+.layui-form-checkbox[lay-skin=primary]:hover i {
+    border-color:#1890ff;
+}
+.layui-form-checked[lay-skin=primary] i {
+    border-color:#1890ff!important;
+    background-color:#1890ff;
+}
+/*单选框*/
+.layui-form-radio:hover *,.layui-form-radioed,.layui-form-radioed>i {
+    color:#42AAFF;
+}
+/*下拉框*/
+.layui-form-select dl dd.layui-this {
+    background-color:#e7f6fe;
+    color: #333;
+}
+/*Tab选型框*/
+.layui-tab-brief>.layui-tab-title .layui-this:after {
+    border-bottom:2px solid #42AAFF;
+}
+
+/*添加页面关闭按钮*/
+.close_btn {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    background: #f8f8f8;
+    z-index: 99;
+    right: 10px;
+    top: 4px;
+    cursor: pointer;
+    font-size: 24px;
+}
+/*表单样式*/
+.layui-form .layui-form-item {
+    border-bottom: 1px #f6f6f6 solid;
+    padding-bottom: 15px;
+}
+.layui-form-item .layui-form-label {
+    color: #333;
+}
+.layui-form-item .layui-form-label span,.layui-word-aux span {
+    color: #f52;
+}
+.layui-form-label {
+    padding-left: 5px;
+}
+.layui-form-item .layui-input-block {
+    margin-right: 10px;
+}
+/*列表搜索*/
+.search_ctr {
+    float: right;
+}
+.search_ctr .layui-form-item {
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+/*规格行高*/
+.spec_ctr .layui-table tbody td,.spec_ctr .layui-table tfoot td {
+    height: 20px;
+    line-height: 20px;
+}
+
+.spec_ctr .layui-form-checkbox[lay-skin=primary] {
+    margin-top:1px!important;
+}
+/*商品幻灯片上传按钮*/
+.upload_btn {
+    margin:3px auto;
+    float: left;
+    width:100px;
+    height:100px;
+    background: url('./images/more.jpg') no-repeat center center #f4f4f4;
+    background-size: auto 100%;
+    cursor: pointer;
+}
+.slide_ctr {
+    margin:3px 6px 3px 0;
+    float: left;
+    width:auto;
+    height:100px;
+    position: relative;
+}
+.slide_ctr img {
+    width:auto;
+    height: 100%;
+}
+.slide_title {
+    position: absolute;
+    width: 100%;
+    height: 36px;
+    line-height: 18px;
+    overflow: hidden;
+    padding: 0 4px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    font-size: 12px;
+    box-sizing: border-box;
+    left: 0;
+    bottom: 0;
+    z-index: 9;
+}
+.pic_del {
+    position: absolute;
+    right:5px;
+    top: 0;
+    z-index:9;
+    cursor: pointer;
+}
+/*添加商品，商品类型*/
+.goods_type,.goods_type_on {
+    float: left;
+    margin-right: 10px;
+    width: 120px;
+    line-height: 22px;
+    border: 1px #eee solid;
+    border-radius: 2px;
+    text-align: center;
+    padding: 6px 0;
+    font-weight: bold;
+    cursor: pointer;
+    outline:0;
+    -webkit-appearance:none;
+    transition:all .3s;
+    -webkit-transition:all .3s;
+    position: relative;
+    overflow: hidden;
+}
+.goods_type i,.goods_type_on i {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    font-size: 18px;
+    color: #1890ff;
+    z-index: 999;
+}
+.goods_type i {
+    display: none;
+}
+.goods_type_on {
+    border-color:#1890ff!important;
+    box-shadow:0 0 0 2px rgba(186,231,255,.3)
+}
+.goods_type span,.goods_type_on span {
+    font-weight: normal;
+    color: #999;
+    font-size: 12px;
+}
+/*编辑器*/
+.ck-editor__editable_inline {
+    height: 300px !important;
+}
+.ck-content .image {
+    max-width: 100%;
+    margin: 5px auto;
+}
+/*订单列表商品信息*/
+.order_goods_ctr {
+    margin: 10px 0;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+}
+.order_goods_pic {
+    margin-right: 10px;
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+}
+
+.order_goods_pic img {
+    width: 100%;
+    height: 100%;
+}
+.order_goods_right {
+    flex: 1;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 18px;
+    font-size: 14px;
+}
+.order_goods_title {
+    width: 100%;
+    display: -webkit-box;
+    height: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+}
+.order_goods_spec {
+    margin-top: 4px;
+    width: 100%;
+    font-size: 12px;
+    color: #999;
+}
+.order_dropdown .layui-menu-body-title {
+    color: #666;
+}
+/*屏幕尺寸大于等于500px*/
+@media screen and (min-width:500px){
+    .layui-form-item .layui-input-inline {
+        width: 300px;
+    }
+    .layui-form-item .w50 {
+        width: 50px;
+    }
+    .layui-form-item .w80 {
+        width: 80px;
+    }
+    .layui-form-item .w120 {
+        width: 120px;
+    }
+    .layui-form-item .w150 {
+        width: 150px;
+    }
+    .layui-form-item .w160 {
+        width: 160px;
+    }
+    .layui-form-item .w180 {
+        width: 180px;
+    }
+    .layui-form-item .w200 {
+        width: 200px;
+    }
+    .layui-form-item .w300 {
+        width: 300px;
+    }
+    .layui-form-item .w400 {
+        width: 400px;
+    }
+    .layui-form-item .w500 {
+        width: 500px;
+    }
+    .layui-form-item .layui-form-label {
+        width: 122px;
+        padding-left: 0;
+    }
+    .layui-form-item .layui-input-block {
+        margin-left: 137px;
+    }
+}
+
+/*屏幕尺寸不大于450px*/
+@media screen and (max-width:450px) {
+    .layui-form .layui-form-item {
+        padding-bottom: 5px;
+    }
+    .layui-word-aux {
+        display: none;
+    }
+}
+
+/*屏幕尺寸不大于600px*/
+@media screen and (max-width:600px) {
+    .search_ctr {
+        display: none;
+    }
+}
+

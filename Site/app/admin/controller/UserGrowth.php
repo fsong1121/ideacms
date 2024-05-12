@@ -1,0 +1,52 @@
+<?php
+// +----------------------------------------------------------------------
+// | 专注于产品，坚持小而美，赋能开发者，助力企业发展！
+// +----------------------------------------------------------------------
+// | Copyright (c) 2009~2049 https://www.ideacms.net All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | 程序开源并非等于免费,商业使用务必购买正版授权,以免引起不必要的法律纠纷.
+// +----------------------------------------------------------------------
+namespace app\admin\controller;
+
+use app\common\model\GrowthDetail as GrowthDetailModel;
+use think\facade\Request;
+use think\facade\Db;
+use think\response\Json;
+
+class UserGrowth extends Base
+{
+    /**
+     * 列表
+     * @return string
+     */
+    public function index() : string
+    {
+        return $this->fetch('/user_growth');
+    }
+
+    /**
+     * 获取列表
+     */
+    public function getList() : Json
+    {
+        $param = Request::param();
+        $perPage = Request::has('limit', 'get') ? $param['limit'] : $this->perPage;
+        $keys = trimStr(Request::has('keys','get') ? $param['keys'] : '');
+        $list = GrowthDetailModel::where('id', '>', '0');
+        if($keys != '') {
+            $list = $list->where('user_id', 'in' , Db::name('user')->where('uid|mobile|nickname', 'like' , '%' . $keys . '%')->column('id'));
+        }
+        $list = $list->order('id', 'desc')
+            ->paginate($perPage)
+            ->toArray();
+        $data = [
+            'code' => 0,
+            'msg' => '',
+            'count' => $list['total'],
+            'data' => $list['data']
+        ];
+        return json($data);
+    }
+}
