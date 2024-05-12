@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://www.ideacms.net/statics/index/images/logo_b.png" width="400" />
+<img src="https://www.ideacms.net/statics/index/images/logo_b.png" width="200" />
 </p>
 
 <div align="center">
