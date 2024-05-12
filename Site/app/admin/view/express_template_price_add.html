@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>添加区域运费</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+    <style>
+        html {background: #fff;padding-top: 20px;}
+    </style>
+</head>
+<body>
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 选择区域：</label>
+            <div class="layui-input-block">
+                {volist name="areaList" id="vo"}
+                <div style="float:left;width: 110px;"><input type="checkbox" name="area[]" lay-skin="primary" title="{:str_replace('自治区','',str_replace('壮族自治区','',str_replace('回族自治区','',str_replace('维吾尔自治区','',str_replace('特别行政区','',$vo.name)))))}" value="{$vo.name}" {eq name=":in_array($vo.name,$selectAreaList)" value="1"}disabled{/eq} /></div>
+                {/volist}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 首重：</label>
+            <div class="layui-input-inline w180">
+                <input type="text" name="m_first_num" lay-verify="number" value="0.00" placeholder="请输入首重" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                {eq name="$template.type" value="0"}KG{/eq}
+                {eq name="$template.type" value="1"}m³{/eq}
+                {eq name="$template.type" value="2"}件{/eq}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 首重运费：</label>
+            <div class="layui-input-inline w180">
+                <input type="text" name="m_first_price" lay-verify="number" value="0.00" placeholder="请输入首重运费" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">元</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 续重：</label>
+            <div class="layui-input-inline w180">
+                <input type="text" name="m_second_num" lay-verify="number" value="0.00" placeholder="请输入续重" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                {eq name="$template.type" value="0"}KG{/eq}
+                {eq name="$template.type" value="1"}m³{/eq}
+                {eq name="$template.type" value="2"}件{/eq}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 续重运费：</label>
+            <div class="layui-input-inline w180">
+                <input type="text" name="m_second_price" lay-verify="number" value="0.00" placeholder="请输入续重运费" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">元</div>
+        </div>
+        <input type="hidden" name="m_express_template" value="{$template.id}">
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit lay-filter="LAY-submit" id="LAY-submit" value="确认">
+        </div>
+    </div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>

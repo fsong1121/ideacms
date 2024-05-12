@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>配货单</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		.m_ctr {
+			margin: 0 auto;
+			max-width: 800px;
+			height: auto;
+			padding: 20px;
+			box-sizing: border-box;
+			display: flex;
+			flex-direction: column;
+			font-size: 14px;
+			color: #333;
+		}
+		.txt_ctr {
+			width: 100%;
+			height: auto;
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+		}
+		.txt_cell {
+			width: auto;
+			line-height: 32px;
+			display: flex;
+			flex-direction: column;
+		}
+		.table_ctr {
+			width: 100%;
+			height: auto;
+			padding: 8px 0;
+		}
+		.table_ctr table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+		.table_ctr td {
+			border: 1px #333 solid;
+			text-align: center;
+			line-height: 22px;
+			padding: 6px;
+			box-sizing: border-box;
+		}
+	</style>
+</head>
+<body>
+    <div class="m_ctr">
+		<div class="txt_ctr">
+			<div class="txt_cell">
+				<div>收件人：{$data.name}</div>
+				<div>收货地址：{$data.address}</div>
+				<div>手机号：{$data.tel}</div>
+			</div>
+			<div class="txt_cell">
+				<div>订单编号：{$data.order_sn}</div>
+				<div>支付时间：{$data.pay_date}</div>
+				<div>
+					支付方式：{$data.pay_type}
+					{eq name="$data.order_type" value=""} [普通订单]{/eq}
+					{eq name="$data.order_type" value="activity"} [促销订单]{/eq}
+					{eq name="$data.order_type" value="seckill"} [秒杀订单]{/eq}
+					{eq name="$data.order_type" value="assist"} [助力订单]{/eq}
+					{eq name="$data.order_type" value="combination"} [拼团订单]{/eq}
+					{eq name="$data.order_type" value="integral"} [积分订单]{/eq}
+				</div>
+			</div>
+		</div>
+		<div class="table_ctr">
+			<table>
+				<tr>
+					<td width="60px">编号</td>
+					<td>商品名称</td>
+					<td width="120px">商品规格</td>
+					{eq name="$data.order_type" value="integral"}
+					<td width="80px">积分</td>
+					<td width="80px">数量</td>
+					<td width="80px">总积分</td>
+					{else}
+					<td width="80px">单价</td>
+					<td width="80px">数量</td>
+					<td width="80px">金额</td>
+					{/eq}
+				</tr>
+				{volist name="$data.goods" id="vo"}
+				<tr>
+					<td>{$i}</td>
+					<td>{:getGoodsInfo($vo.goods_id)['title']}</td>
+					<td>{$vo.spec_key_name}</td>
+					{eq name="$data.order_type" value="integral"}
+					<td>{:formatPrice($vo.exchange_integral)}</td>
+					<td>{$vo.amount}</td>
+					<td>{:formatPrice($vo.amount * $vo.exchange_integral)}</td>
+					{else}
+					<td>{$vo.price}</td>
+					<td>{$vo.amount}</td>
+					<td>{:formatPrice($vo.amount * $vo.price)}</td>
+					{/eq}
+				</tr>
+				{/volist}
+			</table>
+		</div>
+		<div class="txt_ctr">
+			<div class="txt_cell">
+				<div>运费：{$data.express_price}&ensp;&ensp;折扣：{$data.rebate_price}&ensp;&ensp;满减：{$data.discount_price}&ensp;&ensp;优惠券：{$data.coupon_price}&ensp;&ensp;</div>
+			</div>
+			<div class="txt_cell">
+				{eq name="$data.order_type" value="integral"}
+				<div>实付积分：{:formatPrice($data.exchange_integral)}</div>
+				{else}
+				<div>实付款：{$data.pay_price}</div>
+				{/eq}
+			</div>
+		</div>
+		<div class="txt_ctr">
+			<div class="txt_cell">
+				<div>备注：{$data.info}</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

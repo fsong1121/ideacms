@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{:config('site.title')}-后台管理中心</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+  <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+  <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+  <link href="{__STATIC__}/iconfont/iconfont.css" rel="stylesheet">
+</head>
+<body class="layui-layout-body" id="LAY_home_iframe">
+<div id="LAY_app" style="visibility: hidden">
+  <div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+      <!-- 头部区域 -->
+      <ul class="layui-nav layui-layout-left">
+        <li class="layui-nav-item layadmin-flexible" lay-unselect>
+          <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩">
+            <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+          </a>
+        </li>
+        <li class="layui-nav-item layui-hide-xs" lay-unselect>
+          <a href="{:config('site.url')}" target="_blank" title="前台">
+            <i class="layui-icon layui-icon-website"></i>
+          </a>
+        </li>
+        <li class="layui-nav-item" lay-unselect>
+          <a href="javascript:;" layadmin-event="refresh" title="刷新">
+            <i class="layui-icon layui-icon-refresh-3"></i>
+          </a>
+        </li>
+      </ul>
+      <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+        <li class="layui-nav-item layui-hide-xs" lay-unselect>
+          <a href="javascript:;" layadmin-event="note">
+            <i class="layui-icon layui-icon-note"></i>
+          </a>
+        </li>
+        <li class="layui-nav-item layui-hide-xs" lay-unselect>
+          <a href="javascript:;" layadmin-event="theme">
+            <i class="layui-icon layui-icon-theme"></i>
+          </a>
+        </li>
+        <li class="layui-nav-item layui-hide-xs" lay-unselect>
+          <a href="javascript:;" layadmin-event="fullscreen">
+            <i class="layui-icon layui-icon-screen-full"></i>
+          </a>
+        </li>
+        <li class="layui-nav-item" lay-unselect>
+          <a href="javascript:;">
+            <cite>{$manager['uid']}</cite>
+          </a>
+          <dl class="layui-nav-child">
+            <dd><a lay-href="{:url('admin/admin/index')}">修改密码</a></dd>
+            <dd layadmin-event="clearCache" style="text-align: center;"><a>清除缓存</a></dd>
+            <hr>
+            <dd layadmin-event="logout" style="text-align: center;"><a>退出</a></dd>
+          </dl>
+        </li>
+
+        <li class="layui-nav-item layui-hide-xs" lay-unselect>
+          <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
+        </li>
+        <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
+          <a href="javascript:;" layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 侧边菜单 -->
+    <div class="layui-side layui-side-menu">
+      <div class="layui-side-scroll">
+        <div class="layui-logo" lay-href="{:url('admin/console/index')}">
+          <span>IdeaCMS商城后台</span>
+        </div>
+
+        <!--左侧菜单开始-->
+        <ul class="layui-nav layui-nav-tree" lay-accordion id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
+          <li class="layui-nav-item layui-nav-itemed">
+            <a lay-href="{:url('admin/console/index')}" lay-tips="主页" lay-direction="2">
+              <i class="layui-icon layui-icon-home"></i>
+              <cite>后台主页</cite>
+            </a>
+          </li>
+          {volist name="$adminMenu" id="vo1"}
+          <!--一级-->
+          <li class="layui-nav-item">
+            {eq name="$vo1.controller" value=""}
+              <a href="javascript:;" lay-tips="{$vo1.subtitle}" lay-direction="2">
+            {else}
+              {eq name="$vo1.is_addon" value="1"}
+              <a lay-href="/addons/{$vo1.controller}" lay-tips="{$vo1.subtitle}" lay-direction="2">
+              {else}
+              <a lay-href="/admin/{$vo1.controller}/{$vo1.operation}" lay-tips="{$vo1.subtitle}" lay-direction="2">
+              {/eq}
+            {/eq}
+            <i class="layui-icon layui-icon-{$vo1.ico}"></i>
+            <cite>{$vo1.title}</cite>
+            </a>
+            {gt name="$vo1.child_count" value="0"}
+                <dl class="layui-nav-child">
+                  {volist name="$vo1.childMenus" id="vo2"}
+                  <!--二级-->
+                  <dd>
+                  {gt name="$vo2.child_count" value="0"}
+                    <a href="javascript:;">{$vo2.title}</a>
+                  {else}
+                    {eq name="$vo2.is_addon" value="1"}
+                      <a lay-href="/addons/{$vo2.controller}">{$vo2.title}</a>
+                    {else}
+                      <a lay-href="/admin/{$vo2.controller}/{$vo2.operation}">{$vo2.title}</a>
+                    {/eq}
+                  {/gt}
+
+                  {gt name="$vo2.child_count" value="0"}
+                  <dl class="layui-nav-child">
+                    {volist name="$vo2.childMenus" id="vo3"}
+                    <!--三级-->
+                    {gt name="$vo3.child_count" value="0"}
+                      <dd><a href="javascript:;">{$vo3.title}</a></dd>
+                    {else}
+                      {eq name="$vo3.is_addon" value="1"}
+                        <dd><a lay-href="/addons/{$vo3.controller}">{$vo3.title}</a></dd>
+                      {else}
+                        <dd><a lay-href="/admin/{$vo3.controller}/{$vo3.operation}">{$vo3.title}</a></dd>
+                      {/eq}
+                    {/gt}
+                    {/volist}
+                  </dl>
+                  {/gt}
+                  </dd>
+
+                  {/volist}
+                </dl>
+            {/gt}
+          </li>
+          {/volist}
+        </ul>
+        <!--左侧菜单结束-->
+      </div>
+    </div>
+
+    <!-- 页面标签 -->
+    <div class="layadmin-pagetabs" id="LAY_app_tabs">
+      <div class="layui-icon layadmin-tabs-control layui-icon-prev" layadmin-event="leftPage"></div>
+      <div class="layui-icon layadmin-tabs-control layui-icon-next" layadmin-event="rightPage"></div>
+      <div class="layui-icon layadmin-tabs-control layui-icon-down">
+        <ul class="layui-nav layadmin-tabs-select" lay-filter="layadmin-pagetabs-nav">
+          <li class="layui-nav-item" lay-unselect>
+            <a href="javascript:;"></a>
+            <dl class="layui-nav-child layui-anim-fadein">
+              <dd layadmin-event="closeThisTabs"><a href="javascript:;">关闭当前标签页</a></dd>
+              <dd layadmin-event="closeOtherTabs"><a href="javascript:;">关闭其它标签页</a></dd>
+              <dd layadmin-event="closeAllTabs"><a href="javascript:;">关闭全部标签页</a></dd>
+            </dl>
+          </li>
+        </ul>
+      </div>
+      <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
+        <ul class="layui-tab-title" id="LAY_app_tabsheader">
+          <li lay-id="{:url('admin/console/index')}" lay-attr="{:url('admin/console/index')}" class="layui-this"><i class="layui-icon layui-icon-home"></i></li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 主体内容 -->
+    <div class="layui-body" id="LAY_app_body">
+      <div class="layadmin-tabsbody-item layui-show">
+        <iframe src="{:url('admin/console/index')}" frameborder="0" class="layadmin-iframe"></iframe>
+      </div>
+    </div>
+
+    <!-- 辅助元素，一般用于移动设备下遮罩 -->
+    <div class="layadmin-body-shade" layadmin-event="shade"></div>
+  </div>
+</div>
+
+<script src="{__STATIC__}/jquery/jquery.min.js"></script>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+  layui.config({
+    base: '{__STATIC__}/layuiAdmin/' // 静态资源所在路径
+  }).use(['index']);
+
+  /**
+   * 刷新左侧导航
+   */
+  function refreshNav()
+  {
+    $.ajax({
+      type:"post",
+      url:"{:url('getNavList')}",
+      data: {},
+      dataType:"json",
+      success:function(res){
+        if(res.code == 0){
+          //console.log(res.data);
+          let navStr = "<li class='layui-nav-item'><a lay-href='/admin/console/index.html' lay-tips='主页' lay-direction='2'><i class='layui-icon layui-icon-home'></i><cite>后台主页</cite></a></li>";
+          let data = res.data;
+          for (let i = 0; i < data.length; i++) {
+            //一级
+            if(data[i]['title'] == '应用中心'){
+              navStr = navStr + "<li class='layui-nav-item layui-nav-itemed'>";
+            } else {
+              navStr = navStr + "<li class='layui-nav-item'>";
+            }
+            if(data[i]['child_count'] > 0) {
+              navStr = navStr + "<a href='javascript:;' lay-tips='"+data[i]['subtitle']+"' lay-direction='2'>";
+            } else {
+              if(data[i]['is_addon'] == 1) {
+                navStr = navStr + "<a lay-href='/addons/"+data[i]['controller']+"' lay-tips='"+data[i]['subtitle']+"' lay-direction='2'>";
+              } else {
+                navStr = navStr + "<a lay-href='/admin/"+data[i]['controller']+"/"+data[i]['operation']+"' lay-tips='"+data[i]['subtitle']+"' lay-direction='2'>";
+              }
+            }
+            navStr = navStr + "<i class='layui-icon layui-icon-"+data[i]['ico']+"'></i>";
+            navStr = navStr + "<cite>"+data[i]['title']+"</cite>";
+            navStr = navStr + "</a>";
+            if(data[i]['child_count'] > 0) {
+              navStr = navStr + "<dl class='layui-nav-child'>";
+              let data1 = data[i]['childMenus'];
+              for (let j = 0; j < data1.length; j++) {
+                //二级
+                if(data[i]['title'] == '应用中心') {
+                  navStr = navStr + "<dd class='layui-this'>";
+                } else {
+                  navStr = navStr + "<dd>";
+                }
+                if(data1[j]['child_count'] > 0) {
+                  navStr = navStr + "<a href='javascript:;'>"+data1[j]['title']+"</a>";
+                } else {
+                  if(data1[j]['is_addon'] == 1) {
+                    navStr = navStr + "<a lay-href='/addons/"+data1[j]['controller']+"'>"+data1[j]['title']+"</a>";
+                  } else {
+                    navStr = navStr + "<a lay-href='/admin/"+data1[j]['controller']+"/"+data1[j]['operation']+"'>"+data1[j]['title']+"</a>";
+                  }
+                }
+                if(data1[j]['child_count'] > 0) {
+                  navStr = navStr + "<dl class='layui-nav-child'>";
+                  let data2 = data1[j]['childMenus'];
+                  for (let k = 0; k < data2.length; k++) {
+                    //三级
+                    if(data2[k]['child_count'] > 0) {
+                      navStr = navStr + "<dd><a href='javascript:;'>"+data2[k]['title']+"</a></dd>";
+                    } else {
+                      if(data2[k]['is_addon'] == 1) {
+                        navStr = navStr + "<dd><a lay-href='/addons/"+data2[k]['controller']+"'>"+data2[k]['title']+"</a></dd>";
+                      } else {
+                        navStr = navStr + "<dd><a lay-href='/admin/"+data2[k]['controller']+"/"+data2[k]['operation']+"'>"+data2[k]['title']+"</a></dd>";
+                      }
+                    }
+                  }
+                  navStr = navStr + "</dl>";
+                }
+                navStr = navStr + "</dd>";
+              }
+              navStr = navStr + "</dl>";
+            }
+            navStr = navStr + "</li>";
+          }
+          $('#LAY-system-side-menu').html(navStr);
+          layui.element.render('nav', 'layadmin-system-side-menu');
+        }
+      }
+    });
+  }
+</script>
+</body>
+</html>

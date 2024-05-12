@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>支付设置</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="layui-fluid">
+	<form class="layui-form" style="padding-bottom: 45px;">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<div class="layui-tab layui-tab-brief">
+					<ul class="layui-tab-title">
+						<li class="layui-this">微信支付</li>
+						<li>支付宝支付</li>
+						<li>其他支付</li>
+					</ul>
+					<div class="layui-tab-content">
+						<div class="layui-tab-item layui-show">
+							<div class="layui-form-item">
+								<label class="layui-form-label">商户号：</label>
+								<div class="layui-input-inline w300">
+									<input type="text" name="m_wechat_mchid" value="{$pay.wechat_pay.mchid}" placeholder="请输入商户号" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux">微信支付后台-账户中心-个人信息</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">支付秘钥：</label>
+								<div class="layui-input-inline w300">
+									<input type="text" name="m_wechat_key" value="{$pay.wechat_pay.key}" placeholder="请输入支付秘钥" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux">微信支付后台-账户中心-API安全</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">通知地址：</label>
+								<div class="layui-input-inline w400">
+									<input type="text" class="layui-input" value="{:config('site.url')}{$pay.wechat_pay.notify_url}" readonly>
+									<input type="hidden" name="m_wechat_notify_url" value="{$pay.wechat_pay.notify_url}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">微信支付后台开发配置中Native支付回调链接。</div>
+							</div>
+							<input type="hidden" name="m_wechat_apiclient_cert" value="{$pay.wechat_pay.apiclient_cert}">
+							<input type="hidden" name="m_wechat_apiclient_key" value="{$pay.wechat_pay.apiclient_key}">
+							<div class="layui-form-item">
+								<label class="layui-form-label">是否启用：</label>
+								<div class="layui-input-inline w50">
+									<input type="checkbox" name="m_wechat_pay" value="1" lay-text="是|否" {eq name="$pay.wechat_pay.open" value="1"}checked{/eq} lay-skin="switch">
+								</div>
+								<div class="layui-form-mid layui-word-aux">开启后有效</div>
+							</div>
+						</div>
+
+						<div class="layui-tab-item">
+							<div class="layui-form-item">
+								<label class="layui-form-label">应用APPID：</label>
+								<div class="layui-input-inline w300">
+									<input type="text" name="m_ali_app_id" value="{$pay.ali_pay.app_id}" placeholder="请输入应用APPID" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux"><a href="https://open.alipay.com" target="_blank">支付宝开放平台申请</a></div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">支付宝公钥：</label>
+								<div class="layui-input-inline w500">
+									<textarea name="m_ali_public_key" placeholder="支付宝公钥" class="layui-textarea" style="height: 180px;">{$pay.ali_pay.public_key}</textarea>
+								</div>
+								<div class="layui-form-mid layui-word-aux">注意不能换行</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">应用私钥：</label>
+								<div class="layui-input-inline w500">
+									<textarea name="m_ali_private_key" placeholder="应用私钥" class="layui-textarea" style="height: 180px;">{$pay.ali_pay.private_key}</textarea>
+								</div>
+								<div class="layui-form-mid layui-word-aux">注意不能换行</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">应用网关：</label>
+								<div class="layui-input-inline w400">
+									<input type="text" value="{:config('site.url')}{$pay.ali_pay.notify_url}" class="layui-input" readonly>
+									<input type="hidden" name="m_ali_notify_url" value="{$pay.ali_pay.notify_url}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">支付宝支付应用网关地址</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">回调地址：</label>
+								<div class="layui-input-inline w400">
+									<input type="text" value="{:config('site.url')}{$pay.ali_pay.return_url}" class="layui-input" readonly>
+									<input type="hidden" name="m_ali_return_url" value="{$pay.ali_pay.return_url}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">支付宝支付回调地址</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">是否启用：</label>
+								<div class="layui-input-inline w50">
+									<input type="checkbox" name="m_ali_pay" value="1" lay-text="是|否" {eq name="$pay.ali_pay.open" value="1"}checked{/eq} lay-skin="switch">
+								</div>
+								<div class="layui-form-mid layui-word-aux">开启后有效</div>
+							</div>
+						</div>
+
+						<div class="layui-tab-item">
+							<div class="layui-form-item">
+								<label class="layui-form-label">余额支付：</label>
+								<div class="layui-input-inline w50">
+									<input type="checkbox" name="m_balance_pay" value="1" lay-text="是|否" {eq name="$pay.balance_pay" value="1"}checked{/eq} lay-skin="switch">
+								</div>
+								<div class="layui-form-mid layui-word-aux">开启后有效</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">货到付款：</label>
+								<div class="layui-input-inline w50">
+									<input type="checkbox" name="m_cod_pay" value="1" lay-text="是|否" {eq name="$pay.cod_pay" value="1"}checked{/eq} lay-skin="switch">
+								</div>
+								<div class="layui-form-mid layui-word-aux">开启后有效</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="m_footer">
+			<button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-submit">提交</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+	</form>
+</div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+	layui.config({
+		base: '{__STATIC__}/layuiAdmin/' // 静态资源所在路径
+	}).use(['index','form'], function(){
+		let $ = layui.$;
+		let layer = layui.layer;
+		let form = layui.form;
+
+		/* 监听提交 */
+		form.on('submit(LAY-submit)', function(data){
+			let field = data.field; //获取提交的字段
+			let m_wechat_pay = field.hasOwnProperty('m_wechat_pay') ? field.m_wechat_pay : 0;
+			let m_ali_pay = field.hasOwnProperty('m_ali_pay') ? field.m_ali_pay : 0;
+			let m_balance_pay = field.hasOwnProperty('m_balance_pay') ? field.m_balance_pay : 0;
+			let m_cod_pay = field.hasOwnProperty('m_cod_pay') ? field.m_cod_pay : 0;
+			$.ajax({
+				type:"post",
+				url:"savePay.html",
+				data: {
+					m_wechat_pay:m_wechat_pay,
+					m_wechat_mchid:field.m_wechat_mchid,
+					m_wechat_key:field.m_wechat_key,
+					m_wechat_apiclient_cert:field.m_wechat_apiclient_cert,
+					m_wechat_apiclient_key:field.m_wechat_apiclient_key,
+					m_wechat_notify_url:field.m_wechat_notify_url,
+					m_ali_pay:m_ali_pay,
+					m_ali_app_id:field.m_ali_app_id,
+					m_ali_public_key:field.m_ali_public_key,
+					m_ali_private_key:field.m_ali_private_key,
+					m_ali_notify_url:field.m_ali_notify_url,
+					m_ali_return_url:field.m_ali_return_url,
+					m_balance_pay:m_balance_pay,
+					m_cod_pay:m_cod_pay
+				},
+				dataType:"json",
+				beforeSend: function () {
+					layer.load(1);
+				},
+				success:function(res){
+					layer.closeAll(); //关闭弹层
+					if(res.code == 0){
+						layer.msg('修改成功', {
+							time: 2000
+						}, function(){
+							location.reload();
+						});
+					}
+					else {
+						layer.msg(res.msg);
+					}
+				}
+			});
+			return false;
+		});
+	});
+</script>

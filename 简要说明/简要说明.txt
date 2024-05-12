@@ -1,0 +1,29 @@
+1、Site目录为主程序，上传Site目录下的所有文件到服务器网站目录（宝塔为例：运行目录请指向public，伪静态规则请按下发说明，本系统所需环境为php8.0，mysql5.6+）。
+2、Uniapp目录为前端源代码(体验版不含)，如需修改前端请在XBuilderX软件中编辑发布（可发布为h5,小程序等），具体可参看Uniapp官方文档。用XBuilderX打开后，先点击manifest.json配置文件，把一些基础配置信息修改为自己的。前端配置文件在common/js/config.js。
+
+3、上传Site后，直接在浏览器中输入访问地址，按照提示进行安装即可，安装成功后，进入后台-系统设置配置好访问地址及网站名称等，前端默认已经打包了一份，可直接使用，使用前需修改public\h5\assets\index-****.js中把192.168.0.***更换成你自己的地址。
+
+4、ngnix伪静态规则
+location / {
+    if (!-e $request_filename){
+        rewrite  ^(.*)$  /index.php?s=$1  last;
+        break;
+    }
+}
+#h5前端规则
+location /h5 {
+    try_files $uri $uri/ /h5/index.html;
+}
+
+5、apache伪静态规则
+<IfModule mod_rewrite.c>
+  Options +FollowSymlinks -Multiviews
+  RewriteEngine On
+
+  RewriteCond %{REQUEST_URI} ^/(h5|h5/.*)$
+  RewriteRule ^/h5/index.html$ - [L,NC]
+
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
+</IfModule>

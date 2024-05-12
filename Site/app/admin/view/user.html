@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>会员列表</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+</head>
+<body>
+	<div class="layui-fluid">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<div style="padding-bottom: 10px;">
+					<button class="layui-btn layui-btn-normal btn-top" data-type="add">添加会员</button>
+					<button class="layui-btn layui-btn-info btn-top" data-type="batchDel">批量删除</button>
+					<button class="layui-btn layui-btn-info btn-top" data-type="export">导出会员</button>
+					<div class="layui-form search_ctr">
+						<div class="layui-form-item">
+							<div class="layui-input-inline w150">
+								<select name="k2">
+									<option value="">会员标签</option>
+									{volist name="$labelList" id="vo"}
+									<option value="{$vo.id}">{$vo.title}</option>
+									{/volist}
+								</select>
+							</div>
+							<div class="layui-input-inline w150">
+								<select name="k3">
+									<option value="">会员等级</option>
+									{volist name="$levelList" id="vo"}
+									<option value="{$vo.id}">{$vo.title}</option>
+									{/volist}
+								</select>
+							</div>
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="keys" placeholder="输入用户名/手机/昵称查询" class="layui-input">
+								</div>
+								<button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-search">查询</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<table id="LAY-table" lay-filter="LAY-table"></table>
+				<script type="text/html" id="work">
+					{{#  if(d.is_work == 1){ }}
+					<span class="layui-badge-dot layui-bg-blue"></span>正常
+					{{#  } else { }}
+					<span class="layui-badge-dot layui-bg-gray"></span>锁定
+					{{#  } }}
+				</script>
+				<script type="text/html" id="fenxiao">
+					{{#  if(d.is_fx == 1){ }}
+					是
+					{{#  } else { }}
+					否
+					{{#  } }}
+				</script>
+				<script type="text/html" id="tableBar">
+					<a class="link-text" lay-event="edit">编辑</a>
+					<div class="link-line"></div>
+					<a class="link-text" lay-event="del">删除</a>
+				</script>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script src="{__STATIC__}/sheetjs/xlsx.core.min.js"></script>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+	layui.config({
+		base: '{__STATIC__}/layuiAdmin/' // 静态资源所在路径
+	}).use(['index', 'layer', 'table', 'form'], function(){
+		let $ = layui.$;
+		let layer = layui.layer;
+		let table = layui.table;
+		let form = layui.form;
+
+		//初始化列表
+		table.render({
+			elem: '#LAY-table'
+			,url: "{:url('getList')}"
+			,cols: [[
+				{type: 'checkbox', fixed: 'left'}
+				,{field: 'id', width: 80, title: 'ID', sort: true}
+				,{field: 'uid', width: 150, title: '用户名'}
+				,{field: 'nickname', minWidth:120, title: '昵称'}
+				,{field: 'balance', width: 110, title: '余额'}
+				,{field: 'commission', width: 110, title: '佣金'}
+				,{field: 'integral', width: 110, title: '积分'}
+				,{field: 'growth', width: 110, title: '成长值'}
+				,{field: 'level_id', width: 110, title: '等级'}
+				,{field: 'is_fx', width: 90, title: '分销商', templet: '#fenxiao', align:'center'}
+				,{field: 'is_work', width: 90, title: '状态', templet: '#work', align:'center', sort: true}
+				,{field: 'add_date', width: 180, title: '时间'}
+				,{title: '操作', width: 106, align:'center', fixed: 'right', toolbar: '#tableBar'}
+			]]
+			,page: true
+			,limit: 20
+			,height: 'full-100'
+			,text: {none: '暂无相关数据'}
+		});
+
+		//监听搜索
+		form.on('submit(LAY-search)', function(data){
+			let field = data.field;
+			//执行重载
+			table.reload('LAY-table', {
+				url: "{:url('getList')}"
+				,where: field
+				,page: {
+					curr: 1 //重新从第 1 页开始
+				}
+			});
+		});
+
+		//表格内操作按钮
+		table.on('tool(LAY-table)', function(obj){
+			let data = obj.data;
+			if(obj.event === 'del'){
+				layer.confirm('真的删除行么', function(index){
+					$.ajax({
+						type:"post",
+						url:"{:url('delete')}",
+						data: {
+							m_id:data.id
+						},
+						dataType:"json",
+						beforeSend: function () {
+							layer.load(1);
+						},
+						success:function(res){
+							layer.closeAll();
+							if(res.code == 0){
+								if(res.msg == 'success') {
+									obj.del();
+									layer.msg('删除成功');
+								} else {
+									layer.msg(res.msg);
+								}
+							}
+							else {
+								layer.msg(res.msg);
+							}
+						}
+					});
+
+				});
+			} else if(obj.event === 'edit'){
+				layer.open({
+					type: 2
+					,title: '编辑会员'
+					,content: "{:url('edit')}?id=" + data.id
+					,maxmin: true
+					,area: ['750px', '90%']
+					,btn: ['确定', '取消']
+					,yes: function(index, layero){
+						let iframeWindow = window['layui-layer-iframe'+ index];
+						let submitID = 'LAY-submit';
+						let submit = layero.find('iframe').contents().find('#'+ submitID);
+
+						//监听提交
+						iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+							let field = data.field; //获取提交的字段
+							let m_work = field.hasOwnProperty('m_work') ? field.m_work : 0;
+							let m_fx = field.hasOwnProperty('m_fx') ? field.m_fx : 0;
+							//标签
+							let m_label = [];
+							$.each(field, function(key, val) {
+								if(key.indexOf("label") != -1){
+									m_label.push(val);
+								}
+							});
+							m_label = m_label.toString();
+
+							//提交 Ajax 成功后，静态更新表格中的数据
+							$.ajax({
+								type:"post",
+								url:"{:url('save')}",
+								data: {
+									m_level: field.m_level,
+									m_label: m_label,
+									m_nickname: field.m_nickname,
+									m_tel: field.m_tel,
+									m_email: field.m_email,
+									m_work: m_work,
+									m_fx: m_fx,
+									m_uid: field.m_uid,
+									m_pwd: field.m_pwd,
+									m_id:field.m_id
+								},
+								dataType:"json",
+								beforeSend: function () {
+									layer.load(1);
+								},
+								success:function(res){
+									layer.close(layer.index);
+									if(res.code == 0){
+										layer.closeAll();
+										table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+									}
+									else {
+										layer.msg(res.msg);
+									}
+								}
+							});
+
+						});
+
+						submit.trigger('click');
+					}
+				});
+			}
+		});
+
+		//头部操作按钮
+		$('.btn-top').on('click', function(){
+			let type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+
+		let active = {
+			batchDel: function(){
+				let checkStatus = table.checkStatus('LAY-table');
+				let checkData = checkStatus.data //得到选中的数据
+				let ids = "0";
+				if(checkData.length === 0){
+					return layer.msg('请选择数据');
+				}
+				$.each(checkData,function(key,value){
+					ids = ids + "," + checkData[key]['id'];
+				});
+				layer.confirm('确定删除吗？', function(index) {
+					$.ajax({
+						type:"post",
+						url:"{:url('delete')}",
+						data: {
+							m_id:ids
+						},
+						dataType:"json",
+						beforeSend: function () {
+							layer.load(1);
+						},
+						success:function(res){
+							layer.closeAll();
+							if(res.code == 0){
+								let msg = res.msg == 'success' ? '删除成功' : res.msg;
+								layer.msg(msg, {
+									time: 2000
+								}, function(){
+									table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+								});
+							}
+							else {
+								layer.msg(res.msg);
+							}
+						}
+					});
+				});
+			}
+			,add: function(){
+				layer.open({
+					type: 2
+					,title: '添加会员'
+					,content: "{:url('create')}"
+					,maxmin: true
+					,area: ['500px', '350px']
+					,btn: ['确定', '取消']
+					,yes: function(index, layero){
+						let iframeWindow = window['layui-layer-iframe'+ index];
+						let submitID = 'LAY-submit';
+						let submit = layero.find('iframe').contents().find('#'+ submitID);
+
+						//监听提交
+						iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+							let field = data.field; //获取提交的字段
+
+							//提交 Ajax 成功后，静态更新表格中的数据
+							$.ajax({
+								type:"post",
+								url:"{:url('save')}",
+								data: {
+									m_uid:field.m_uid,
+									m_pwd:field.m_pwd,
+									m_level:field.m_level
+								},
+								dataType:"json",
+								beforeSend: function () {
+									layer.load(1);
+								},
+								success:function(res){
+									layer.close(layer.index);
+									if(res.code == 0){
+										layer.closeAll();
+										table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+									}
+									else {
+										layer.msg(res.msg);
+									}
+								}
+							});
+						});
+						submit.trigger('click');
+					}
+				});
+			}
+			,export: function(){
+				let checkStatus = table.checkStatus('LAY-table')
+				let checkData = checkStatus.data //得到选中的数据
+				let str = "确定导出选中数据吗？";
+				let ids = "0";
+				$.each(checkData,function(key,value){
+					ids = ids + "," + checkData[key]['id'];
+				});
+				if(checkData.length === 0){
+					str = "未选择数据将导出当前所有，确定导出吗？";
+				}
+				layer.confirm(str, function(index) {
+					layer.closeAll();
+					// 要打印的数据格式 对象中的key将会作为表头渲染
+					let count = 0; //数据总数
+					let limit = 3000; //每次请求数量
+					//获取总数
+					$.ajax({
+						type:"post",
+						url:"{:url('exportData')}",
+						data: {
+							m_id:ids
+						},
+						dataType:"json",
+						beforeSend: function () {
+							layer.load(1);
+						},
+						success:function(res){
+							layer.closeAll();
+							if(res.code == 0) {
+								count = res.count;
+								if(count == 0) {
+									layer.msg('暂无数据可导出');
+									return;
+								}
+								let request_times = Math.ceil(count/limit); //计算分几次请求
+								let funcs = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
+								let complete_count = 0; //成功请求次数
+								let export_percentage = 0; //设置当前进度百分比为0
+								for (let i = 1; i <= request_times; i++) {
+									// 循环请求次数，构造请求的Promise对象并插入funcs数组
+									let func = new Promise(function(resolve, reject){
+										//定义Promise并处理请求逻辑
+										let data = [];
+										$.ajax({
+											type:"post",
+											url:"{:url('exportData')}?page=" + i,
+											data: {
+												m_id:ids,
+												limit:limit
+											},
+											dataType:"json",
+											success:function(res){
+												layer.closeAll();
+												if(res.code == 0) {
+													data = res.data;
+													complete_count++; //成功请求次数+1
+													export_percentage = 100*complete_count/request_times; //设置当前进度百分比
+													layer.msg('导出中，已完成' + Math.ceil(export_percentage) + '%');
+													resolve(data);
+												} else {
+													layer.msg(res.msg);
+													reject();
+												}
+											}
+										});
+									});
+									funcs.push(func);
+								}
+
+								Promise.all(funcs).then(function(values) {
+									//使用Promise.all调用funcs里面的函数，并合并数据，最后给js-xlsx生成Excel
+									let print_data = [];
+									//将数据合并
+									for (let i = 0; i < values.length; i++) {
+										for (let j = 0; j < values[i].length; j++) {
+											print_data.push(values[i][j]);
+										}
+									}
+									// 创建一个新sheet
+									const new_sheet = XLSX.utils.json_to_sheet(print_data)
+									// 新建book
+									const new_book = XLSX.utils.book_new()
+									// 将 sheet 添加到 book 中
+									XLSX.utils.book_append_sheet(new_book, new_sheet, 'Sheet1')
+									// 导出excel文件
+									let time = new Date();
+									let month = time.getMonth()+1;
+									let timeStr = time.getFullYear() + '-' + month + '-'+time.getDate();
+									XLSX.writeFile(new_book, '会员列表('+timeStr+').xlsx')
+								});
+
+							} else {
+								layer.msg(res.msg);
+							}
+						}
+					});
+				});
+			}
+		};
+
+	});
+</script>

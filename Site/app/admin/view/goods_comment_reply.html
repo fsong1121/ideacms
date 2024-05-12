@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>回复内容</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+    <style>
+        html {background: #fff;padding-top: 20px;}
+    </style>
+</head>
+<body>
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="margin-left: 10px;">
+                <textarea name="m_reply_info" lay-verify="required" placeholder="请输入回复内容" class="layui-textarea">{$data.reply_info}</textarea>
+            </div>
+        </div>
+        <input type="hidden" name="m_reply_date" value="{$data.reply_date}">
+        <input type="hidden" name="m_id" value="{$data.id}">
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit lay-filter="LAY-submit" id="LAY-submit" value="确认">
+        </div>
+    </div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>

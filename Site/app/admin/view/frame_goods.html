@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>商品列表</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+	<link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+</head>
+<body>
+	<div class="layui-fluid">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<div style="padding-bottom: 10px;">
+					<div class="layui-table-title">商品列表</div>
+					<div class="layui-form search_ctr">
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="keys" placeholder="输入商品名称查询" autocomplete="off" class="layui-input">
+								</div>
+								<div class="layui-input-inline w150">
+									<select name="k2">
+										<option value="">所有商品</option>
+										{volist name="catList" id="cat"}
+										<option value="{$cat.id}">{neq name="$cat.parent_id" value="0"}&ensp;└&ensp;{/neq}{$cat.title}</option>
+										{/volist}
+									</select>
+								</div>
+								<button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-search">查询</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<table id="LAY-table" lay-filter="LAY-table"></table>
+				<script type="text/html" id="tableBar">
+					<a class="link-text" lay-event="select">选择</a>
+				</script>
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+	layui.use(function (){
+		let $ = layui.$;
+		let form = layui.form;
+		let table = layui.table;
+
+		//初始化列表
+		table.render({
+			elem: '#LAY-table'
+			,url: "{:url('getList')}"
+			,cols: [[
+				{field: 'title', minWidth:220, title: '标题'}
+				,{field: 'price', width: 100, title: '价格'}
+				,{title: '操作', width: 70, align:'center', fixed: 'right', toolbar: '#tableBar'}
+			]]
+			,page: true
+			,limit: 10
+			,height: 'full-100'
+			,text: {none: '暂无相关数据'}
+		});
+
+		//监听搜索
+		form.on('submit(LAY-search)', function(data){
+			let field = data.field;
+			//执行重载
+			table.reload('LAY-table', {
+				url: "{:url('getList')}"
+				,where: field
+				,page: {
+					curr: 1 //重新从第 1 页开始
+				}
+			});
+		});
+
+		//监听单个选择
+		table.on('tool(LAY-table)', function(obj){
+			let data = obj.data;
+			if(obj.event === 'select'){
+				window.parent.call_back(data.id,data.title,data.pic,data.price);
+			}
+		});
+
+	});
+</script>
