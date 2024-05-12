@@ -70,6 +70,15 @@ MySQL 5.6+
 <img src="https://www.ideacms.net/statics/index/images/gitee/14.jpg" width="19.5%" />
 <img src="https://www.ideacms.net/statics/index/images/gitee/15.jpg" width="19.5%" />
 </p>
+<p><img src="https://www.ideacms.net/statics/index/images/gitee/a1.jpg" /></p>
+<p><img src="https://www.ideacms.net/statics/index/images/gitee/a2.jpg" /></p>
+<p><img src="https://www.ideacms.net/statics/index/images/gitee/a3.jpg" /></p>
+<p><img src="https://www.ideacms.net/statics/index/images/gitee/a4.jpg" /></p>
+<p><img src="https://www.ideacms.net/statics/index/images/gitee/a5.jpg" /></p>
+<p><img src="https://www.ideacms.net/statics/index/images/gitee/a6.jpg" /></p>
+<p><img src="https://www.ideacms.net/statics/index/images/gitee/a7.jpg" /></p>
+<p><img src="https://www.ideacms.net/statics/index/images/gitee/a8.jpg" /></p>
+<p><img src="https://www.ideacms.net/statics/index/images/gitee/a9.jpg" /></p>
 
 ### 特别说明
 
