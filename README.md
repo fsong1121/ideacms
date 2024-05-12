@@ -57,18 +57,18 @@ MySQL 5.6+
 <img src="https://www.ideacms.net/statics/index/images/gitee/5.jpg" width="19.5%" />
 </p>
 <p>
-<img src="https://www.ideacms.net/statics/index/images/gitee/6.jpg" width="20%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/7.jpg" width="20%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/8.jpg" width="20%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/9.jpg" width="20%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/10.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/6.jpg" width="19.5%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/7.jpg" width="19.5%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/8.jpg" width="19.5%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/9.jpg" width="19.5%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/10.jpg" width="19.5%" />
 </p>
 <p>
-<img src="https://www.ideacms.net/statics/index/images/gitee/11.jpg" width="20%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/12.jpg" width="20%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/13.jpg" width="20%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/14.jpg" width="20%" />
-<img src="https://www.ideacms.net/statics/index/images/gitee/15.jpg" width="20%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/11.jpg" width="19.5%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/12.jpg" width="19.5%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/13.jpg" width="19.5%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/14.jpg" width="19.5%" />
+<img src="https://www.ideacms.net/statics/index/images/gitee/15.jpg" width="19.5%" />
 </p>
 
 ### 特别说明
