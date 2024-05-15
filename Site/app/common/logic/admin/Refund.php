@@ -171,7 +171,7 @@ class Refund extends Base
                             }
                         }
                         //记录资金流水
-                        if($order['pay_type'] < 4) {
+                        if($order['pay_type'] < 4 && $orderRefund['price'] > 0) {
                             Event::trigger('FinanceDetail',[
                                 'related_sn' => $order['order_sn'],
                                 'user_id' => $order['user_id'],
