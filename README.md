@@ -85,6 +85,4 @@ MySQL 5.6+
 IdeaCMS商城系统免费版也可用于商业使用，请保留我们的版权信息哦。我们商业授权也是很便宜的，还望各位大力支持！另：免费版前端仅支持H5，不含Uniapp前端源码，请须知！
 
 ### 参与项目
-非常欢迎您对IdeaCMS的开发作出贡献！你可以选择以下方式向IdeaCMS贡献：
-- [Gitee - 发布issue进行问题反馈和建议](https://gitee.com/ideacms/shop/pulls)
-> 通过Pull Request提交修复、完善我们的文档和例子
+非常欢迎您对IdeaCMS的开发作出贡献！你可以通过Issue或Pull Request方式反馈或修复、完善我们的系统！
