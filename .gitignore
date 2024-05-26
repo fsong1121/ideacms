@@ -2,3 +2,5 @@
 *.log
 *.lock
 .idea
+.env
+runtime
