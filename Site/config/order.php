@@ -15,7 +15,8 @@
          'activity'=>'促销订单',
          'seckill'=>'秒杀订单',
          'assist'=>'助力订单',
-         'combination'=>'拼团订单'
+         'combination'=>'拼团订单',
+         'raffle'=>'抽奖订单'
      ],
      //支付方式
      'pay_type' => [
