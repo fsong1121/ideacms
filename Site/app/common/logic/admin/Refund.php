@@ -199,6 +199,17 @@ class Refund extends Base
                                 'state' => 1,
                                 'reply_date' => time()
                             ]);
+                        //更新订单及订单商品状态
+                        Db::name('order')
+                            ->where('id', $orderRefund['order_id'])
+                            ->update([
+                                'refund_state' => 2
+                            ]);
+                        Db::name('order_goods')
+                            ->where('order_id', $orderRefund['order_id'])
+                            ->update([
+                                'state' => 2
+                            ]);
                     }
                 }
             }
