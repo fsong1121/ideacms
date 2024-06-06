@@ -43,8 +43,6 @@ class Message extends BaseLogic
             if(!empty($order)) {
                 $wechat = new WechatService();
                 $user = Db::name('user')->where('id',$order['user_id'])->find();
-                $wechatUserId = !empty($user) ? $user['wechat_user_id'] : 0;
-                $miniAppUserId = !empty($user) ? $user['miniapp_user_id'] : 0;
                 //下单支付成功
                 if($state == 'pay') {
                     //给用户发
@@ -58,11 +56,11 @@ class Message extends BaseLogic
                             ->withParams('{"sn": "'.$order['order_sn'].'","price": "'.$order['pay_price'].'"}')
                             ->request();
                     }
-                    if(config('message.gzh_user_pay') == 1 && !empty($wechatUserId)) {
+                    if(config('message.gzh_user_pay') == 1 && !empty($user['wechat_openid'])) {
                         //公众号消息
                         $data = [];
                         $data['template_id'] = config('message.gzh_user_pay_id');
-                        $data['touser'] = Db::name('wechat_user')->where('id',$wechatUserId)->value('openid');
+                        $data['touser'] = $user['wechat_openid'];
                         $data['data'] = [
                             'character_string2' => [
                                 'value' => $order['order_sn']
@@ -79,12 +77,12 @@ class Message extends BaseLogic
                         ];
                         $wechat->sendMsg($data);
                     }
-                    if(config('message.miniapp_user_pay') == 1 && !empty($miniAppUserId)) {
+                    if(config('message.miniapp_user_pay') == 1 && !empty($user['miniapp_openid'])) {
                         //小程序消息
                         $data = [];
                         $data['template_id'] = config('message.miniapp_user_pay_id');
                         $data['page'] = 'pages/order/list?state=2';
-                        $data['touser'] = Db::name('miniapp_user')->where('id',$miniAppUserId)->value('openid');
+                        $data['touser'] = $user['miniapp_openid'];
                         $data['data'] = [
                             'character_string3' => [
                                 'value' => $order['order_sn']
@@ -148,11 +146,11 @@ class Message extends BaseLogic
                             ->withParams('{"sn": "'.$order['order_sn'].'"}')
                             ->request();
                     }
-                    if(config('message.gzh_user_send') == 1 && !empty($wechatUserId)) {
+                    if(config('message.gzh_user_send') == 1 && !empty($user['wechat_openid'])) {
                         //公众号消息
                         $data = [];
                         $data['template_id'] = config('message.gzh_user_send_id');
-                        $data['touser'] = Db::name('wechat_user')->where('id',$wechatUserId)->value('openid');
+                        $data['touser'] = $user['wechat_openid'];
                         $data['data'] = [
                             'character_string2' => [
                                 'value' => $order['order_sn']
@@ -169,7 +167,7 @@ class Message extends BaseLogic
                         ];
                         $wechat->sendMsg($data);
                     }
-                    if(config('message.miniapp_user_send') == 1 && !empty($miniAppUserId)) {
+                    if(config('message.miniapp_user_send') == 1 && !empty($user['miniapp_openid'])) {
                         //小程序消息
                         $data = [];
                         if(config('wechat.miniapp.auto_send') == 1) {
@@ -210,14 +208,14 @@ class Message extends BaseLogic
                             }
                             $data['logistics_type'] = $logisticsType; //1快递，2同城配送，3虚拟商品，4用户自提
                             $data['payer'] = [
-                                'openid' => Db::name('miniapp_user')->where('id',$miniAppUserId)->value('openid')
+                                'openid' => $user['miniapp_openid']
                             ];
                             $wechat->uploadShipping($data);
                         } else {
                             //无需上传发货信息
                             $data['template_id'] = config('message.miniapp_user_send_id');
                             $data['page'] = 'pages/order/list?state=3';
-                            $data['touser'] = Db::name('miniapp_user')->where('id',$miniAppUserId)->value('openid');
+                            $data['touser'] = $user['miniapp_openid'];
                             $data['data'] = [
                                 'character_string7' => [
                                     'value' => $order['order_sn']

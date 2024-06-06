@@ -30,17 +30,11 @@ class User extends Base
         $data = UserModel::find($id);
         if(!empty($data)) {
             $otherUser = '';
-            if($data['wechat_user_id'] > 0) {
-                $wechatUser = Db::name('wechat_user')->where('id',$data['wechat_user_id'])->find();
-                if(!empty($wechatUser)) {
-                    $otherUser = $otherUser . '公众号：' . $wechatUser['openid'] . '/' . $wechatUser['nickname'];
-                }
+            if(!empty($data['wechat_openid'])) {
+                $otherUser = $otherUser . '公众号：' . $data['wechat_openid'];
             }
-            if($data['miniapp_user_id'] > 0) {
-                $miniappUser = Db::name('miniapp_user')->where('id',$data['miniapp_user_id'])->find();
-                if(!empty($miniappUser)) {
-                    $otherUser = $otherUser . '小程序：' . $miniappUser['openid'] . '/' . $miniappUser['nickname'];
-                }
+            if(!empty($data['miniapp_openid'])) {
+                $otherUser = $otherUser . '小程序：' . $data['miniapp_openid'];
             }
             $data['other_user'] = $otherUser;
         }
@@ -71,12 +65,6 @@ class User extends Base
             $list = $list->order(['id'=>'desc'])
                 ->paginate($param['limit'])
                 ->toArray();
-            foreach ($list['data'] as $key => $value) {
-                $list['data'][$key]['source'] = '用户注册';
-                if(!empty($value['wechat_user_id'])) $list['data'][$key]['source'] = '公众号';
-                if(!empty($value['miniapp_user_id'])) $list['data'][$key]['source'] = '小程序';
-                if(!empty($value['qq_user_id'])) $list['data'][$key]['source'] = 'QQ登录';
-            }
             return [
                 'code' => 0,
                 'msg' => '',

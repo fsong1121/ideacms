@@ -11,6 +11,7 @@
 namespace app\common\logic\index;
 
 use app\common\service\JwtAuth as AuthService;
+use app\common\service\Wechat as WechatService;
 use app\common\logic\BaseLogic;
 use think\facade\Cache;
 use think\facade\Event;
@@ -123,8 +124,9 @@ class Login extends BaseLogic
             if(isset($param['loginCode']) && !empty($param['loginCode'])) {
                 //获取手机号
                 $phone = '';
+                $wechat = new WechatService();
                 if(!empty($param['phoneCode'])) {
-                    $accessToken = $this->getAccessToken();
+                    $accessToken = $wechat->getAccessToken('miniapp','login');
                     $phoneUrl = 'https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=' . $accessToken;
                     $data = curlPost($phoneUrl,['code'=>$param['phoneCode']]);
                     if($data['errcode'] == 0) {
@@ -143,22 +145,16 @@ class Login extends BaseLogic
                 $data = curlGet($curl_url);
                 if(isset($data['openid'])) {
                     $unionid = $data['unionid'] ?? '';
-                    $miniappUser = Db::name('miniapp_user')->where('openid',$data['openid'])->find();
+                    $miniappUser = Db::name('user')->where('miniapp_openid',$data['openid'])->find();
                     if(empty($miniappUser)) {
                         //新会员
                         try {
-                            //添加到小程序会员
-                            $miniappUserId = Db::name('miniapp_user')->insertGetId([
-                                'openid' => $data['openid'],
-                                'unionid' => $unionid,
-                                'add_date' => time()
-                            ]);
                             $user = empty($unionid) ? [] : Db::name('user')->where('wechat_unionid',$unionid)->find();
                             if(!empty($user)) {
                                 //微信其他端登录过
                                 Db::name('user')
                                     ->where('wechat_unionid',$unionid)
-                                    ->update(['miniapp_user_id'=>$miniappUserId]);
+                                    ->update(['miniapp_openid'=>$data['openid']]);
                                 $userId = $user['id'];
                             } else {
                                 //如果手机号登录过就只更新
@@ -166,7 +162,7 @@ class Login extends BaseLogic
                                 if(!empty($user)) {
                                     Db::name('user')
                                         ->where('uid',$phone)
-                                        ->update(['miniapp_user_id'=>$miniappUserId,'wechat_unionid'=>$unionid]);
+                                        ->update(['miniapp_openid'=>$data['openid'],'wechat_unionid'=>$unionid]);
                                     $userId = $user['id'];
                                 } else {
                                     $userId = Db::name('user')->insertGetId([
@@ -174,7 +170,7 @@ class Login extends BaseLogic
                                         'uid' => $phone,
                                         'mobile' => $phone,
                                         'pid' => $pid,
-                                        'miniapp_user_id' => $miniappUserId,
+                                        'miniapp_openid' => $data['openid'],
                                         'wechat_unionid' => $unionid,
                                         'is_work' => 1,
                                         'add_date' => time()
@@ -189,37 +185,10 @@ class Login extends BaseLogic
                         }
                     } else {
                         //老会员
-                        $user = Db::name('user')->where('miniapp_user_id',$miniappUser['id'])->find();
-                        if(!empty($user)) {
-                            if ($user['is_work'] == 0) {
-                                return fail('此用户已被锁定');
-                            } else {
-                                return $this->setLogin($user['id']);
-                            }
+                        if ($miniappUser['is_work'] == 0) {
+                            return fail('此用户已被锁定');
                         } else {
-                            //如果手机号登录过就只更新
-                            $user = Db::name('user')->where('uid',$phone)->find();
-                            if(!empty($user)) {
-                                Db::name('user')
-                                    ->where('uid',$phone)
-                                    ->update(['miniapp_user_id'=>$miniappUser['id'],'wechat_unionid'=>$unionid]);
-                                $userId = $user['id'];
-                            } else {
-                                //没有加入会员表
-                                $userId = Db::name('user')->insertGetId([
-                                    'uuid' => makeUuid(),
-                                    'uid' => $phone,
-                                    'mobile' => $phone,
-                                    'pid' => $pid,
-                                    'miniapp_user_id' => $miniappUser['id'],
-                                    'wechat_unionid' => $unionid,
-                                    'is_work' => 1,
-                                    'add_date' => time()
-                                ]);
-                            }
-                            //注册成功后事件
-                            Event::trigger('RegSuccess',['user_id' => $userId]);
-                            return $this->setLogin($userId);
+                            return $this->setLogin($miniappUser['id']);
                         }
                     }
                 } else {
@@ -309,26 +278,6 @@ class Login extends BaseLogic
             header('token:' . $res['access_token']);
         }
         return $res;
-    }
-
-    /**
-     * 获取accessToken
-     * @return mixed
-     */
-    private function getAccessToken()
-    {
-        $appId = config('wechat.miniapp.appid');
-        $appSecret = config('wechat.miniapp.appsecret');
-        $accessToken = Cache::get('access_token');
-        if(empty($accessToken)) {
-            $tokenUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appId . '&secret=' . $appSecret;
-            $data = curlGet($tokenUrl);
-            if (isset($data['access_token'])) {
-                $accessToken = $data['access_token'];
-                Cache::set('access_token',$accessToken,7000);
-            }
-        }
-        return $accessToken;
     }
 
 }
