@@ -87,11 +87,21 @@ class Config extends Base
                 'uptype' => '" . $param['uptype'] . "',
                 'upsize' => '" . $param['upsize'] . "',
                 'uplocation' => '" . $param['uplocation'] . "',
-                'access_key_id' => '" . $param['access_key_id'] . "',
-                'access_key_secret' => '" . $param['access_key_secret'] . "',
-                'bucket' => '" . $param['bucket'] . "',
-                'domain' => '" . $param['domain'] . "',
-                'endpoint' => '" . $param['endpoint'] . "'
+                'qiniu_ak' => '" . $param['qiniu_ak'] . "',
+                'qiniu_sk' => '" . $param['qiniu_sk'] . "',
+                'qiniu_bucket' => '" . $param['qiniu_bucket'] . "',
+                'qiniu_domain' => '" . $param['qiniu_domain'] . "',
+                'qcloud_appId' => '" . $param['qcloud_appId'] . "',
+                'qcloud_secretId' => '" . $param['qcloud_secretId'] . "',
+                'qcloud_secretKey' => '" . $param['qcloud_secretKey'] . "',
+                'qcloud_bucket' => '" . $param['qcloud_bucket'] . "',
+                'qcloud_region' => '" . $param['qcloud_region'] . "',
+                'qcloud_cosUrl' => '" . $param['qcloud_cosUrl'] . "',
+                'ali_accessKeyId' => '" . $param['ali_accessKeyId'] . "',
+                'ali_accessKeySecret' => '" . $param['ali_accessKeySecret'] . "',
+                'ali_endpoint' => '" . $param['ali_endpoint'] . "',
+                'ali_bucket' => '" . $param['ali_bucket'] . "',
+                'ali_url' => '" . $param['ali_url'] . "'
             ]";
             $code = "<?php\n " . $code . ";";
             file_put_contents(config_path() . "upload.php", $code);

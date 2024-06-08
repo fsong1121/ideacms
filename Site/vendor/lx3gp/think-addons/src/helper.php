@@ -321,3 +321,60 @@ if(!function_exists('set_addons_menu')) {
         return false;
     }
 }
+
+//  删除数据表
+if (!function_exists("drop_table")) {
+    function drop_table (string $name=null) {
+        //  判断插件名称是否存在
+        if(!$name) { return false; }
+        //  删除数据表
+        try{
+            $dataTableList = get_addons_tables($name);  //  获取message插件所有的数据表，主要是根据安装文件来获取的
+            if(!empty($dataTableList)) {
+                $sql = "DROP TABLE IF EXISTS ";
+                foreach ($dataTableList as $dtl) {
+                    $sql .= "`{$dtl}`,";
+                }
+                $sql = substr($sql, 0, -1) . ";";
+                $sql_status = Db::execute($sql);
+                if($sql_status === false) {
+                    return false;
+                }
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+        return true;
+    }
+}
+
+if(!function_exists('get_addons_tables')){
+    /**
+     * 获取插件创建的表
+     * @param string $name 插件名
+     * @return array
+     */
+    function get_addons_tables($addonsName=null, $sqlFileName='install')
+    {
+        if (!$addonsName) {
+            return [];
+        }
+        $addonInfo = get_addons_info($addonsName);
+        if (!$addonInfo) {
+            return [];
+        }
+        $regex = "/^CREATE\s+TABLE\s+(IF\s+NOT\s+EXISTS\s+)?`?([a-zA-Z_]+)`?/mi";
+        $sqlFile = root_path() . "addons" . DIRECTORY_SEPARATOR . $addonsName . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . $sqlFileName . '.sql';
+        $tables = [];
+        if (is_file($sqlFile)) {
+            preg_match_all($regex, file_get_contents($sqlFile), $matches);
+            if ($matches && isset($matches[2]) && $matches[2]) {
+                $prefix = config('database.prefix');
+                $tables = array_map(function ($item) use ($prefix) {
+                    return str_replace("{PREFIX}", $prefix, $item);
+                }, $matches[2]);
+            }
+        }
+        return $tables;
+    }
+}
