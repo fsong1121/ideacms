@@ -23,7 +23,7 @@
                 'user_reserved_word' => 'admin,manager',
                 'user_recharge' => '0',
                 'user_recharge_gift' => '0',
-                'code_login' => '1',
+                'code_login' => '0',
                 'other_login' => '0',
                 'log_days' => '30',
                 'map_key' => ''

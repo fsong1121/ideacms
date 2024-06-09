@@ -1,24 +1,6 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS `{PREFIX}addons`;
-CREATE TABLE `{PREFIX}addons` (
-  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `name` varchar(50) DEFAULT NULL COMMENT '插件名称或者标识',
-  `menu` varchar(500) DEFAULT NULL COMMENT '后台菜单',
-  `url` varchar(200) DEFAULT NULL COMMENT '前台地址',
-  `icon` varchar(200) DEFAULT NULL COMMENT '插件图标',
-  `title` varchar(50) DEFAULT NULL COMMENT '中文名',
-  `description` text COMMENT '插件描述',
-  `author` varchar(40) DEFAULT NULL COMMENT '作者',
-  `version` varchar(20) DEFAULT NULL COMMENT '版本号',
-  `status` tinyint(1) unsigned DEFAULT '1' COMMENT '状态(0:隐藏 1:显示)',
-  `type` tinyint(1) unsigned DEFAULT '0' COMMENT '类型',
-  `sequence` int(10) unsigned DEFAULT '0' COMMENT '排序',
-  `add_date` int(10) unsigned DEFAULT '0' COMMENT '安装时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='插件表';
-
 DROP TABLE IF EXISTS `{PREFIX}admin`;
 CREATE TABLE `{PREFIX}admin` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序号',
@@ -41,37 +23,37 @@ CREATE TABLE `{PREFIX}admin_menu` (
   `parent_id` int(10) unsigned DEFAULT '0' COMMENT '上级ID',
   `title` varchar(50) DEFAULT NULL COMMENT '名称',
   `subtitle` varchar(50) DEFAULT NULL COMMENT '简称',
-  `controller` varchar(50) DEFAULT NULL COMMENT '控制器',
+  `controller` varchar(100) DEFAULT NULL COMMENT '控制器',
   `operation` varchar(50) DEFAULT NULL COMMENT '方法',
-  `other_operation` varchar(200) DEFAULT NULL COMMENT '允许的其他方法',
+  `other_operation` varchar(300) DEFAULT NULL COMMENT '允许的其他方法',
   `ico` varchar(50) DEFAULT NULL COMMENT '图标',
   `deep` tinyint(1) unsigned DEFAULT '1' COMMENT '层级',
   `sequence` int(10) unsigned DEFAULT '0' COMMENT '排序',
   `type` tinyint(1) unsigned DEFAULT '1' COMMENT '0:系统菜单 1:自定义菜单',
   `is_turn` int(1) unsigned DEFAULT '0' COMMENT '点击顶级菜单是否跳转',
-  `is_addon` tinyint(255) unsigned DEFAULT '0' COMMENT '是否插件',
+  `is_addon` tinyint(1) unsigned DEFAULT '0' COMMENT '是否插件',
   `is_show` tinyint(1) unsigned DEFAULT '0' COMMENT '显示',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='平台后台菜单';
 
 INSERT INTO `{PREFIX}admin_menu` VALUES (1, 0, '商品管理', '商品', NULL, NULL, NULL, 'component', 1, 1, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (2, 1, '商品列表', NULL, 'goods', NULL, 'create,edit,save,delete,get_list', NULL, 2, 1, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (2, 1, '商品列表', NULL, 'goods', NULL, 'create,edit,save,delete,get_list,set_top,set_sale,get_goods_spec,get_goods_spec_item,get_edit_goods_spec_item,get_sku_data,spec_create,spec_delete,spec_value_create,spec_value_delete,select_goods', NULL, 2, 1, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (3, 1, '商品分类', NULL, 'goods_category', NULL, 'create,edit,save,delete,get_list', NULL, 2, 2, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (4, 1, '商品规格', NULL, 'goods_spec', NULL, 'create,edit,save,delete,get_list', NULL, 2, 3, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (5, 1, '商品参数', NULL, 'goods_param', NULL, 'create,edit,save,delete,get_list', NULL, 2, 4, 0, 0, 0, 0);
 INSERT INTO `{PREFIX}admin_menu` VALUES (6, 1, '商品单位', NULL, 'unit', NULL, 'create,edit,save,delete,get_list', NULL, 2, 5, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (7, 1, '商品品牌', NULL, 'brand', NULL, 'create,edit,save,delete,get_list', NULL, 2, 6, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (8, 1, '商品评价', NULL, 'comment', NULL, 'create,edit,save,delete,get_list', NULL, 2, 7, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (8, 1, '商品评价', NULL, 'comment', NULL, 'create,edit,save,delete,get_list,reply,set_show', NULL, 2, 7, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (9, 1, '服务承诺', NULL, 'service', NULL, 'create,edit,save,delete,get_list', NULL, 2, 8, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (10, 1, '商品回收站', NULL, 'recycle', NULL, 'create,edit,save,delete,get_list', NULL, 2, 9, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (10, 1, '商品回收站', NULL, 'recycle', NULL, 'delete,get_list,recovery', NULL, 2, 9, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (11, 0, '订单管理', '订单', NULL, NULL, NULL, 'cart', 1, 2, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (12, 11, '订单列表', NULL, 'order', NULL, 'edit,save,delete,get_list', NULL, 2, 1, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (13, 11, '退款维权', NULL, 'refund', NULL, 'edit,save,delete,get_list', NULL, 2, 2, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (12, 11, '订单列表', NULL, 'order', NULL, 'edit,save,delete,get_list,print_order,edit_price,save_price,edit_info,save_info,save_pay,send_goods,save_send,receipt,cancel,export_data', NULL, 2, 1, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (13, 11, '退款维权', NULL, 'refund', NULL, 'edit,get_list,refuse,save_refuse,agree', NULL, 2, 2, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (14, 0, '营销管理', '营销', NULL, NULL, NULL, 'gift', 1, 3, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (15, 14, '优惠券', NULL, 'coupon', NULL, 'edit,save,delete,get_list', NULL, 2, 1, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (16, 14, '满减送', NULL, 'discount', NULL, 'edit,save,delete,get_list', NULL, 2, 2, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (15, 14, '优惠券', NULL, 'coupon', NULL, 'create,edit,save,delete,get_list,show,get_info_list,give,save_give', NULL, 2, 1, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (16, 14, '满减送', NULL, 'discount', NULL, 'create,edit,save,delete,get_list', NULL, 2, 2, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (17, 0, '会员管理', '会员', NULL, NULL, NULL, 'username', 1, 4, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (18, 17, '会员列表', NULL, 'user', NULL, 'create,edit,save,delete,get_list,edit_pwd,save_pwd,edit_integral,save_integral,edit_balance,save_balance,export', NULL, 2, 1, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (18, 17, '会员列表', NULL, 'user', NULL, 'create,edit,save,delete,get_list,edit_pwd,save_pwd,edit_integral,save_integral,edit_balance,save_balance,edit_growth,save_growth,export_data', NULL, 2, 1, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (19, 17, '会员等级', NULL, 'user_level', NULL, 'create,edit,save,delete,get_list', NULL, 2, 2, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (20, 17, '会员标签', NULL, 'user_label', NULL, 'create,edit,save,delete,get_list', NULL, 2, 3, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (21, 17, '余额明细', NULL, 'user_balance', NULL, 'get_list', NULL, 2, 4, 0, 0, 0, 1);
@@ -79,8 +61,8 @@ INSERT INTO `{PREFIX}admin_menu` VALUES (22, 17, '积分明细', NULL, 'user_int
 INSERT INTO `{PREFIX}admin_menu` VALUES (23, 17, '成长值明细', NULL, 'user_growth', NULL, 'get_list', NULL, 2, 6, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (24, 0, '财务管理', '财务', NULL, NULL, NULL, 'rmb', 1, 5, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (25, 24, '资金流水', NULL, 'finance', NULL, 'get_list', NULL, 2, 1, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (26, 24, '提现管理', NULL, 'cash', NULL, 'get_list', NULL, 2, 2, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (27, 24, '发票管理', NULL, 'bill', NULL, 'get_list', NULL, 2, 3, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (26, 24, '提现管理', NULL, 'cash', NULL, 'get_list,agree,edit_cash,save_cash', NULL, 2, 2, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (27, 24, '发票管理', NULL, 'bill', NULL, 'edit,save,get_list', NULL, 2, 3, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (28, 0, '数据分析', '数据', '', '', '', 'chart', 1, 6, 0, 0, 0, 0);
 INSERT INTO `{PREFIX}admin_menu` VALUES (29, 28, '交易统计', '', 'report_order', '', '', '', 2, 1, 0, 0, 0, 0);
 INSERT INTO `{PREFIX}admin_menu` VALUES (30, 28, '商品统计', '', 'report_goods', '', '', '', 2, 2, 0, 0, 0, 0);
@@ -103,15 +85,16 @@ INSERT INTO `{PREFIX}admin_menu` VALUES (46, 38, '消息设置', NULL, 'config',
 INSERT INTO `{PREFIX}admin_menu` VALUES (47, 38, '协议设置', NULL, 'config', 'agreement', 'save_agreement', NULL, 2, 9, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (48, 38, '微信设置', NULL, 'config', 'wechat', 'save_wechat', NULL, 2, 10, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (49, 38, '广告管理', NULL, 'ads', NULL, 'create,edit,save,delete,get_list', NULL, 2, 12, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (50, 38, '登录日志', NULL, 'login_log', NULL, 'create,edit,save,delete,get_list', NULL, 2, 13, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (50, 38, '登录日志', NULL, 'login_log', NULL, 'get_list', NULL, 2, 13, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (51, 38, '后台菜单', NULL, 'admin_menu', NULL, 'create,edit,save,delete,get_list', NULL, 2, 14, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (52, 0, '装修风格', '装修', NULL, NULL, NULL, 'theme', 1, 10, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (53, 52, '主题风格', NULL, 'setting', 'theme', 'save_theme', NULL, 2, 1, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (54, 52, '手机端装修', NULL, 'setting', 'mobile', 'save_mobile', NULL, 2, 2, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (55, 52, '手机金刚区', NULL, 'mobile_menu', NULL, 'create,edit,save,delete,get_list', NULL, 2, 3, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (56, 52, 'PC端装修', NULL, 'setting', 'pc', 'save_pc', NULL, 2, 4, 0, 0, 0, 0);
-INSERT INTO `{PREFIX}admin_menu` VALUES (57, 0, '应用中心', '应用', NULL, NULL, NULL, 'app', 1, 11, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (58, 57, '本地应用', NULL, 'local_app', NULL, 'get_list', NULL, 2, 1, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (57, 0, '插件扩展', '插件', NULL, NULL, NULL, 'senior', 1, 11, 0, 0, 0, 0);
+INSERT INTO `{PREFIX}admin_menu` VALUES (58, 0, '应用中心', '应用', NULL, NULL, NULL, 'app', 1, 12, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (59, 58, '本地应用', NULL, 'local_app', NULL, 'get_list,install,up,down,uninstall', NULL, 2, 1, 0, 0, 0, 1);
 
 DROP TABLE IF EXISTS `{PREFIX}admin_role`;
 CREATE TABLE `{PREFIX}admin_role` (
@@ -131,15 +114,15 @@ CREATE TABLE `{PREFIX}ads` (
   `url` varchar(100) DEFAULT NULL COMMENT '链接地址',
   `pic` varchar(100) DEFAULT NULL COMMENT '图片',
   `info` varchar(200) DEFAULT NULL COMMENT '描述',
-  `type` tinyint(1) unsigned DEFAULT '0' COMMENT '广告类型 0:普通广告 1:pc幻灯片 2:手机幻灯片 3:小程序幻灯片',
+  `type` tinyint(1) unsigned DEFAULT '0' COMMENT '广告类型 0:普通广告 1:pc端 2:移动端',
   `sequence` int(10) unsigned DEFAULT '0' COMMENT '排序',
   `is_show` tinyint(1) unsigned DEFAULT '0' COMMENT '是否显示',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='广告';
 
-INSERT INTO `{PREFIX}ads` VALUES (1, 0, '幻灯片一', '#', 'ads/5d118dfac4c1c.jpg', '', 3, 3, 1);
-INSERT INTO `{PREFIX}ads` VALUES (2, 0, '幻灯片二', '#', 'ads/5d118e1a8c50d.jpg', '', 3, 2, 1);
-INSERT INTO `{PREFIX}ads` VALUES (3, 0, '幻灯片三', '#', 'ads/5d118e2d7bfa8.jpg', '', 3, 1, 1);
+INSERT INTO `{PREFIX}ads` VALUES (1, 0, '幻灯片一', '#', 'ads/5d118dfac4c1c.jpg', '', 2, 3, 1);
+INSERT INTO `{PREFIX}ads` VALUES (2, 0, '幻灯片二', '#', 'ads/5d118e1a8c50d.jpg', '', 2, 2, 1);
+INSERT INTO `{PREFIX}ads` VALUES (3, 0, '幻灯片三', '#', 'ads/5d118e2d7bfa8.jpg', '', 2, 1, 1);
 
 DROP TABLE IF EXISTS `{PREFIX}area`;
 CREATE TABLE `{PREFIX}area` (
@@ -182,7 +165,7 @@ CREATE TABLE `{PREFIX}article` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='文章';
 
-INSERT INTO `{PREFIX}article` VALUES (1, 0, 3, '本站仅为演示，请勿真实下单哦！', '', '', '', '&lt;p&gt;本站仅为演示，下单不发货，请勿真实下单哦！&lt;/p&gt;', '', '', '', '', 1, 1, 17, 0, 1, 1700535849);
+INSERT INTO `{PREFIX}article` VALUES (1, 0, 3, '本站仅为演示，请勿真实下单哦！', '', '', '', '本站仅为演示，下单不发货，请勿真实下单哦！', '', '', '', '', 1, 1, 17, 0, 1, 1700535849);
 
 DROP TABLE IF EXISTS `{PREFIX}article_category`;
 CREATE TABLE `{PREFIX}article_category` (
@@ -294,15 +277,15 @@ CREATE TABLE `{PREFIX}cash` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序号',
   `sn` varchar(50) DEFAULT NULL COMMENT '单号',
   `user_id` int(10) unsigned DEFAULT '0' COMMENT '用户ID',
-  `fee` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '数量',
-  `commission` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '手续费',
+  `fee` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '提现金额(实际到账)',
+  `service_fee` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '服务费',
   `info` text COMMENT '说明',
   `type` tinyint(1) unsigned DEFAULT '0' COMMENT '方式 1:余额 2:银行卡 3:微信 4:支付宝',
   `cash_name` varchar(50) DEFAULT NULL COMMENT '收款人',
   `cash_bank` varchar(50) DEFAULT NULL COMMENT '收款银行',
   `bank_account` varchar(50) DEFAULT NULL COMMENT '银行账户',
   `cash_pic` varchar(200) DEFAULT NULL COMMENT '收款码',
-  `cash_state` tinyint(1) unsigned DEFAULT '0' COMMENT '提现状态(1:待审 2:通过 3:拒绝)',
+  `cash_state` tinyint(1) DEFAULT '0' COMMENT '提现状态(0:待审 1:通过 -1:拒绝)',
   `cash_date` int(10) unsigned DEFAULT '0' COMMENT '提现处理时间',
   `cash_info` varchar(100) DEFAULT NULL COMMENT '处理意见',
   `add_date` int(10) unsigned DEFAULT NULL COMMENT '添加日期',
@@ -327,6 +310,7 @@ CREATE TABLE `{PREFIX}commission_detail` (
   `fee` decimal(10,2) DEFAULT '0.00' COMMENT '数量',
   `info` text COMMENT '说明',
   `account_fee` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '账号余额',
+  `type` tinyint(1) unsigned DEFAULT '0' COMMENT '0:订单佣金',
   `add_date` int(10) unsigned DEFAULT NULL COMMENT '添加日期',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='佣金明细';
@@ -434,6 +418,7 @@ CREATE TABLE `{PREFIX}finance_detail` (
   `info` text COMMENT '说明',
   `pay_type` tinyint(1) unsigned DEFAULT '0' COMMENT '支付类型 1:微信支付 2:支付宝 3:网银支付 5:货到付款线下支付',
   `pay_sn` varchar(50) DEFAULT NULL COMMENT '交易号',
+  `pay_gateway` varchar(100) DEFAULT NULL COMMENT '支付网关',
   `type` tinyint(1) unsigned DEFAULT '0' COMMENT '类型 1:订单支付 2:订单退款 3:会员充值 4:充值退款 5:佣金提现 6:购买vip',
   `add_date` int(10) unsigned DEFAULT NULL COMMENT '添加日期',
   PRIMARY KEY (`id`) USING BTREE
@@ -492,8 +477,6 @@ INSERT INTO `{PREFIX}goods` VALUES (4, 0, '蓝宝(BLAUPUNKT)破壁机家用全�
 INSERT INTO `{PREFIX}goods` VALUES (5, 0, '美的(Midea) 电饭煲4L/4升智能预约多功能家用电饭锅大容量微电脑式底盘加热不粘锅不溢锅WFD4016', '一键柴火饭 黄晶蜂窝内胆 智能预约 4L大容量 健康不粘 大火力5段焖香曲线', 0, 5, 3, 0, 2, 0.00, 1, '', 'goods/630aeac3be1c2.jpeg', 'goods/630aeac3be1c2.jpeg,goods/630aeac8861de.jpeg', '', '', 249.00, 299.00, '', 99, 0, 4, 0, '[]', '5,4,3', '', '', '', '', 0.00, 0, 0, 23, 1, 0, 1, 1, 1, 0, 1, 4, 1661659884);
 INSERT INTO `{PREFIX}goods` VALUES (6, 0, 'Apple iPhone 13 移动联通电信5G全网通手机', '全新A15仿生超高速芯片；相机系统升级拍摄效果更佳；续航能力提升满足日常需要；', 0, 1, 0, 0, 0, 0.00, 0, '', 'goods/6312fe4ab7c39.jpeg', 'goods/6312fe4ab7c39.jpeg,goods/6312fe5c2c3aa.jpeg,goods/6312fe6211f85.jpeg', '', '', 5999.00, 6299.00, '', 561, 0, 33, 1, '[{\"spec\":\"颜色\",\"items\":[{\"title\":\"黑色\",\"select\":0},{\"title\":\"蓝色\",\"select\":1},{\"title\":\"紫色\",\"select\":0},{\"title\":\"午夜色\",\"select\":1},{\"title\":\"星光色\",\"select\":1}]},{\"spec\":\"内存\",\"items\":[{\"title\":\"64G\",\"select\":0},{\"title\":\"128G\",\"select\":1},{\"title\":\"256G\",\"select\":1}]}]', '5,4,3,2', '<img src=\"/upload/pic/goods/6312ff768cc36.jpeg\" alt=\"undefined\">', '', '', '', 0.00, 0, 0, 815, 1, 0, 1, 0, 1, 0, 1, 32, 1662189455);
 INSERT INTO `{PREFIX}goods` VALUES (7, 0, '华为/HUAWEI P50 Pro 移动联通电信全网通手机', '120Hz高刷新率；后置6400万像素潜望式长焦摄像头；前置100°超广角影像系统', 0, 1, 6, 0, 1, 10.00, 0, '', 'goods/631301304008a.jpeg', 'goods/631301304008a.jpeg,goods/6313013424da6.jpeg,goods/63130137ca0be.jpeg', '', '', 5399.00, 5499.00, '', 388, 0, 8, 1, '[{\"spec\":\"颜色\",\"items\":[{\"title\":\"曜金黑\",\"select\":1},{\"title\":\"雪域白\",\"select\":1}]},{\"spec\":\"内存\",\"items\":[{\"title\":\"8GB+128GB\",\"select\":1},{\"title\":\"8GB+256GB\",\"select\":1}]}]', '5,4,3,2', '<img src=\"/upload/pic/goods/63130204db5bc.jpeg\" alt=\"undefined\">', '', '', '', 0.00, 0, 0, 53, 0, 0, 1, 0, 1, 0, 1, 8, 1662190094);
-INSERT INTO `{PREFIX}goods` VALUES (8, 0, '三合一数据线', '', 0, 39, 0, 0, 0, 0.00, 0, '', 'goods/653b389a41b3b.png', 'goods/653b389a41b3b.png', '', '', 0.00, 0.00, '', 99, 0, 0, 0, '[]', '5,4,3', '<p>哈哈</p>', '', '', '', 0.00, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1698380033);
-INSERT INTO `{PREFIX}goods` VALUES (9, 0, '好铺商城系统v1.0(B2C)', '', 2, 37, 0, 0, 0, 0.00, 0, '', 'goods/657b0fbc975e8.png', 'goods/657b0fbc975e8.png', '', '', 0.00, 0.00, '', 998, 0, 1, 0, '[]', '', '<p>这是测试内容</p><p class=\"image\"><img src=\"/upload/pic/goods/658a7ab5ce0df.png\"></p>', '', '', '', 0.00, 0, 0, 7, 0, 0, 0, 0, 1, 0, 1, 1, 1702563792);
 
 DROP TABLE IF EXISTS `{PREFIX}goods_category`;
 CREATE TABLE `{PREFIX}goods_category` (
@@ -736,11 +719,12 @@ CREATE TABLE `{PREFIX}order` (
   `user_id` int(10) unsigned DEFAULT '0' COMMENT '用户ID',
   `price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '订单金额',
   `pay_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '实付金额',
-  `order_state` tinyint(1) unsigned DEFAULT '1' COMMENT '订单状态 1:待付款 2:待发货 3:待收货 4:待评价 5:已完成 9:已取消',
+  `order_state` tinyint(1) DEFAULT '1' COMMENT '订单状态 1:待付款 2:待发货 3:待收货 4:已完成 -1:已取消',
   `pay_type` tinyint(1) unsigned DEFAULT '0' COMMENT '支付方式 1:微信支付 2:支付宝 3:网银支付 4:余额支付 5:货到付款',
   `pay_sn` varchar(50) DEFAULT NULL COMMENT '交易号',
   `pay_date` varchar(20) DEFAULT NULL COMMENT '支付时间',
   `pay_order_sn` varchar(200) DEFAULT NULL COMMENT '支付订单号',
+  `pay_gateway` varchar(100) DEFAULT NULL COMMENT '支付网关',
   `terminal` tinyint(1) unsigned DEFAULT '1' COMMENT '订单来源 1:h5端 2:pc端 3:微信端 4:小程序 5:app',
   `send_type` int(10) unsigned DEFAULT '1' COMMENT '1:快递 2:自提',
   `store_id` int(10) unsigned DEFAULT '0' COMMENT '自提门店ID',
@@ -762,16 +746,18 @@ CREATE TABLE `{PREFIX}order` (
   `discount_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '满减优惠金额',
   `discount_integral` int(10) unsigned DEFAULT '0' COMMENT '满减送积分',
   `discount_coupon_ids` varchar(200) DEFAULT NULL COMMENT '满减送优惠券ID',
+  `exchange_integral` int(10) unsigned DEFAULT '0' COMMENT '使用积分',
   `exchange_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '积分抵扣费用',
   `trim_price` decimal(10,2) DEFAULT '0.00' COMMENT '调整订单价格(正数为加，负数为减)',
   `refund_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '退款金额',
   `refund_state` tinyint(1) unsigned DEFAULT '0' COMMENT '退款状态 1:部分退款 2:全部退款',
-  `user_commission` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '会员佣金(分销使用)',
+  `user_commission` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '可分佣金(分销使用)',
+  `commission_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '分佣金额',
   `order_integral` int(10) unsigned DEFAULT '0' COMMENT '商品赠送积分',
   `order_growth` int(10) unsigned DEFAULT '0' COMMENT '订单成长值',
   `order_type` varchar(50) DEFAULT '' COMMENT '订单类型 空:普通订单',
   `activity_id` int(10) unsigned DEFAULT '0' COMMENT '活动ID',
-  `activity_state` tinyint(1) unsigned DEFAULT '1' COMMENT '活动状态 1:进行中 2:成功 3:失败',
+  `activity_state` tinyint(1) unsigned DEFAULT '1' COMMENT '活动状态 0:进行中 1:成功 2:失败',
   `add_date` int(10) DEFAULT NULL COMMENT '添加日期',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `id` (`id`) USING BTREE,
@@ -790,6 +776,7 @@ CREATE TABLE `{PREFIX}order_goods` (
   `rebate_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '会员折扣',
   `discount_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '满减优惠',
   `coupon_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '优惠券优惠',
+  `exchange_integral` int(10) unsigned DEFAULT '0' COMMENT '商品积分',
   `exchange_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '积分抵扣',
   `trim_price` decimal(10,2) DEFAULT '0.00' COMMENT '调整订单价格(正数为加，负数为减)',
   `commission` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '商品佣金',
@@ -817,16 +804,20 @@ CREATE TABLE `{PREFIX}order_log` (
 DROP TABLE IF EXISTS `{PREFIX}order_refund`;
 CREATE TABLE `{PREFIX}order_refund` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序号',
+  `sn` varchar(50) DEFAULT NULL COMMENT '单号',
   `user_id` int(10) unsigned DEFAULT '0' COMMENT '会员ID',
   `order_goods_id` int(10) unsigned DEFAULT '0' COMMENT '订单商品ID',
   `order_id` int(10) unsigned DEFAULT '0' COMMENT '订单ID',
   `type` tinyint(1) unsigned DEFAULT '0' COMMENT '退款类型 1:仅退款 2:退货退款 3:仅换货',
   `reason` varchar(200) DEFAULT NULL COMMENT '退款原因',
+  `pay_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '订单实付款',
+  `express_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '发货运费(已发货订单)',
   `price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '退款金额',
+  `integral` int(10) unsigned DEFAULT '0' COMMENT '退积分',
   `info` varchar(200) DEFAULT NULL COMMENT '说明',
   `pic` varchar(200) DEFAULT NULL COMMENT '图片',
   `express_sn` varchar(100) DEFAULT NULL COMMENT '退货物流单号',
-  `state` tinyint(1) DEFAULT '1' COMMENT '退款状态 -1:已拒绝 0:已取消 1:退款中 2:退款成功',
+  `state` tinyint(1) DEFAULT '0' COMMENT '退款状态 -2:已取消 -1:已拒绝 0:退款中 1:退款成功',
   `add_date` int(10) unsigned DEFAULT NULL COMMENT '添加时间',
   `reply_info` varchar(200) DEFAULT NULL COMMENT '回复内容',
   `reply_date` int(10) unsigned DEFAULT NULL COMMENT '审核时间',
@@ -903,6 +894,7 @@ CREATE TABLE `{PREFIX}user` (
   `miniapp_openid` varchar(50) DEFAULT NULL COMMENT '小程序openid',
   `wechat_unionid` varchar(50) DEFAULT NULL COMMENT '微信unionid',
   `is_fx` tinyint(1) unsigned DEFAULT '0' COMMENT '是否分销商',
+  `invite_code` varchar(50) DEFAULT NULL COMMENT '分销商邀请码',
   `is_vip` tinyint(1) unsigned DEFAULT '0' COMMENT '是否vip会员',
   `vip_effective_date` int(10) unsigned DEFAULT NULL COMMENT 'vip有效期至',
   `is_work` tinyint(1) unsigned DEFAULT '0' COMMENT '激活',
