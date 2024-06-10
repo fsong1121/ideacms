@@ -203,6 +203,75 @@ class Login extends BaseLogic
     }
 
     /**
+     * 公众号登录
+     * @param array $param
+     * @return array
+     */
+    public function wechatLogin(array $param) : array
+    {
+        try {
+            $appId = config('wechat.mp.appid');
+            $appSecret = config('wechat.mp.appsecret');
+            if(isset($param['loginCode']) && !empty($param['loginCode'])) {
+                //添加会员
+                $pid = $param['pid'];
+                $parentUser = Db::name('user')->where('id',$pid)->find();
+                if(empty($parentUser) || $parentUser['is_fx'] == 0) {
+                    $pid = 0;
+                }
+                $curl_url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.$appId.'&secret='.$appSecret.'&code='.$param['loginCode'].'&grant_type=authorization_code';
+                $data = curlGet($curl_url);
+                if(isset($data['openid'])) {
+                    $unionid = $data['unionid'] ?? '';
+                    $wechatUser = Db::name('user')->where('wechat_openid',$data['openid'])->find();
+                    if(empty($wechatUser)) {
+                        //新会员
+                        try {
+                            $user = empty($unionid) ? [] : Db::name('user')->where('wechat_unionid',$unionid)->find();
+                            if(!empty($user)) {
+                                //微信其他端登录过
+                                Db::name('user')
+                                    ->where('wechat_unionid',$unionid)
+                                    ->update(['wechat_openid'=>$data['openid']]);
+                                $userId = $user['id'];
+                            } else {
+                                //新增
+                                $userId = Db::name('user')->insertGetId([
+                                    'uuid' => makeUuid(),
+                                    'pid' => $pid,
+                                    'wechat_openid' => $data['openid'],
+                                    'wechat_unionid' => $unionid,
+                                    'is_work' => 1,
+                                    'add_date' => time()
+                                ]);
+                                Db::name('user')->where('id',$userId)->update(['uid'=>'user' . $userId]);
+                            }
+                            //注册成功后事件
+                            Event::trigger('RegSuccess',['user_id' => $userId]);
+                            return $this->setLogin($userId);
+                        } catch (\Exception $e) {
+                            return fail($e->getMessage());
+                        }
+                    } else {
+                        //老会员
+                        if ($wechatUser['is_work'] == 0) {
+                            return fail('此用户已被锁定');
+                        } else {
+                            return $this->setLogin($wechatUser['id']);
+                        }
+                    }
+                } else {
+                    return fail($data['errmsg']);
+                }
+            } else {
+                return fail('code为空或不存在');
+            }
+        } catch (\Exception $e) {
+            return fail($e->getMessage());
+        }
+    }
+
+    /**
      * 退出登录
      * @param string $token
      * @return array
