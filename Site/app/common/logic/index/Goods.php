@@ -38,6 +38,10 @@ class Goods extends BaseLogic
         if(!empty($data)) {
             $data->save(['hits'=>$data['hits']+1]);
             $data['sales'] = $data['sales'] + $data['initial_sales'];
+            //幻灯片
+            foreach ($data['slide'] as $key => $value) {
+                $data['slide'][$key] = getPic($value);
+            }
             //规格
             $data['spec_str'] = json_decode($data['spec_str'], true);
             //服务
