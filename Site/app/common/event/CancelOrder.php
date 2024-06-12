@@ -46,7 +46,7 @@ class CancelOrder
                         ]);
                 }
                 //更改订单状态
-                Db::name('order')->where('id',$order['order_id'])->update(['order_state' => -1]);
+                Db::name('order')->where('id',$order['id'])->update(['order_state' => -1]);
                 //记录订单取消日志
                 Event::trigger('OrderLog',[
                     'type' => $param['type'],
