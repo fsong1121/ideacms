@@ -90,7 +90,7 @@ class Wechat
             $data = curlGet($tokenUrl);
             if (isset($data['access_token'])) {
                 $accessToken = $data['access_token'];
-                Cache::set($type . $name . '_access_token',$accessToken,6000);
+                //Cache::set($type . $name . '_access_token',$accessToken,6000);
             }
         }
         return $accessToken;
