@@ -45,7 +45,11 @@ class Goods extends BaseModel
      */
     public function getSlideAttr($value)
     {
-        return empty($value) ? [] : explode(',',$value);
+        $slide = empty($value) ? [] : explode(',',$value);
+        foreach ($slide as $key => $value) {
+            $slide[$key] = getPic($value);
+        }
+        return $slide;
     }
 
     /**
