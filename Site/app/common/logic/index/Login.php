@@ -154,7 +154,7 @@ class Login extends BaseLogic
                                 //微信其他端登录过
                                 Db::name('user')
                                     ->where('wechat_unionid',$unionid)
-                                    ->update(['miniapp_openid'=>$data['openid']]);
+                                    ->update(['miniapp_openid'=>$data['openid'],'uid'=>$phone,'mobile'=>$phone]);
                                 $userId = $user['id'];
                             } else {
                                 //如果手机号登录过就只更新
