@@ -27,3 +27,10 @@ location /h5 {
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
 </IfModule>
+
+
+6、其他问题可到官网帮助栏目查询
+
+官网：www.ideacms.net
+QQ群：314894528
+微信：289039121
