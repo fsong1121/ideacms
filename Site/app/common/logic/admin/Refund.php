@@ -165,7 +165,7 @@ class Refund extends Base
                         }
                         if($order['pay_type'] == 4) {
                             //余额支付
-                            $res = self::saveUserAccount($orderRefund['user_id'],$orderRefund['price'],1);
+                            $res = self::saveUserAccount($orderRefund['user_id'],$orderRefund['price'],1,'订单'.$order['order_sn'].'退款');
                             if($res['code'] > 0) {
                                 return fail($res['msg']);
                             }
