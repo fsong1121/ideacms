@@ -149,4 +149,39 @@ class Refund extends Base
         }
     }
 
+    /**
+     * 保存退货物流
+     * @return Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function saveExpress() : Json
+    {
+        if (Request::isPost()) {
+            $res = $this->setParam(Request::param());
+            if($res['code'] == 0) {
+                $param = $res['data'];
+                if(!empty($param['user_id'])) {
+                    if(!isset($param['form_token'])) {
+                        return json(fail('formToken为空'));
+                    }
+                    if(empty($param['express_title'])) {
+                        return json(fail('请填写快递公司'));
+                    }
+                    if(empty($param['express_sn'])) {
+                        return json(fail('请填写快递编号'));
+                    }
+                    $logic = new RefundLogic();
+                    $res = $logic->saveExpressData($param);
+                } else {
+                    $res = fail('请先登录',401);
+                }
+            }
+            return json($res);
+        } else {
+            return json(fail('非法提交被禁止'));
+        }
+    }
+
 }

@@ -40,6 +40,7 @@ class Refund extends BaseLogic
                 }
                 $data['goods_list'] = $orderGoods;
                 $data['order_sn'] = Db::name('order')->where('id',$data['order_id'])->value('order_sn');
+                $data['express_sn'] = empty($data['express_sn']) ? '' : $data['express_sn'];
             }
             return [
                 'code' => 0,
@@ -157,7 +158,7 @@ class Refund extends BaseLogic
                         'state' => $state + 1
                     ]);
                 //退款金额为0且没有用积分的直接成功并取消订单
-                if($price == 1 && $order['exchange_integral'] == 0) {
+                if($price == 0 && $order['exchange_integral'] == 0) {
                     //取消订单
                     $res = Event::trigger('CancelOrder',[
                         'type' => 1,
@@ -242,6 +243,32 @@ class Refund extends BaseLogic
             return success();
         }
         catch (\Exception $e){
+            return fail($e->getMessage());
+        }
+    }
+
+    /**
+     * 保存退货物流
+     * @param array $param
+     * @return array
+     */
+    public function saveExpressData(array $param = []) : array
+    {
+        try {
+            $userId = $param['user_id'];
+            $orderRefund = OrderRefundModel::where('id',$param['id'])
+                ->where('user_id',$userId)
+                ->find();
+            if(!empty($orderRefund)) {
+                $orderRefund->express_title = $param['express_title'];
+                $orderRefund->express_sn = $param['express_sn'];
+                $orderRefund->save();
+                return success();
+            } else {
+                return fail('添加失败');
+            }
+        }
+        catch (\Exception $e) {
             return fail($e->getMessage());
         }
     }

@@ -816,6 +816,7 @@ CREATE TABLE `{PREFIX}order_refund` (
   `integral` int(10) unsigned DEFAULT '0' COMMENT '退积分',
   `info` varchar(200) DEFAULT NULL COMMENT '说明',
   `pic` varchar(200) DEFAULT NULL COMMENT '图片',
+  `express_title` varchar(100) DEFAULT NULL COMMENT '退货快递公司',
   `express_sn` varchar(100) DEFAULT NULL COMMENT '退货物流单号',
   `state` tinyint(1) DEFAULT '0' COMMENT '退款状态 -2:已取消 -1:已拒绝 0:退款中 1:退款成功',
   `add_date` int(10) unsigned DEFAULT NULL COMMENT '添加时间',
