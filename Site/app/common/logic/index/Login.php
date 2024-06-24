@@ -299,6 +299,8 @@ class Login extends BaseLogic
                 $res = fail('会员不存在或已被锁定');
             } else {
                 $res['data']['user_id'] = $user['id'];
+                $res['data']['uid'] = $user['uid'];
+                $res['data']['avatar'] = getPic($user['avatar'],1);
             }
             return $res;
         } catch (\Exception $e) {

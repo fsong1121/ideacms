@@ -24,6 +24,7 @@ class InitBase
             // 视图输出字符串内容替换
             'tpl_replace_string'       => [
                 '{__STATIC__}'  => '/statics',
+                '{__TEMPLATE__}'  => '/template',
                 '{__ADDONS__}'  => '/addons',
             ],
             //自定义标签库
