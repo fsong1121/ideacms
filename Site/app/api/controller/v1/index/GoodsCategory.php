@@ -12,6 +12,7 @@ namespace app\api\controller\v1\index;
 
 use app\common\logic\BaseLogic;
 use think\response\Json;
+use think\facade\Request;
 
 class GoodsCategory extends Base
 {
@@ -24,7 +25,15 @@ class GoodsCategory extends Base
      */
     public function getList() : Json
     {
-        $logic = new BaseLogic();
-        return json(success($logic->getCat(0,'goods_category',1)));
+        $res = $this->setParam(Request::param(),0);
+        if($res['code'] == 0) {
+            $param = $res['data'];
+            $parentId = $param['parent_id'] ?? 0;
+            $all = $param['all'] ?? 1;
+            $logic = new BaseLogic();
+            return json(success($logic->getCat($parentId, 'goods_category', 1, $all)));
+        } else {
+            return json($res);
+        }
     }
 }

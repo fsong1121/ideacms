@@ -19,6 +19,7 @@
 					<ul class="layui-tab-title">
 						<li class="layui-this">公众号设置</li>
 						<li>小程序设置</li>
+						<li>开放平台设置</li>
 					</ul>
 					<div class="layui-tab-content">
 						<div class="layui-tab-item layui-show">
@@ -32,14 +33,14 @@
 							<div class="layui-form-item">
 								<label class="layui-form-label"><span>*</span> AppID：</label>
 								<div class="layui-input-inline">
-									<input type="text" name="m_appid" lay-verify="required" placeholder="请输入AppID" class="layui-input" value="{$wechat.mp.appid}">
+									<input type="text" name="m_appid" placeholder="请输入AppID" class="layui-input" value="{$wechat.mp.appid}">
 								</div>
 								<div class="layui-form-mid layui-word-aux">服务号开发配置中获取</div>
 							</div>
 							<div class="layui-form-item">
 								<label class="layui-form-label"><span>*</span> AppSecret：</label>
 								<div class="layui-input-inline w300">
-									<input type="text" name="m_appsecret" lay-verify="required" placeholder="请输入AppSecret" class="layui-input" value="{$wechat.mp.appsecret}">
+									<input type="text" name="m_appsecret" placeholder="请输入AppSecret" class="layui-input" value="{$wechat.mp.appsecret}">
 								</div>
 								<div class="layui-form-mid layui-word-aux">服务号开发配置中获取</div>
 							</div>
@@ -59,14 +60,14 @@
 							<div class="layui-form-item">
 								<label class="layui-form-label"><span>*</span> AppID：</label>
 								<div class="layui-input-inline">
-									<input type="text" name="m_miniapp_appid" lay-verify="required" placeholder="请输入AppID" class="layui-input" value="{$wechat.miniapp.appid}">
+									<input type="text" name="m_miniapp_appid" placeholder="请输入AppID" class="layui-input" value="{$wechat.miniapp.appid}">
 								</div>
 								<div class="layui-form-mid layui-word-aux">小程序开发管理中获取</div>
 							</div>
 							<div class="layui-form-item">
 								<label class="layui-form-label"><span>*</span> AppSecret：</label>
 								<div class="layui-input-inline w300">
-									<input type="text" name="m_miniapp_appsecret" lay-verify="required" placeholder="请输入AppSecret" class="layui-input" value="{$wechat.miniapp.appsecret}">
+									<input type="text" name="m_miniapp_appsecret" placeholder="请输入AppSecret" class="layui-input" value="{$wechat.miniapp.appsecret}">
 								</div>
 								<div class="layui-form-mid layui-word-aux">小程序开发管理中获取</div>
 							</div>
@@ -76,6 +77,26 @@
 									<input type="checkbox" name="m_auto_send" value="1" lay-text="是|否" {eq name="$wechat.miniapp.auto_send" value="1"}checked{/eq} lay-skin="switch">
 								</div>
 								<div class="layui-form-mid layui-word-aux">需要上传发货信息的请选择</div>
+							</div>
+						</div>
+						<div class="layui-tab-item">
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> AppID：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="m_open_appid" placeholder="请输入AppID" class="layui-input" value="{$wechat.open.appid}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">微信开放平台中获取</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> AppSecret：</label>
+								<div class="layui-input-inline w300">
+									<input type="text" name="m_open_appsecret" placeholder="请输入AppSecret" class="layui-input" value="{$wechat.open.appsecret}">
+								</div>
+								<div class="layui-form-mid layui-word-aux">微信开放平台中获取</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label"></label>
+								<div class="layui-form-mid layui-word-aux">用于PC端微信扫码登录、支付等</div>
 							</div>
 						</div>
 					</div>
@@ -113,7 +134,9 @@
 					m_miniapp_title:field.m_miniapp_title,
 					m_miniapp_appid:field.m_miniapp_appid,
 					m_miniapp_appsecret:field.m_miniapp_appsecret,
-					m_auto_send:auto_send
+					m_auto_send:auto_send,
+					m_open_appid:field.m_open_appid,
+					m_open_appsecret:field.m_open_appsecret
 				},
 				dataType:"json",
 				beforeSend: function () {

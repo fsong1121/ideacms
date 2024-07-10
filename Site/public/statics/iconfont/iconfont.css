@@ -1,32 +1,93 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4287092 */
-  src: url('iconfont.woff2?t=1697422042983') format('woff2'),
-       url('iconfont.woff?t=1697422042983') format('woff'),
-       url('iconfont.ttf?t=1697422042983') format('truetype');
+  src: url('iconfont.woff2?t=1719313957501') format('woff2'),
+       url('iconfont.woff?t=1719313957501') format('woff'),
+       url('iconfont.ttf?t=1719313957501') format('truetype');
 }
 
 .iconfont {
   font-family: "iconfont" !important;
+  font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.font-lg { font-size: 1.3333em; line-height: 0.75em; vertical-align: -.0667em; }
-.font-xl { font-size: 1.5em; line-height: 0.6666em; vertical-align: -.075em; }
-.font-xxs { font-size: .5em; }
-.font-xs { font-size: .75em; }
-.font-sm { font-size: .875em }
-.font-1x { font-size: 1em; }
-.font-2x { font-size: 2em; }
-.font-3x { font-size: 3em; }
-.font-4x { font-size: 4em; }
-.font-5x { font-size: 5em; }
-.font-6x { font-size: 6em; }
-.font-7x { font-size: 7em; }
-.font-8x { font-size: 8em; }
-.font-9x { font-size: 9em; }
-.font-10x { font-size: 10em; }
+.icon-yewutubiaohao:before {
+  content: "\e63d";
+}
+
+.icon-yewutubiaokuai:before {
+  content: "\e63e";
+}
+
+.icon-yewutubiaoman:before {
+  content: "\e63f";
+}
+
+.icon-yewutubiaomian:before {
+  content: "\e640";
+}
+
+.icon-yewutubiaopei:before {
+  content: "\e642";
+}
+
+.icon-yewutubiaoqi:before {
+  content: "\e644";
+}
+
+.icon-yewutubiaosheng:before {
+  content: "\e646";
+}
+
+.icon-yewutubiaosi:before {
+  content: "\e647";
+}
+
+.icon-yewutubiaoyou:before {
+  content: "\e648";
+}
+
+.icon-yewutubiaoyou1:before {
+  content: "\e649";
+}
+
+.icon-yewutubiaozheng:before {
+  content: "\e64a";
+}
+
+.icon-wap-nav:before {
+  content: "\e6fe";
+}
+
+.icon-back-top:before {
+  content: "\e6fd";
+}
+
+.icon-qq:before {
+  content: "\e62b";
+}
+
+.icon-home-o:before {
+  content: "\e6fc";
+}
+
+.icon-phone:before {
+  content: "\e6fb";
+}
+
+.icon-deliver:before {
+  content: "\e671";
+}
+
+.icon-deliver_fill:before {
+  content: "\e7f6";
+}
+
+.icon-orders-o:before {
+  content: "\e723";
+}
 
 .icon-unlock:before {
   content: "\e6f9";

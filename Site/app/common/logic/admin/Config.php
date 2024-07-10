@@ -262,7 +262,11 @@ class Config extends Base
                     'appid' => '" . $param['m_miniapp_appid'] . "',
                     'appsecret' => '" . $param['m_miniapp_appsecret'] . "',
                     'auto_send' => '" . $param['m_auto_send'] . "'
-                 ]
+                 ],
+                 'open' => [
+                    'appid' => '" . $param['m_open_appid'] . "',
+                    'appsecret' => '" . $param['m_open_appsecret'] . "'
+                ],
             ]";
             $code = "<?php\n " . $code . ";";
             file_put_contents(config_path() . "wechat.php", $code);
