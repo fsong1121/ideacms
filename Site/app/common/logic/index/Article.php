@@ -30,6 +30,7 @@ class Article extends BaseLogic
                 ->find();
             if(!empty($data)) {
                 $data->save(['hits'=>$data['hits']+1]);
+                $data['y_cat_id'] = $data->getData('cat_id');
                 $res['data'] = $data;
             } else {
                 $res = fail('文章不存在');

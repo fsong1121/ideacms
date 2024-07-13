@@ -31,6 +31,11 @@ class Login extends BaseLogic
             if(empty($param['m_uid']) || empty($param['m_pwd'])) {
                 return fail('账号或密码为空');
             }
+            if(isset($param['m_captcha'])) {
+                if(!captcha_check($param['m_captcha'])){
+                    return fail('验证码错误');
+                }
+            }
             $user = Db::name('user')
                 ->where('uid', $param['m_uid'])
                 ->where('pwd',makePassword($param['m_pwd']))
@@ -94,14 +99,22 @@ class Login extends BaseLogic
                 if (!empty($parentUser) && $parentUser['is_fx'] == 0) {
                     $pid = 0;
                 }
-                $userId = Db::name('user')->insertGetId([
+                $data = [
                     'uuid' => makeUuid(),
                     'uid' => $param['m_tel'],
                     'mobile' => $param['m_tel'],
                     'pid' => $pid,
                     'is_work' => 1,
                     'add_date' => time()
-                ]);
+                ];
+                if(isset($param['m_pwd'])) {
+                    if(empty($param['m_pwd'])) {
+                        return fail('密码为空');
+                    } else {
+                        $data['pwd'] = makePassword($param['m_pwd']);
+                    }
+                }
+                $userId = Db::name('user')->insertGetId($data);
                 //注册成功后事件
                 Event::trigger('RegSuccess',['user_id' => $userId]);
                 return $this->setLogin($userId);

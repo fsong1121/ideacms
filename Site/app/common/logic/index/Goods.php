@@ -37,6 +37,7 @@ class Goods extends BaseLogic
             ->find();
         if(!empty($data)) {
             $data->save(['hits'=>$data['hits']+1]);
+            $data['y_cat_id'] = $data->getData('cat_id');
             $data['sales'] = $data['sales'] + $data['initial_sales'];
             //规格
             $data['spec_str'] = json_decode($data['spec_str'], true);

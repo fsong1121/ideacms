@@ -55,7 +55,7 @@ class Article extends Base
     }
 
     /**
-     * 获取文章一级分类
+     * 获取文章分类
      * @return Json
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -63,7 +63,15 @@ class Article extends Base
      */
     public function getCategory() : Json
     {
-        $logic = new ArticleLogic();
-        return json(success($logic->getCat(0,'article_category',1,0)));
+        $res = $this->setParam(Request::param(),0);
+        if($res['code'] == 0) {
+            $param = $res['data'];
+            $parentId = $param['parent_id'] ?? 0;
+            $all = $param['all'] ?? 0;
+            $logic = new ArticleLogic();
+            return json(success($logic->getCat($parentId, 'article_category', 1, $all)));
+        } else {
+            return json($res);
+        }
     }
 }
