@@ -55,6 +55,35 @@ class Address extends Base
                         }
                     }
                 }
+                //根据名称获取单省、市、县列表
+                if(isset($param['province']) && isset($param['city'])) {
+                    $newAreaList = [];
+                    if(empty($param['province']) && empty($param['city'])) {
+                        //省列表
+                        $newAreaList = $areaList;
+                    }
+                    if(!empty($param['province']) && empty($param['city'])) {
+                        //市列表
+                        foreach ($areaList as $value) {
+                            if($value['name'] == $param['province']) {
+                                $newAreaList = $value['children'];
+                            }
+                        }
+                    }
+                    if(!empty($param['province']) && !empty($param['city'])) {
+                        //县列表
+                        foreach ($areaList as $value) {
+                            if($value['name'] == $param['province']) {
+                                foreach ($value['children'] as $value1) {
+                                    if($value1['name'] == $param['city']) {
+                                        $newAreaList = $value1['children'];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $areaList = $newAreaList;
+                }
             } else {
                 return json(fail('请先登录',401));
             }
