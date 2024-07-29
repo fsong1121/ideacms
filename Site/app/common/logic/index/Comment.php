@@ -91,6 +91,7 @@ class Comment extends BaseLogic
                     $list['data'][$key]['title'] = $goods['title'];
                     $list['data'][$key]['pic'] = getPic($goods['pic']);
                 }
+                $list['data'][$key]['order_sn'] = OrderModel::where('id',$value['order_id'])->value('order_sn');
             }
             return [
                 'code' => 0,

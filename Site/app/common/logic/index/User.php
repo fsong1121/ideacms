@@ -71,11 +71,14 @@ class User extends BaseLogic
     public function saveInfo(array $param) : array
     {
         try {
-            $data = [
-                'nickname'=>$param['name'],
-                'mobile'=>$param['tel']
-            ];
-            if(!empty($param['avatar'])) {
+            $data = [];
+            if(isset($param['name'])) {
+                $data['nickname'] = $param['name'];
+            }
+            if(isset($param['tel'])) {
+                $data['mobile'] = $param['tel'];
+            }
+            if(isset($param['avatar'])) {
                 $data['avatar'] = $param['avatar'];
             }
             UserModel::update($data,['id'=>$param['user_id']]);

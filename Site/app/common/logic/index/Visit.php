@@ -24,11 +24,12 @@ class Visit extends BaseLogic
     {
         try {
             VisitModel::create([
-                'user_id'  => $param['user_id'],
-                'goods_id' => $param['goods_id'],
-                'url' => $param['url'],
-                'platform' => $param['platform'],
-                'model' => $param['model'],
+                'user_id'  => $param['user_id'] ?? 0,
+                'goods_id' => $param['goods_id'] ?? 0,
+                'url' => $param['url'] ?? '',
+                'platform' => $param['platform'] ?? '',
+                'model' => $param['model'] ?? '',
+                'ip' => $param['ip'] ?? '',
                 'add_date' => time()
             ]);
             return success();

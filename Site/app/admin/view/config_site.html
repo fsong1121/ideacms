@@ -114,7 +114,7 @@
 								</div>
 								<div class="layui-form-mid layui-word-aux">不同词用“|”隔开</div>
 							</div>
-							<div class="layui-form-item" style="display: none;">
+							<div class="layui-form-item">
 								<label class="layui-form-label">版权信息：</label>
 								<div class="layui-input-inline">
 									<input type="text" name="m_copyright" placeholder="请输入版权信息" class="layui-input" value="{$site.copyright}">
@@ -152,7 +152,7 @@
 							<div class="layui-form-item">
 								<label class="layui-form-label">启用PC端：</label>
 								<div class="layui-input-inline w50">
-									<input type="checkbox" name="m_openpc" value="1" {eq name="$site.open_pc" value="1"}checked{/eq} lay-skin="switch">
+									<input type="checkbox" name="m_openpc" value="1" lay-text="是|否" {eq name="$site.open_pc" value="1"}checked{/eq} lay-skin="switch">
 								</div>
 								<div class="layui-form-mid layui-word-aux">开启后PC打开显示PC模板</div>
 							</div>

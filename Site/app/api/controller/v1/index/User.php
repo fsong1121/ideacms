@@ -55,9 +55,6 @@ class User extends Base
                     if(!isset($param['form_token'])) {
                         return json(fail('formToken为空'));
                     }
-                    if ($param['name'] == '') {
-                        return json(fail('昵称为空'));
-                    }
                     $logic = new UserLogic();
                     $res = $logic->saveInfo($param);
                 } else {

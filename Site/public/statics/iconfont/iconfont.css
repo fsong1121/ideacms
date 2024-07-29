@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4287092 */
-  src: url('iconfont.woff2?t=1719313957501') format('woff2'),
-       url('iconfont.woff?t=1719313957501') format('woff'),
-       url('iconfont.ttf?t=1719313957501') format('truetype');
+  src: url('iconfont.woff2?t=1722151987988') format('woff2'),
+       url('iconfont.woff?t=1722151987988') format('woff'),
+       url('iconfont.ttf?t=1722151987988') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-photograph:before {
+  content: "\e730";
 }
 
 .icon-yewutubiaohao:before {
