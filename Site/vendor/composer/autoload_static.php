@@ -128,12 +128,12 @@ class ComposerStaticInita5620cd867b9727f62cecf0102212ed7
         'think\\' => 
         array (
             0 => __DIR__ . '/..' . '/lx3gp/think-addons/src',
-            1 => __DIR__ . '/..' . '/topthink/framework/src/think',
-            2 => __DIR__ . '/..' . '/topthink/think-filesystem/src',
-            3 => __DIR__ . '/..' . '/topthink/think-helper/src',
-            4 => __DIR__ . '/..' . '/topthink/think-orm/src',
-            5 => __DIR__ . '/..' . '/topthink/think-queue/src',
-            6 => __DIR__ . '/..' . '/topthink/think-template/src',
+            1 => __DIR__ . '/..' . '/topthink/think-filesystem/src',
+            2 => __DIR__ . '/..' . '/topthink/think-helper/src',
+            3 => __DIR__ . '/..' . '/topthink/think-queue/src',
+            4 => __DIR__ . '/..' . '/topthink/think-template/src',
+            5 => __DIR__ . '/..' . '/topthink/think-orm/src',
+            6 => __DIR__ . '/..' . '/topthink/framework/src/think',
         ),
         'app\\' => 
         array (
@@ -201,8 +201,8 @@ class ComposerStaticInita5620cd867b9727f62cecf0102212ed7
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -1396,8 +1396,20 @@ class ComposerStaticInita5620cd867b9727f62cecf0102212ed7
         'app\\common\\validate\\admin\\User' => __DIR__ . '/../..' . '/app/common/validate/admin/User.php',
         'app\\common\\validate\\index\\Address' => __DIR__ . '/../..' . '/app/common/validate/index/Address.php',
         'app\\common\\validate\\index\\Order' => __DIR__ . '/../..' . '/app/common/validate/index/Order.php',
+        'app\\index\\controller\\Article' => __DIR__ . '/../..' . '/app/index/controller/Article.php',
         'app\\index\\controller\\Base' => __DIR__ . '/../..' . '/app/index/controller/Base.php',
+        'app\\index\\controller\\Cart' => __DIR__ . '/../..' . '/app/index/controller/Cart.php',
+        'app\\index\\controller\\Comment' => __DIR__ . '/../..' . '/app/index/controller/Comment.php',
+        'app\\index\\controller\\Coupon' => __DIR__ . '/../..' . '/app/index/controller/Coupon.php',
+        'app\\index\\controller\\Error' => __DIR__ . '/../..' . '/app/index/controller/Error.php',
+        'app\\index\\controller\\Goods' => __DIR__ . '/../..' . '/app/index/controller/Goods.php',
         'app\\index\\controller\\Index' => __DIR__ . '/../..' . '/app/index/controller/Index.php',
+        'app\\index\\controller\\Login' => __DIR__ . '/../..' . '/app/index/controller/Login.php',
+        'app\\index\\controller\\Order' => __DIR__ . '/../..' . '/app/index/controller/Order.php',
+        'app\\index\\controller\\Pay' => __DIR__ . '/../..' . '/app/index/controller/Pay.php',
+        'app\\index\\controller\\Refund' => __DIR__ . '/../..' . '/app/index/controller/Refund.php',
+        'app\\index\\controller\\Search' => __DIR__ . '/../..' . '/app/index/controller/Search.php',
+        'app\\index\\controller\\User' => __DIR__ . '/../..' . '/app/index/controller/User.php',
         'app\\install\\controller\\Base' => __DIR__ . '/../..' . '/app/install/controller/Base.php',
         'app\\install\\controller\\Index' => __DIR__ . '/../..' . '/app/install/controller/Index.php',
         'app\\task\\controller\\Index' => __DIR__ . '/../..' . '/app/task/controller/Index.php',
@@ -1555,6 +1567,7 @@ class ComposerStaticInita5620cd867b9727f62cecf0102212ed7
         'think\\event\\LogRecord' => __DIR__ . '/..' . '/topthink/framework/src/think/event/LogRecord.php',
         'think\\event\\LogWrite' => __DIR__ . '/..' . '/topthink/framework/src/think/event/LogWrite.php',
         'think\\event\\RouteLoaded' => __DIR__ . '/..' . '/topthink/framework/src/think/event/RouteLoaded.php',
+        'think\\exception\\AlwaysErrorMsg' => __DIR__ . '/..' . '/topthink/framework/src/think/exception/AlwaysErrorMsg.php',
         'think\\exception\\ClassNotFoundException' => __DIR__ . '/..' . '/topthink/framework/src/think/exception/ClassNotFoundException.php',
         'think\\exception\\ErrorException' => __DIR__ . '/..' . '/topthink/framework/src/think/exception/ErrorException.php',
         'think\\exception\\FileException' => __DIR__ . '/..' . '/topthink/framework/src/think/exception/FileException.php',

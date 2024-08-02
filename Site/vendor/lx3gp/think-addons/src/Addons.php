@@ -286,7 +286,7 @@ abstract class Addons
      * @param string $type
      * @return bool
      */
-    final private function writeConfigAndIniInFile(string $name = null, array $value = null, string $type='config')
+    private function writeConfigAndIniInFile(string $name = null, array $value = null, string $type='config')
     {
         if (!$name || !$value) {
             return false;
@@ -316,7 +316,7 @@ abstract class Addons
      * @param array $value
      * @return array
      */
-    final private function listINIRecursive($array, $indent = 0)
+    private function listINIRecursive($array, $indent = 0)
     {
         global $str;
         foreach ($array as $k => $v)
