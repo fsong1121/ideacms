@@ -94,10 +94,16 @@ class Notify
             if(in_array('wap',$outTradeNo)) {
                 header('Location:' . config('site.url') . '/h5/pages/order/list?state=2');
             }
+            if(in_array('web',$outTradeNo)) {
+                header('Location:' . config('site.url') . '/index/order/list.html?state=2');
+            }
         } else {
             //充值、VIP等
             if(in_array('wap',$outTradeNo)) {
                 header('Location:' . config('site.url') . '/h5/pages/user/index');
+            }
+            if(in_array('web',$outTradeNo)) {
+                header('Location:' . config('site.url') . '/index/user/index.html');
             }
         }
     }
