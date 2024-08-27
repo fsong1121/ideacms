@@ -61,37 +61,45 @@ class Cart extends BaseLogic
     {
         try {
             $res = ['code' => 0,'msg' => 'success'];
-            $goodsPrice = Db::name('goods_price')
-                ->where('goods_id',$param['goods_id'])
-                ->where('spec_key',$param['spec_key'])
+            $goods = Db::name('goods')
+                ->where('id',$param['goods_id'])
                 ->find();
-            if(!empty($goodsPrice)) {
-                if($goodsPrice['stock'] > 0) {
-                    $amount = $param['amount'] > $goodsPrice['stock'] ? $goodsPrice['stock'] : $param['amount'];
-                    $cart = CartModel::where('user_id', $param['user_id'])
-                        ->where('goods_id', $param['goods_id'])
-                        ->where('spec_key', $param['spec_key'])
-                        ->find();
-                    $data = [
-                        'user_id' => $param['user_id'],
-                        'goods_id' => $param['goods_id'],
-                        'spec_key' => $param['spec_key'],
-                        'spec_key_name' => $goodsPrice['spec_key_name'],
-                        'amount' => $amount
-                    ];
-                    if (!empty($cart)) {
-                        $data['amount'] = $amount + $cart['amount'];
-                        $cart->save($data);
+            if(!empty($goods) && $goods['type'] == 0) {
+                $goodsPrice = Db::name('goods_price')
+                    ->where('goods_id', $param['goods_id'])
+                    ->where('spec_key', $param['spec_key'])
+                    ->find();
+                if (!empty($goodsPrice)) {
+                    if ($goodsPrice['stock'] > 0) {
+                        $amount = $param['amount'] > $goodsPrice['stock'] ? $goodsPrice['stock'] : $param['amount'];
+                        $cart = CartModel::where('user_id', $param['user_id'])
+                            ->where('goods_id', $param['goods_id'])
+                            ->where('spec_key', $param['spec_key'])
+                            ->find();
+                        $data = [
+                            'user_id' => $param['user_id'],
+                            'goods_id' => $param['goods_id'],
+                            'spec_key' => $param['spec_key'],
+                            'spec_key_name' => $goodsPrice['spec_key_name'],
+                            'amount' => $amount
+                        ];
+                        if (!empty($cart)) {
+                            $data['amount'] = $amount + $cart['amount'];
+                            $cart->save($data);
+                        } else {
+                            CartModel::create($data);
+                        }
                     } else {
-                        CartModel::create($data);
+                        $res['code'] = 500;
+                        $res['msg'] = '库存不足';
                     }
                 } else {
                     $res['code'] = 500;
-                    $res['msg'] = '库存不足';
+                    $res['msg'] = '商品不存在';
                 }
             } else {
                 $res['code'] = 500;
-                $res['msg'] = '商品不存在';
+                $res['msg'] = '商品不允许加入购物车';
             }
             return $res;
         }
