@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Keywords" content="{:config('site.keywords')}">
+    <meta name="Description" content="{:config('site.description')}">
+    <title>确认订单-{:config('site.title')}</title>
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/iconfont/iconfont.css" rel="stylesheet">
+    <link href="{__TEMPLATE__}/pc/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+    <!--头部-->
+    {include file="header" /}
+    <div class="ej_fg"></div>
+    <div class="m_ctr">
+        <div class="ej_ctt">
+            <div class="path_ctr"><a href="/">首页</a>&ensp;>&ensp;确认订单</div>
+            <div class="m_ctr" v-cloak>
+                <div class="order_ctr">
+                    <div class="order_title_ctr">
+                        <div class="order_title_t1">收货信息</div>
+                    </div>
+                    <div class="order_address_ctr">
+                        <div v-for="(item, index) in addressList" :key="index">
+                            <div :class="addressIndex == index ? 'order_address_ctt_on' : 'order_address_ctt'" @click="changeAddress(index)">
+                                <div class="address_name">{{item.name}}</div>
+                                <div class="address_txt">{{item.tel}}</div>
+                                <div class="address_txt">{{item.province}}{{item.city}}{{item.county}}</div>
+                                <div class="address_txt">{{item.address}}</div>
+                            </div>
+                        </div>
+                        <div class="order_address_add_ctt" @click="editAddress(0,0)">
+                            <div><i class="iconfont icon-add-o"></i></div>
+                            <div>添加收货地址</div>
+                        </div>
+                    </div>
+                    <!--添加编辑地址-->
+                    <div class="m_ctr" id="span_address" style="display: none;">
+                        <div class="address_edit_ctr">
+                            <div class="address_input_ctr">
+                                <div class="address_input_title">收货人：</div>
+                                <div class="address_input_ctt">
+                                    <input type="text" v-model="address.name" class="address_input" placeholder="收货人姓名">
+                                </div>
+                            </div>
+                            <div class="address_input_ctr">
+                                <div class="address_input_title">手机号：</div>
+                                <div class="address_input_ctt">
+                                    <input type="tel" v-model="address.tel" class="address_input" placeholder="收货人手机号码">
+                                </div>
+                            </div>
+                            <div class="address_input_ctr">
+                                <div class="address_input_title">选择地区：</div>
+                                <div class="address_input_ctt">
+                                    <select class="address_input" v-model="address.province" @change="provinceChange" style="width: 148px;">
+                                        <option value="">请选择</option>
+                                        <option v-for="(item, index) in provinceList" :key="index" :value="item.name">{{item.name}}</option>
+                                    </select>
+                                    <select class="address_input" v-model="address.city" @change="cityChange" style="width: 148px;">
+                                        <option value="">请选择</option>
+                                        <option v-for="(item, index) in cityList" :key="index" :value="item.name">{{item.name}}</option>
+                                    </select>
+                                    <select class="address_input" v-model="address.county" style="width: 148px;">
+                                        <option value="">请选择</option>
+                                        <option v-for="(item, index) in countyList" :key="index" :value="item.name">{{item.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="address_input_ctr">
+                                <div class="address_input_title">详细地址：</div>
+                                <div class="address_input_ctt">
+                                    <input type="tel" v-model="address.address" class="address_input" style="width: 441px;" placeholder="收货人详细地址">
+                                </div>
+                            </div>
+                            <div class="address_input_ctr" style="padding: 15px 0;">
+                                <div class="address_input_title"></div>
+                                <div class="address_input_ctt">
+                                    <input type="checkbox" v-model="address.is_default" class="address_checkbox"> 默认地址
+                                </div>
+                            </div>
+                            <div class="address_edit_btn" @click="saveAddress">确认提交</div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="order_ctr">
+                    <div class="order_title_ctr">
+                        <div class="order_title_t1">商品信息</div>
+                        <div class="order_title_t2">单价</div>
+                        <div class="order_title_t2">数量</div>
+                        <div class="order_title_t2">小计</div>
+                    </div>
+                    <div class="order_goods_ctr" v-for="(item, index) in data.goodsList" :key="index">
+                        <a class="order_goods_ctt" :href="'/index/goods/detail.html?id='+item.id">
+                            <div class="order_goods_pic"><img :src="item.pic"></div>
+                            <div class="order_goods_info">
+                                <div>{{item.title}}</div>
+                                <div class="span">{{item.spec_key_name}}</div>
+                            </div>
+                        </a>
+                        <div class="order_goods_txt">¥{{item.price}}</div>
+                        <div class="order_goods_txt">×{{item.amount}}</div>
+                        <div class="order_goods_txt">¥{{item.total_price}}</div>
+                    </div>
+                    <div class="order_info_ctr">
+                        <div>订单备注：</div>
+                        <div>
+                            <input class="order_info_input" type="text" v-model="info" placeholder="建议留言前先和商家沟通确认~">
+                        </div>
+                    </div>
+                    <div class="order_price_ctr">
+                        <div class="order_price_cell">
+                            <div class="order_price_title">商品金额：</div>
+                            <div class="price">¥{{data.goodsPrice}}</div>
+                        </div>
+                        <div class="order_price_cell">
+                            <div class="order_price_title">运费：</div>
+                            <div class="price">¥{{data.sendPrice}}</div>
+                        </div>
+                        <div class="order_price_cell" v-if="data.rebatePrice>0">
+                            <div class="order_price_title">折扣：</div>
+                            <div class="price">-¥{{data.rebatePrice}}</div>
+                        </div>
+                        <div class="order_price_cell" v-if="data.discountPrice>0">
+                            <div class="order_price_title">满减：</div>
+                            <div class="price">-¥{{data.discountPrice}}</div>
+                        </div>
+                        <div class="order_price_cell" v-if="data.couponPrice>0">
+                            <div class="order_price_title">优惠券：</div>
+                            <div class="price">-¥{{data.couponPrice}}</div>
+                        </div>
+                        <div class="order_price_cell" v-if="data.exchangeIntegral>0">
+                            <div class="order_price_title">积分抵扣：</div>
+                            <div class="price">-¥{{data.goodsPrice}}</div>
+                        </div>
+                        <div class="order_price_cell">
+                            <div class="order_price_title">合计：</div>
+                            <div class="price1"><span>¥</span>{{data.payPrice}}</div>
+                        </div>
+                    </div>
+                    <div class="order_btn_ctr">
+                        <div class="order_btn" @click="onSubmit">提交订单</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--底部-->
+    {include file="footer" /}
+</div>
+{include file="js" /}
+</body>
+</html>
+<script>
+    const { createApp } = Vue
+
+    createApp({
+        data() {
+            return {
+                isLogin: 0,
+                userInfo: {},
+                cartNumber: 0,
+                addressList: [],
+                address: {
+                    id: 0,
+                    name: '',
+                    tel: '',
+                    province: '',
+                    city: '',
+                    county: '',
+                    address: '',
+                    is_default: false
+                },
+                addressIndex: 0,
+                provinceList: [],
+                cityList: [],
+                countyList: [],
+                currentAddress: {
+                    name: '',
+                    tel: '',
+                    province: '',
+                    address: ''
+                },
+                buyType: 0, //0:直接购买 1:购物车提交
+                orderType: '', //订单类型 空:普通订单
+                activityId: 0, //非普通订单需要
+                groupId: 0, //拼团订单需要
+                goodsId: 0,
+                specKey: '',
+                amount: 0,
+                cartIds: '',
+                info: '',
+                sendType: 1,
+                data: {
+                    goodsList: [],
+                    goodsPrice: '0.00',
+                    sendPrice: '0.00',
+                    rebatePrice: '0.00',
+                    discountPrice: '0.00',
+                    couponPrice: '0.00',
+                    payPrice: '0.00'
+                },
+            }
+        },
+        methods: {
+            async initData() {
+                let that = this;
+                let res;
+                let loadIndex = layer.load(0);
+                //判断登录
+                res = await httpPost('/api/v1.index.login/checkLogin.html')
+                if(res.code === 0) {
+                    that.isLogin = 1;
+                    that.userInfo = res.data;
+                } else {
+                    location.href = '/index/login/index.html';
+                }
+                //记录访问
+                let visitData = {};
+                visitData.url = window.location.href;
+                visitData.platform = 'web';
+                visitData.goods_id = 0;
+                visitData.user_id = that.isLogin ? that.userInfo.user_id : 0;
+                visitData.ip = '{$ip}';
+                await httpPost('/api/v1.index.visit/addPv.html',visitData);
+                //获取购物车
+                res = await httpGet('/api/v1.index.cart/getList.html',{
+                    size:100
+                })
+                if(res.code === 0) {
+                    that.cartNumber = res.goods_amount;
+                }
+                //获取收货地址
+                that.getAddressList();
+                //获取订单商品信息
+                res = await httpPost('/api/v1.index.order/fillData.html',{
+                    buy_type: that.buyType,
+                    order_type: that.orderType,
+                    activity_id: that.activityId,
+                    goods_id: that.goodsId,
+                    spec_key: that.specKey,
+                    amount: that.amount,
+                    cart_id: that.cartIds,
+                    province:that.currentAddress.province
+                });
+                if(res.code === 0) {
+                    that.data = res.data;
+                } else {
+                    that.data.goodsList = [];
+                    that.data.goodsPrice = '0.00';
+                    that.data.sendPrice = '0.00';
+                    that.data.rebatePrice = '0.00';
+                    that.data.discountPrice = '0.00';
+                    that.data.couponPrice = '0.00';
+                    that.data.payPrice = '0.00';
+                }
+
+                layer.close(loadIndex);
+            },
+            /**
+             * 获取地址
+             */
+            getAddressList() {
+                let that = this;
+                let address = {
+                    name: '',
+                    tel: '',
+                    province: '',
+                    address: ''
+                };
+                httpGet('/api/v1.index.address/getList.html',{
+                    size: 100
+                }).then(res => {
+                    if(res.code === 0) {
+                        that.addressList = res.data;
+                        if(res.data.length > 0) {
+                            address.name = res.data[0]['name'];
+                            address.tel = res.data[0]['tel'];
+                            address.province = res.data[0]['province'];
+                            address.address = res.data[0]['province'] + res.data[0]['city'] + res.data[0]['county'] + res.data[0]['address'];
+                        }
+                    }
+                    that.currentAddress = address;
+                });
+            },
+            /**
+             * 切换地址
+             */
+            changeAddress(index) {
+                let that = this;
+                that.addressIndex = index;
+                that.currentAddress.name = that.addressList[index]['name'];
+                that.currentAddress.tel = that.addressList[index]['tel'];
+                that.currentAddress.province = that.addressList[index]['province'];
+                that.currentAddress.address = that.addressList[index]['province'] + that.addressList[index]['city'] + that.addressList[index]['county'] + that.addressList[index]['address'];
+            },
+            /**
+             * 添加地址
+             * @param id
+             * @param index
+             */
+            async editAddress(id,index) {
+                let that = this;
+                let title = '添加地址';
+                //获取省份
+                let res = await httpGet('/api/v1.index.address/getArea.html',{
+                    province: '',
+                    city: ''
+                });
+                that.provinceList = res.data;
+                that.address = {
+                    id: 0,
+                    name: '',
+                    tel: '',
+                    province: '',
+                    city: '',
+                    county: '',
+                    address: '',
+                    is_default: false
+                };
+                layer.open({
+                    type: 1,
+                    title: title,
+                    shade: false, // 不显示遮罩
+                    content: $('#span_address')
+                });
+            },
+            /**
+             * 切换省份
+             */
+            async provinceChange() {
+                let that = this;
+                if(that.address.province === '') {
+                    that.cityList = [];
+                } else {
+                    //获取市
+                    let res = await httpGet('/api/v1.index.address/getArea.html', {
+                        province: that.address.province,
+                        city: ''
+                    });
+                    that.cityList = res.data;
+                }
+                that.countyList = [];
+                that.address.city = '';
+                that.address.county = '';
+            },
+            /**
+             * 切换市
+             */
+            async cityChange() {
+                let that = this;
+                if(that.address.city === '') {
+                    that.countyList = [];
+                } else {
+                    //获取县
+                    let res = await httpGet('/api/v1.index.address/getArea.html', {
+                        province: that.address.province,
+                        city: that.address.city,
+                    });
+                    that.countyList = res.data;
+                }
+                that.address.county = '';
+            },
+            /**
+             * 保存
+             */
+            saveAddress() {
+                let that = this;
+                let data = {};
+                let address = that.address;
+                data.name = address.name.replace(/\s/g,"");
+                data.tel = address.tel.replace(/\s/g,"");
+                data.province = address.province;
+                data.city = address.city;
+                data.county = address.county;
+                data.address = address.address.replace(/\s/g,"");
+                data.is_default = address.is_default ? 1 : 0;
+                if(address.id > 0) {
+                    data.m_id = address.id;
+                }
+                data.form_token = localStorage.getItem('formToken') || '';
+                if(data.province === "" || data.city === "" || data.county === "") {
+                    layer.msg('请选择所在地区');
+                    return false;
+                }
+                if(data.address === "") {
+                    layer.msg('详细地址为空');
+                    return false;
+                }
+                if(data.name === "") {
+                    layer.msg('联系人为空');
+                    return false;
+                }
+                let myReg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/;
+                if (!myReg.test(data.tel)) {
+                    layer.msg('手机号错误');
+                    return false;
+                }
+                //提交
+                httpPost('/api/v1.index.address/save.html',data).then(res => {
+                    if(res.code === 0) {
+                        layer.closeAll();
+                        that.getAddressList();
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                });
+            },
+            /**
+             * 提交订单
+             */
+            onSubmit() {
+                let that = this;
+                let terminal = 2;
+                if(that.data.goodsList.length>0) {
+                    if(that.currentAddress.tel === "") {
+                        layer.msg('收货信息为空');
+                        return;
+                    }
+                    let data = {
+                        buy_type: that.buyType,
+                        order_type: that.orderType,
+                        activity_id: that.activityId,
+                        group_id: that.groupId,
+                        goods_id: that.goodsId,
+                        spec_key: that.specKey,
+                        amount: that.amount,
+                        cart_id: that.cartIds,
+                        name: that.currentAddress.name,
+                        tel: that.currentAddress.tel,
+                        province:that.currentAddress.province,
+                        address: that.currentAddress.address,
+                        send_type: that.sendType,
+                        info: that.info,
+                        terminal: terminal,
+                        form_token: localStorage.getItem('formToken') || ''
+                    };
+                    // 提交订单
+                    let loadIndex = layer.load(0);
+                    httpPost('/api/v1.index.order/save.html',data).then(res => {
+                        layer.close(loadIndex);
+                        if(res.code === 0) {
+                            if(res.is_pay === 0) {
+                                //跳转到支付
+                                location.href = '/index/pay/index.html?sn=' + res.sn;
+                            } else {
+                                //跳转到订单中心
+                                location.href = '/index/order/list.html';
+                            }
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    });
+                } else {
+                    layer.msg('商品为空');
+                }
+            }
+        },
+        mounted() {
+            let that = this;
+            if(getQueryString('goods_id') === null) {
+                //购物车
+                let cartIds = getQueryString('cart_id') === null ? 0 : getQueryString('cart_id');
+                that.buyType = 1;
+                that.cartIds = cartIds;
+            } else {
+                //直接购买
+                let orderType = getQueryString('order_type') === null ? '' : getQueryString('order_type');
+                let activityId = getQueryString('activity_id') === null ? 0 : getQueryString('activity_id');
+                let groupId = getQueryString('group_id') === null ? 0 : getQueryString('group_id');
+                let goodsId = getQueryString('goods_id') === null ? 0 : getQueryString('goods_id');
+                let specKey = getQueryString('spec_key') === null ? '' : decodeURIComponent(getQueryString('spec_key'));
+                let amount = getQueryString('amount') === null ? 1 : getQueryString('amount');
+                that.buyType = 0;
+                that.orderType = orderType;
+                that.activityId = activityId;
+                that.groupId = groupId;
+                that.goodsId = goodsId;
+                that.specKey = specKey;
+                that.amount = amount;
+            }
+            that.initData();
+        }
+    }).mount('#app')
+</script>

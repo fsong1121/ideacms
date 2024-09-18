@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>添加卡密</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+    <style>
+        html {background: #fff;padding-top: 20px;}
+    </style>
+</head>
+<body>
+    <div class="layui-form">
+        <input type="hidden" id="index" value="1">
+        <span id="span_detail">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 卡号：</label>
+            <div class="layui-input-inline w180">
+                <input type="text" name="m_account[]" lay-verify="required" placeholder="请输入卡号" class="layui-input">
+            </div>
+            <label class="layui-form-label" style="width: 58px;">密码：</label>
+            <div class="layui-input-inline w180">
+                <input type="text" name="m_pwd[]" placeholder="请输入密码" class="layui-input">
+            </div>
+            <button type="button" class="layui-btn layui-btn-info" id="addBtn" style="margin-left:10px;padding-left: 10px;padding-right: 10px;">
+                <i class="layui-icon">&#xe624;</i>
+            </button>
+        </div>
+        </span>
+
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit lay-filter="LAY-submit" id="LAY-submit" value="确认">
+        </div>
+    </div>
+</body>
+</html>
+<script src="{__STATIC__}/jquery/jquery.min.js"></script>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+    layui.use(function(){
+        let $ = layui.$;
+        //添加
+        $('#addBtn').click(function () {
+            let id = $('#index').val();
+            let str = '<div class="layui-form-item" id="cell_'+id+'">\n' +
+                '            <label class="layui-form-label"><span>*</span> 卡号：</label>\n' +
+                '            <div class="layui-input-inline w180">\n' +
+                '                <input type="text" name="m_account[]" lay-verify="required" placeholder="请输入卡号" class="layui-input">\n' +
+                '            </div>\n' +
+                '            <label class="layui-form-label" style="width: 58px;">密码：</label>\n' +
+                '            <div class="layui-input-inline w180">\n' +
+                '                <input type="text" name="m_pwd[]" placeholder="请输入密码" class="layui-input">\n' +
+                '            </div>\n' +
+                '            <button type="button" class="layui-btn layui-btn-info" onclick="delCell('+id+');" style="margin-left:10px;padding-left: 10px;padding-right: 10px;">\n' +
+                '                <i class="layui-icon">&#xe67e;</i>\n' +
+                '            </button>\n' +
+                '        </div>';
+            $('#span_detail').append(str);
+            $('#index').val(parseInt(id)+1);
+        });
+    })
+
+    //删除
+    function delCell(id) {
+        $('#cell_'+id).remove();
+    }
+</script>

@@ -293,4 +293,17 @@ class Goods extends Base
         return $this->fetch('/frame_goods');
     }
 
+    /**
+     * 获取卡密列表
+     * @return Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getCardList() : Json
+    {
+        $logic = new GoodsLogic();
+        return json($logic->getCardList());
+    }
+
 }

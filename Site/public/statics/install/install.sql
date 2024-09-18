@@ -37,7 +37,7 @@ CREATE TABLE `{PREFIX}admin_menu` (
 ) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='平台后台菜单';
 
 INSERT INTO `{PREFIX}admin_menu` VALUES (1, 0, '商品管理', '商品', NULL, NULL, NULL, 'component', 1, 1, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (2, 1, '商品列表', NULL, 'goods', NULL, 'create,edit,save,delete,get_list,set_top,set_sale,get_goods_spec,get_goods_spec_item,get_edit_goods_spec_item,get_sku_data,spec_create,spec_delete,spec_value_create,spec_value_delete,select_goods', NULL, 2, 1, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (2, 1, '商品列表', NULL, 'goods', NULL, 'create,edit,save,delete,get_list,set_top,set_sale,get_goods_spec,get_goods_spec_item,get_edit_goods_spec_item,get_sku_data,spec_create,spec_delete,spec_value_create,spec_value_delete,select_goods,get_card_list', NULL, 2, 1, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (3, 1, '商品分类', NULL, 'goods_category', NULL, 'create,edit,save,delete,get_list', NULL, 2, 2, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (4, 1, '商品规格', NULL, 'goods_spec', NULL, 'create,edit,save,delete,get_list', NULL, 2, 3, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (5, 1, '商品参数', NULL, 'goods_param', NULL, 'create,edit,save,delete,get_list', NULL, 2, 4, 0, 0, 0, 0);
@@ -95,6 +95,7 @@ INSERT INTO `{PREFIX}admin_menu` VALUES (56, 52, 'PC端装修', NULL, 'setting',
 INSERT INTO `{PREFIX}admin_menu` VALUES (57, 0, '插件扩展', '插件', NULL, NULL, NULL, 'senior', 1, 11, 0, 0, 0, 0);
 INSERT INTO `{PREFIX}admin_menu` VALUES (58, 0, '应用中心', '应用', NULL, NULL, NULL, 'app', 1, 12, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (59, 58, '本地应用', NULL, 'local_app', NULL, 'get_list,install,up,down,uninstall', NULL, 2, 1, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (60, 1, '卡密网盘', NULL, 'card', NULL, 'create,edit,save,delete,get_list', NULL, 2, 4, 0, 0, 0, 1);
 
 DROP TABLE IF EXISTS `{PREFIX}admin_role`;
 CREATE TABLE `{PREFIX}admin_role` (
@@ -585,6 +586,7 @@ CREATE TABLE `{PREFIX}goods_price` (
   `weight` smallint(6) unsigned DEFAULT '0' COMMENT '重量:克',
   `volume` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '体积:平方米',
   `stock` int(10) unsigned DEFAULT '0' COMMENT '库存',
+  `card_id` int(10) unsigned DEFAULT '0' COMMENT '卡密ID',
   `pic` varchar(200) DEFAULT NULL COMMENT '规格图片',
   `sku` varchar(50) DEFAULT NULL COMMENT '类型号(条形码)',
   `sales` int(10) unsigned DEFAULT '0' COMMENT '销量',
@@ -962,5 +964,30 @@ CREATE TABLE `{PREFIX}visit` (
   `add_date` int(10) unsigned DEFAULT NULL COMMENT '添加日期',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='访问日志';
+
+DROP TABLE IF EXISTS `idea_card`;
+CREATE TABLE `idea_card` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序号',
+    `tenant_id` int(10) unsigned DEFAULT '0' COMMENT '租户ID',
+    `title` varchar(50) DEFAULT NULL COMMENT '名称',
+    `type` tinyint(1) unsigned DEFAULT '0' COMMENT '类型(0:卡密 1:网盘)',
+    `url` varchar(255) DEFAULT NULL COMMENT '地址(固定卡密或网盘)',
+    `pwd` varchar(100) DEFAULT NULL COMMENT '密码(固定卡密或网盘)',
+    `add_date` int(10) unsigned DEFAULT '0' COMMENT '添加时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='卡密/网盘';
+
+DROP TABLE IF EXISTS `idea_card_detail`;
+CREATE TABLE `idea_card_detail` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序号',
+    `card_id` int(10) unsigned DEFAULT '0' COMMENT '卡密ID',
+    `account` varchar(200) DEFAULT NULL COMMENT '账号',
+    `pwd` varchar(200) DEFAULT NULL COMMENT '密码',
+    `order_sn` varchar(100) DEFAULT NULL COMMENT '所属订单',
+    `get_date` int(10) unsigned DEFAULT '0' COMMENT '发放时间',
+    `add_date` int(10) unsigned DEFAULT '0' COMMENT '添加时间',
+    `version` int(10) unsigned DEFAULT '0' COMMENT '版本号(乐观锁使用)',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='卡密账号密码';
 
 SET FOREIGN_KEY_CHECKS = 1;

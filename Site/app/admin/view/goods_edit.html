@@ -31,7 +31,7 @@
 										普通商品<br><span>(物流发货)</span>
 										<i class="layui-icon layui-icon-success"></i>
 									</div>
-									<div class='{eq name="$data.type" value="1"}goods_type_on{else}goods_type{/eq}' id="type1" onclick="changeType(1);" style="display: none;">
+									<div class='{eq name="$data.type" value="1"}goods_type_on{else}goods_type{/eq}' id="type1" onclick="changeType(1);">
 										卡密/网盘<br><span>(自动发货)</span>
 										<i class="layui-icon layui-icon-success"></i>
 									</div>
@@ -366,6 +366,8 @@
 			specValueCreateUrl: "{:url('goods/specValueCreate')}",
 			//删除规格值接口
 			specValueDeleteUrl: "{:url('goods/specValueDelete')}",
+			//获取卡密接口
+			cardListUrl: "{:url('goods/getCardList')}",
 			// ========================================== 回显时相关配置参数 ========================================== //
 			//商品id
 			productId: $('#m_id').val(),
@@ -388,6 +390,7 @@
 			let	m_item_sku = [];
 			let	m_item_weight = [];
 			let	m_item_volume = [];
+			let	m_item_card = [];
 			let	m_item_spec_key = [];
 			let	m_item_spec_key_name = [];
 			$.each(field, function(key, val) {
@@ -421,6 +424,9 @@
 				if(key.indexOf("volume") != -1){
 					m_item_volume.push(val);
 				}
+				if(key.indexOf("card_id") != -1){
+					m_item_card.push(val);
+				}
 				if(key.indexOf("specKey") != -1){
 					m_item_spec_key.push(val);
 				}
@@ -443,6 +449,7 @@
 			m_item_stock = m_item_stock.toString();
 			m_item_weight = m_item_weight.toString();
 			m_item_volume = m_item_volume.toString();
+			m_item_card = m_item_card.toString();
 			m_item_spec_key = m_item_spec_key.toString();
 			m_item_spec_key_name = m_item_spec_key_name.toString();
 			if(m_item_price == '') {
@@ -480,6 +487,7 @@
 					m_item_sku: m_item_sku,
 					m_item_weight: m_item_weight,
 					m_item_volume: m_item_volume,
+					m_item_card: m_item_card,
 					m_item_spec_key: m_item_spec_key,
 					m_item_spec_key_name: m_item_spec_key_name,
 					m_express_type: field.m_express_type,

@@ -19,6 +19,7 @@ use app\common\model\GoodsPrice as GoodsPriceModel;
 use app\common\model\Service as ServiceModel;
 use app\common\model\Unit as UnitModel;
 use app\common\model\ExpressTemplate as ExpressTemplateModel;
+use app\common\model\Card as CardModel;
 use think\facade\Db;
 
 class Goods extends Base
@@ -131,7 +132,7 @@ class Goods extends Base
                 //如果是编辑先删除现有规格，暂时这样处理
                 GoodsPriceModel::destroy(['goods_id' => $goodsId]);
             }
-            $new_stock = 0;
+            $allStock = 0;
             $specList = [];
             $item_picture = explode(",", $param['m_item_picture']);
             $item_price = explode(",", $param['m_item_price']);
@@ -141,8 +142,17 @@ class Goods extends Base
             $item_sku = explode(",", $param['m_item_sku']);
             $item_weight = explode(",", $param['m_item_weight']);
             $item_volume = explode(",", $param['m_item_volume']);
+            $item_card = explode(",", $param['m_item_card']);
             $item_spec_key = explode(",", $param['m_item_spec_key']);
             $item_spec_key_name = explode(",", $param['m_item_spec_key_name']);
+            //如果是卡密商品
+            if($param['m_type'] == 1) {
+                foreach ($item_card as $value) {
+                    if(empty($value)) {
+                        return fail('请选择卡密');
+                    }
+                }
+            }
             foreach ($item_spec_key as $key => $value){
                 $specList[$key]['goods_id'] = $goodsId;
                 $specList[$key]['spec_key'] = $value;
@@ -152,19 +162,11 @@ class Goods extends Base
                 $specList[$key]['cost_price'] = $item_cost_price[$key];
                 $specList[$key]['weight'] = $item_weight[$key];
                 $specList[$key]['volume'] = $item_volume[$key];
+                $specList[$key]['card_id'] = $item_card[$key];
                 $specList[$key]['sku'] = $item_sku[$key];
                 $specList[$key]['pic'] = str_replace(request()->domain(),'',str_replace('/upload/pic/','',$item_picture[$key]));
-                $stock = $item_stock[$key];
-                //如果是新增
-                if(!isset($param['m_id'])) {
-                    $stock = $param['m_type'] == 1 ? 0 : $stock;
-                    $specList[$key]['stock'] = $stock;
-                } else {
-                    if($param['m_type'] != 1) {
-                        $specList[$key]['stock'] = $stock;
-                    }
-                }
-                $new_stock = $new_stock + $stock;
+                $specList[$key]['stock'] = $item_stock[$key];
+                $allStock = $allStock + $specList[$key]['stock'];
             }
             $specPrice = new GoodsPriceModel();
             $specPrice->saveAll($specList);
@@ -174,11 +176,9 @@ class Goods extends Base
                 ->toArray();
             $upData = [
                 'price' => $goodsPrice['price'],
-                'market_price' => $goodsPrice['market_price']
+                'market_price' => $goodsPrice['market_price'],
+                'stock' => $allStock
             ];
-            if(!(isset($param['m_id']) && $param['m_type'] == 1)) {
-                $upData['stock'] = $new_stock;
-            }
             GoodsModel::where('id',$goodsId)->update($upData);
             $list->commit();
             return success();
@@ -519,6 +519,7 @@ class Goods extends Base
                 $data['['.$value['spec_key'].'][sku]'] = $value['sku'];
                 $data['['.$value['spec_key'].'][weight]'] = $value['weight'];
                 $data['['.$value['spec_key'].'][volume]'] = $value['volume'];
+                $data['['.$value['spec_key'].'][card_id]'] = $value['card_id'];
             } else {
                 $data['picture'] = $value['pic'];
                 $data['site_price'] = $value['price'];
@@ -528,6 +529,7 @@ class Goods extends Base
                 $data['sku'] = $value['sku'];
                 $data['weight'] = $value['weight'];
                 $data['volume'] = $value['volume'];
+                $data['card_id'] = $value['card_id'];
             }
         }
 
@@ -564,6 +566,26 @@ class Goods extends Base
         catch (\Exception $e) {
             return fail($e->getMessage());
         }
+    }
+
+    /**
+     * 获取卡密列表
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getCardList() : array
+    {
+        $cardList = CardModel::where('id','>','0')
+            ->order('id','desc')
+            ->select()
+            ->toArray();
+        foreach ($cardList as $key => $value) {
+            $cardList[$key]['value'] = $value['id'];
+            $cardList[$key]['key'] = $value['title'];
+        }
+        return fail('获取成功',200,$cardList);
     }
 
 

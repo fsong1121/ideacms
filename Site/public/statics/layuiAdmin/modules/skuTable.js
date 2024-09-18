@@ -145,7 +145,8 @@ layui.define(['jquery', 'form', 'upload', 'layer', 'sortable'], function (export
             productId: '',
             productTypeId: '',
             specDataDelete: false,
-            selectSpec:[]
+            selectSpec:[],
+            cardData:[{value:'0',key:'选择卡密'}]
         };
 
         options = {
@@ -162,7 +163,8 @@ layui.define(['jquery', 'form', 'upload', 'layer', 'sortable'], function (export
                     {title: '库存', icon: 'layui-icon-cols'},
                     {title: 'SKU', icon: 'layui-icon-cols'},
                     {title: '重量(克)', icon: 'layui-icon-cols'},
-                    {title: '体积(m³)', icon: 'layui-icon-cols'}
+                    {title: '体积(m³)', icon: 'layui-icon-cols'},
+                    {title: '卡密', icon: 'layui-icon-cols'}
                 ],
                 tbody: [
                     {type: 'input', field: 'site_price', value: '0', verify: 'required|number', reqtext: '销售价不能为空'},
@@ -172,6 +174,7 @@ layui.define(['jquery', 'form', 'upload', 'layer', 'sortable'], function (export
                     {type: 'input', field: 'sku', value: '0', verify: 'required', reqtext: 'SKU不能为空'},
                     {type: 'input', field: 'weight', value: '0', verify: 'required|number', reqtext: '重量不能为空'},
                     {type: 'input', field: 'volume', value: '0', verify: 'required|number', reqtext: '体积不能为空'},
+                    {type: 'select', field: 'card_id', value: '0', option: this.data.cardData , verify: 'required|number', reqtext: '体积不能为空'},
                 ]
             },
             skuNameType: 1,
@@ -185,7 +188,8 @@ layui.define(['jquery', 'form', 'upload', 'layer', 'sortable'], function (export
                     {title: '库存', icon: 'layui-icon-cols'},
                     {title: 'SKU', icon: 'layui-icon-cols'},
                     {title: '重量(克)', icon: 'layui-icon-cols'},
-                    {title: '体积(m³)', icon: 'layui-icon-cols'}
+                    {title: '体积(m³)', icon: 'layui-icon-cols'},
+                    {title: '卡密', icon: ''}
                 ],
                 tbody: [
                     {type: 'image', field: 'picture', value: '', verify: '', reqtext: ''},
@@ -196,6 +200,7 @@ layui.define(['jquery', 'form', 'upload', 'layer', 'sortable'], function (export
                     {type: 'input', field: 'sku', value: '0', verify: 'required', reqtext: 'SKU不能为空'},
                     {type: 'input', field: 'weight', value: '0', verify: 'required|number', reqtext: '重量不能为空'},
                     {type: 'input', field: 'volume', value: '0', verify: 'required|number', reqtext: '体积不能为空'},
+                    {type: 'select', field: 'card_id', value: '0', option: this.data.cardData , verify: 'required|number', reqtext: '体积不能为空'},
                 ]
             },
             uploadUrl: '',
@@ -206,6 +211,7 @@ layui.define(['jquery', 'form', 'upload', 'layer', 'sortable'], function (export
             specDeleteUrl: '',
             specValueCreateUrl: '',
             specValueDeleteUrl: '',
+            cardListUrl: '',
             rowspan: false,
             skuIcon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjczN0RFNzU1MTk1RTExRTlBMEQ5OEEwMEM5NDNFOEE4IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjczN0RFNzU2MTk1RTExRTlBMEQ5OEEwMEM5NDNFOEE4Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NzM3REU3NTMxOTVFMTFFOUEwRDk4QTAwQzk0M0U4QTgiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NzM3REU3NTQxOTVFMTFFOUEwRDk4QTAwQzk0M0U4QTgiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5NHmJUAAAA+0lEQVR42pySPwsBYRzH7zk3KIP34CVIKSOrELLJdpuymyzew90kIwMZvACDsCldWZTFn5WQpPN5rlPXlXJ39en7/J57fn+fR9i2rYT5NNM0B2gC3n/6qHBQDMOwZNYg4LOQ3vcQld40/w6lC13Xbd/eHElC3G1JqL4DFWSNprz7BMpAFJ6YkW+jThaosuxAD/rY6R9lCmeq8IAmtKBA1A1OW9YjtIS9QvPYRZkcXo43EzqjF/mDQ5an7ALShTFk4eQOsgFTWeoNKl4nt68J0oYc1LHLbmtDp1IyLgPe4QCuMkIsyAWSuYbs5HD29DML8OTkHR9F2Ef+EWAAdwmkvBAtw94AAAAASUVORK5CYII=',
         };
@@ -218,18 +224,24 @@ layui.define(['jquery', 'form', 'upload', 'layer', 'sortable'], function (export
             if (this.options.productTypeId) {
                 this.data.productTypeId = this.options.productTypeId;
             }
-            if (this.options.skuDataUrl) {
-                Util.request.get({url: this.options.skuDataUrl, data: {goods_id: this.data.productId}}, (res) => {
-                    this.data.skuData = res.data;
+            //获取卡密列表
+            Util.request.get({url: this.options.cardListUrl}, (res) => {
+                for(let i=0;i<res.data.length;i++) {
+                    this.data.cardData.push(res.data[i]);
+                }
+                if (this.options.skuDataUrl) {
+                    Util.request.get({url: this.options.skuDataUrl, data: {goods_id: this.data.productId}}, (res) => {
+                        this.data.skuData = res.data;
+                        this.css();
+                        this.render();
+                        this.listen();
+                    });
+                } else {
                     this.css();
                     this.render();
                     this.listen();
-                });
-            } else {
-                this.css();
-                this.render();
-                this.listen();
-            }
+                }
+            });
         }
 
         css() {

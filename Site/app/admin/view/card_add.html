@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>添加卡密/网盘</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+    <style>
+        html {background: #fff;padding-top: 20px;}
+    </style>
+</head>
+<body>
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 名称：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="m_title" lay-verify="required" placeholder="请输入名称" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">卡密/网盘名称</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 所属类型：</label>
+            <div class="layui-input-inline">
+                <select name="m_type" lay-filter="m_type">
+                    <option value="0">卡密</option>
+                    <option value="1">网盘</option>
+                </select>
+            </div>
+            <div class="layui-form-mid layui-word-aux">固定卡密请选择网盘</div>
+        </div>
+        <div class="layui-form-item" id="span_url" style="display: none;">
+            <label class="layui-form-label"><span>*</span> 卡号/地址：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="m_url" placeholder="请输入卡号/地址" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">网盘类型必填</div>
+        </div>
+        <div class="layui-form-item" id="span_pwd" style="display: none;">
+            <label class="layui-form-label">密码：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="m_pwd" placeholder="请输入密码" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">网盘类型可选</div>
+        </div>
+
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit lay-filter="LAY-submit" id="LAY-submit" value="确认">
+        </div>
+    </div>
+</body>
+</html>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+    layui.use(function(){
+        let $ = layui.$;
+        let form = layui.form;
+
+        /* 监听类型 */
+        form.on('select(m_type)',function (data) {
+            if(data.value == 0){
+                $("#span_url").hide();
+                $("#span_pwd").hide();
+            }
+            else {
+                $("#span_url").show();
+                $("#span_pwd").show();
+            }
+        });
+
+    })
+</script>

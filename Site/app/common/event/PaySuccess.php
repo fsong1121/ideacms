@@ -80,10 +80,47 @@ class PaySuccess
                     ->where('order_id',$order['id'])
                     ->select()
                     ->toArray();
-                if(count($orderGoods) == 1 && getGoodsInfo($orderGoods[0]['goods_id'],'','type')['type'] > 0) {
+                $goodsType = getGoodsInfo($orderGoods[0]['goods_id'],'','type')['type'];
+                if(count($orderGoods) == 1 && $goodsType > 0) {
                     $orderState = 3;
                     $data['express_type'] = 2;
                     $data['express_date'] = time();
+                    //卡密商品
+                    if($goodsType == 1) {
+                        $cardId = Db::name('goods_price')
+                            ->where('goods_id',$orderGoods[0]['goods_id'])
+                            ->where('spec_key',$orderGoods[0]['spec_key'])
+                            ->value('card_id');
+                        $card = Db::name('card')->where('id',$cardId)->find();
+                        if($card['type'] == 0) {
+                            $orderState = 2;
+                            $data['express_type'] = 2;
+                            $data['express_date'] = 0;
+                            $cardDetail = Db::name('card_detail')
+                                ->where('card_id',$cardId)
+                                ->where('get_date',0)
+                                ->find();
+                            if(!empty($cardDetail)) {
+                                $update = Db::name('card_detail')
+                                    ->where('id', $cardDetail['id'])
+                                    ->where('version', $cardDetail['version'])
+                                    ->inc('version')
+                                    ->update([
+                                        'order_sn' => $param['order_sn'],
+                                        'get_date' => time()
+                                    ]);
+                                if($update > 0) {
+                                    //发放成功
+                                    $orderState = 3;
+                                    $data['express_type'] = 2;
+                                    $data['express_date'] = time();
+                                    $data['express_info'] = '卡号：' . $cardDetail['account'] . ' 密码：' . $cardDetail['pwd'];
+                                }
+                            }
+                        } else {
+                            $data['express_info'] = '卡号/地址：' . $card['url'] . ' 密码：' . $card['pwd'];
+                        }
+                    }
                 }
                 $data['order_state'] = $orderState;
                 //更新订单

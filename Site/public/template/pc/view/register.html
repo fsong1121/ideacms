@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Keywords" content="{:config('site.keywords')}">
+    <meta name="Description" content="{:config('site.description')}">
+    <title>会员注册-{:config('site.title')}</title>
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/iconfont/iconfont.css" rel="stylesheet">
+    <link href="{__TEMPLATE__}/pc/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+    <!--头部-->
+    {include file="header" /}
+    <div class="ej_fg"></div>
+    <div class="login_ctr">
+        <div class="login_ctt">
+            <form @submit.prevent="formSubmit">
+            <div class="login_cell">
+                <div class="login_title">会员注册</div>
+                <div class="login_input_ctr">
+                    <div class="login_input_txt">手机号</div>
+                    <input id="m_uid" name="m_uid" class="login_input" placeholder="请输入11位手机号">
+                </div>
+                <div class="login_input_ctr">
+                    <div class="login_input_txt">密码</div>
+                    <input id="m_pwd" name="m_pwd" type="password" class="login_input" placeholder="请输入密码">
+                </div>
+                <div class="login_input_ctr">
+                    <div class="login_input_txt">验证码</div>
+                    <input id="m_code" name="m_code" class="login_input" placeholder="请输入验证码">
+                    <div id="code_btn" class="login_code_btn" @click="getCode">获取验证码</div>
+                </div>
+                <div class="login_input_ctr">
+                    <div class="login_input_txt"></div>
+                    <div class="login_agree">
+                        <input type="submit" class="login_btn" value="注册">
+                    </div>
+                </div>
+                <div class="login_txt">
+                    <a href="index.html">已有账户，点击登录！</a>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    <!--底部-->
+    {include file="footer" /}
+</div>
+{include file="js" /}
+</body>
+</html>
+<script>
+    const { createApp } = Vue
+
+    createApp({
+        data() {
+            return {
+                isLogin: 0,
+                userInfo: {},
+                cartNumber: 0,
+                isCode: 0
+            }
+        },
+        methods: {
+            async initData() {
+                let that = this;
+                let res;
+                //判断登录
+                res = await httpPost('/api/v1.index.login/checkLogin.html')
+                if(res.code === 0) {
+                    that.isLogin = 1;
+                    that.userInfo = res.data;
+                }
+                //记录访问
+                let visitData = {};
+                visitData.url = window.location.href;
+                visitData.platform = 'web';
+                visitData.goods_id = 0;
+                visitData.user_id = that.isLogin ? that.userInfo.user_id : 0;
+                visitData.ip = '{$ip}';
+                await httpPost('/api/v1.index.visit/addPv.html',visitData);
+                //获取购物车
+                res = await httpGet('/api/v1.index.cart/getList.html',{
+                    size:100
+                })
+                if(res.code === 0) {
+                    that.cartNumber = res.goods_amount;
+                }
+            },
+            /**
+             * 获取手机验证码
+             */
+            getCode() {
+                let that = this;
+                if(that.isCode === 0) {
+                    let m_tel = $('#m_uid').val().replace(/\s+/g, "");
+                    let myReg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/;
+                    if (!myReg.test(m_tel)) {
+                        layer.msg('手机号错误');
+                        return false;
+                    } else {
+                        httpPost('/api/v1.index.login/sendSmsCode.html',{
+                            m_tel: m_tel
+                        }).then(res=>{
+                            if(res.code === 0) {
+                                layer.msg('验证码已发送');
+                                that.isCode = 1;
+                                $('#code_btn').attr('class','login_code_btn1');
+                                let count = 59;
+                                let countdown = setInterval(function() {
+                                    if (count > 0) {
+                                        $('#code_btn').html('倒计时'+count+'秒');
+                                        count--;
+                                    } else {
+                                        $('#code_btn').html('获取验证码');
+                                        $('#code_btn').attr('class','login_code_btn');
+                                        that.isCode = 0;
+                                        clearInterval(countdown);
+                                    }
+                                }, 1000);
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        });
+                    }
+                }
+            },
+            /**
+             * 提交
+             */
+            formSubmit() {
+                let m_uid = $('#m_uid').val().replace(/\s+/g, "");
+                let m_pwd = $('#m_pwd').val().replace(/\s+/g, "");
+                let m_code = $('#m_code').val().replace(/\s+/g, "");
+                if (m_uid === '') {
+                    layer.msg('手机号为空');
+                    return false;
+                }
+                if (m_pwd === '') {
+                    layer.msg('密码为空');
+                    return false;
+                }
+                if (m_code === '') {
+                    layer.msg('验证码为空');
+                    return false;
+                }
+                let pid = 0;
+                let data = {
+                    m_tel: m_uid,
+                    m_pwd: m_pwd,
+                    m_code: m_code,
+                    pid: pid
+                };
+                httpPost('/api/v1.index.login/smsCodeLogin.html',data).then(res=>{
+                    if(res.code === 0) {
+                        let lastUrl = localStorage.getItem('lastUrl') || '';
+                        if(lastUrl === '' || lastUrl.indexOf('/login/') !== -1) {
+                            location.href = '/';
+                        } else {
+                            location.href = lastUrl;
+                        }
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                });
+            },
+
+        },
+        mounted() {
+            let that = this;
+            that.initData();
+        }
+    }).mount('#app')
+</script>
