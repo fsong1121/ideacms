@@ -593,24 +593,22 @@ CREATE TABLE `{PREFIX}goods_price` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='商品价格';
 
-INSERT INTO `{PREFIX}goods_price` VALUES (31, 4, '', '', 599.00, 699.00, 499.00, 10000, 0.00, 99, '', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (35, 2, '', '', 69.00, 99.00, 59.00, 360, 0.00, 99, '', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (50, 3, '蓝色经典140g 10卷', '规格:蓝色经典140g 10卷 ', 21.90, 29.90, 18.90, 1400, 0.00, 96, 'public/nopic.jpg', '0', 3);
-INSERT INTO `{PREFIX}goods_price` VALUES (51, 3, '蓝色经典140g 20卷', '规格:蓝色经典140g 20卷 ', 49.80, 59.90, 46.80, 2800, 0.00, 99, 'public/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (52, 3, '蓝色经典130g 30卷', '规格:蓝色经典130g 30卷 ', 59.90, 69.90, 56.90, 3900, 0.00, 99, 'public/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (59, 6, '蓝色-128G', '颜色:蓝色 内存:128G ', 5999.00, 6299.00, 5799.00, 300, 0.00, 69, 'public/nopic.jpg', '0', 12);
-INSERT INTO `{PREFIX}goods_price` VALUES (60, 6, '蓝色-256G', '颜色:蓝色 内存:256G ', 6799.00, 6999.00, 6599.00, 300, 0.00, 99, 'public/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (61, 6, '午夜色-128G', '颜色:午夜色 内存:128G ', 5999.00, 6299.00, 5799.00, 300, 0.00, 99, 'public/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (62, 6, '午夜色-256G', '颜色:午夜色 内存:256G ', 6799.00, 6999.00, 6599.00, 300, 0.00, 98, 'public/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (63, 6, '星光色-128G', '颜色:星光色 内存:128G ', 5999.00, 6299.00, 5799.00, 300, 0.00, 97, 'public/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (64, 6, '星光色-256G', '颜色:星光色 内存:256G ', 6799.00, 6999.00, 6599.00, 300, 0.00, 99, 'public/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (72, 8, '', '', 0.00, 0.00, 0.00, 0, 0.00, 99, '', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (78, 9, '', '', 0.00, 0.00, 0.00, 0, 0.00, 999, '', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (81, 7, '曜金黑-8GB+128GB', '颜色:曜金黑 内存:8GB+128GB ', 5399.00, 5499.00, 5199.00, 200, 0.00, 91, 'http://localhostpublic/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (82, 7, '曜金黑-8GB+256GB', '颜色:曜金黑 内存:8GB+256GB ', 5899.00, 5999.00, 5699.00, 200, 0.00, 99, 'http://localhostpublic/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (83, 7, '雪域白-8GB+128GB', '颜色:雪域白 内存:8GB+128GB ', 5399.00, 5499.00, 5199.00, 200, 0.00, 99, 'http://localhostpublic/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (84, 7, '雪域白-8GB+256GB', '颜色:雪域白 内存:8GB+256GB ', 5899.00, 5999.00, 5699.00, 200, 0.00, 99, 'http://localhostpublic/nopic.jpg', '0', 0);
-INSERT INTO `{PREFIX}goods_price` VALUES (85, 5, '', '', 249.00, 299.00, 199.00, 4500, 0.00, 99, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (31, 4, '', '', 599.00, 699.00, 499.00, 10000, 0.00, 99, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (35, 2, '', '', 69.00, 99.00, 59.00, 360, 0.00, 99, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (50, 3, '蓝色经典140g 10卷', '规格:蓝色经典140g 10卷 ', 21.90, 29.90, 18.90, 1400, 0.00, 96, 0, '', '0', 3);
+INSERT INTO `{PREFIX}goods_price` VALUES (51, 3, '蓝色经典140g 20卷', '规格:蓝色经典140g 20卷 ', 49.80, 59.90, 46.80, 2800, 0.00, 99, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (52, 3, '蓝色经典130g 30卷', '规格:蓝色经典130g 30卷 ', 59.90, 69.90, 56.90, 3900, 0.00, 99, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (59, 6, '蓝色-128G', '颜色:蓝色 内存:128G ', 5999.00, 6299.00, 5799.00, 300, 0.00, 69, 0, '', '0', 12);
+INSERT INTO `{PREFIX}goods_price` VALUES (60, 6, '蓝色-256G', '颜色:蓝色 内存:256G ', 6799.00, 6999.00, 6599.00, 300, 0.00, 99, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (61, 6, '午夜色-128G', '颜色:午夜色 内存:128G ', 5999.00, 6299.00, 5799.00, 300, 0.00, 99, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (62, 6, '午夜色-256G', '颜色:午夜色 内存:256G ', 6799.00, 6999.00, 6599.00, 300, 0.00, 98, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (63, 6, '星光色-128G', '颜色:星光色 内存:128G ', 5999.00, 6299.00, 5799.00, 300, 0.00, 97, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (64, 6, '星光色-256G', '颜色:星光色 内存:256G ', 6799.00, 6999.00, 6599.00, 300, 0.00, 99, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (81, 7, '曜金黑-8GB+128GB', '颜色:曜金黑 内存:8GB+128GB ', 5399.00, 5499.00, 5199.00, 200, 0.00, 91, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (82, 7, '曜金黑-8GB+256GB', '颜色:曜金黑 内存:8GB+256GB ', 5899.00, 5999.00, 5699.00, 200, 0.00, 99, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (83, 7, '雪域白-8GB+128GB', '颜色:雪域白 内存:8GB+128GB ', 5399.00, 5499.00, 5199.00, 200, 0.00, 99, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (84, 7, '雪域白-8GB+256GB', '颜色:雪域白 内存:8GB+256GB ', 5899.00, 5999.00, 5699.00, 200, 0.00, 99, 0, '', '0', 0);
+INSERT INTO `{PREFIX}goods_price` VALUES (85, 5, '', '', 249.00, 299.00, 199.00, 4500, 0.00, 99, 0, '', '0', 0);
 
 DROP TABLE IF EXISTS `{PREFIX}goods_spec`;
 CREATE TABLE `{PREFIX}goods_spec` (
