@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\common\event;
 
+use app\common\logic\admin\Coupon as CouponLogic;
 use app\common\logic\BaseLogic;
 use think\facade\Event;
 use think\facade\Db;
@@ -29,13 +30,13 @@ class PaySuccess
      */
     public function handle(array $param = []) : array
     {
+        //会员充值
         if($param['type'] == 'recharge') {
-            //会员充值
             $res = BaseLogic::saveUserAccount($param['user_id'], $param['pay_total'], 1, '会员余额充值成功');
             if ($res['code'] == 0) {
                 //记录资金流水
-                if($param['pay_type'] < 4) {
-                    Event::trigger('FinanceDetail',[
+                if ($param['pay_type'] < 4) {
+                    Event::trigger('FinanceDetail', [
                         'related_sn' => $res['data']['sn'],
                         'user_id' => $param['user_id'],
                         'fee' => $param['pay_total'],
@@ -48,11 +49,57 @@ class PaySuccess
                 }
             }
             return $res;
-        } elseif ($param['type'] == 'vip') {
-            //购买vip
+        }
+        //购买vip
+        if ($param['type'] == 'vip') {
             return success();
-        } else {
-            //订单支付
+        }
+        //购买优惠券
+        if ($param['type'] == 'ticketing') {
+            $order = Db::name('ticketing_order')
+                ->where('order_sn',$param['order_sn'])
+                ->where('pay_type',0)
+                ->find();
+            if(!empty($order)) {
+                $data = [
+                    'pay_type' => $param['pay_type'],
+                    'pay_sn' => $param['pay_sn'],
+                    'pay_order_sn' => $param['pay_order_sn'],
+                    'pay_gateway' => $param['pay_gateway'],
+                    'pay_date' => $param['pay_time']
+                ];
+                //更新订单
+                $update = Db::name('ticketing_order')->where('id', $order['id'])->update($data);
+                if($update > 0) {
+                    //记录资金流水
+                    Event::trigger('FinanceDetail',[
+                        'related_sn' => $order['order_sn'],
+                        'user_id' => $order['user_id'],
+                        'fee' => $order['pay_price'],
+                        'info' => '订单：' . $order['order_sn'] . '，支付成功',
+                        'pay_type' => $param['pay_type'],
+                        'pay_sn' => $param['pay_sn'],
+                        'pay_gateway' => $param['pay_gateway'],
+                        'type' => 7
+                    ]);
+                    //开始发券
+                    for ($i = 0; $i < $order['total_amount']; $i++) {
+                        $logic = new CouponLogic();
+                        $res = $logic->saveGive(['user_id' => $order['user_id'], 'm_coupon_id' => $order['coupon_id']], 1);
+                        if($res['code'] == 0) {
+                            Db::name('ticketing_order')->where('id', $order['id'])->inc('get_amount')->update();
+                            //防止券不够，发一张新增一张
+                            Db::name('coupon')->where('id', $order['coupon_id'])->inc('send_amount')->update();
+                        }
+                    }
+                }
+                return success();
+            } else {
+                return fail('订单不存在或已支付');
+            }
+        }
+        //订单支付
+        if ($param['type'] == '') {
             $order = Db::name('order')
                 ->where('order_sn',$param['order_sn'])
                 ->where('order_state',1)
@@ -172,6 +219,7 @@ class PaySuccess
                 return fail('订单不存在或已支付');
             }
         }
+        return fail('未知支付业务');
     }
 
 }

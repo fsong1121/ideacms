@@ -35,6 +35,12 @@ class Notify
             if (str_contains($data->out_trade_no, 'V')) {
                 $type = 'vip';
             }
+            if (str_contains($data->out_trade_no, 'TI')) {
+                $type = 'ticketing';
+            }
+            if (str_contains($data->out_trade_no, 'TS')) {
+                $type = 'tickets';
+            }
             $out_trade_no = explode('_',$data->out_trade_no);
             $params['type'] = $type;
             $params['order_sn'] = $out_trade_no[0];
@@ -67,6 +73,12 @@ class Notify
             if (str_contains($data->out_trade_no, 'V')) {
                 $type = 'vip';
             }
+            if (str_contains($data->out_trade_no, 'TI')) {
+                $type = 'ticketing';
+            }
+            if (str_contains($data->out_trade_no, 'TS')) {
+                $type = 'tickets';
+            }
             $out_trade_no = explode('_',$data->out_trade_no);
             $params['type'] = $type;
             $params['order_sn'] = $out_trade_no[0];
@@ -89,8 +101,8 @@ class Notify
         $pay = new PayService();
         $data = $pay->aliReturn();
         $outTradeNo = explode('_',$data->out_trade_no);
-        if(count($outTradeNo) == 3) {
-            //订单
+        if(strlen($outTradeNo[0]) == 16) {
+            //商品订单
             if(in_array('wap',$outTradeNo)) {
                 header('Location:' . config('site.url') . '/h5/pages/order/list?state=2');
             }
@@ -98,12 +110,30 @@ class Notify
                 header('Location:' . config('site.url') . '/index/order/list.html?state=2');
             }
         } else {
-            //充值、VIP等
-            if(in_array('wap',$outTradeNo)) {
-                header('Location:' . config('site.url') . '/h5/pages/user/index');
-            }
-            if(in_array('web',$outTradeNo)) {
-                header('Location:' . config('site.url') . '/index/user/index.html');
+            if(str_contains($data->out_trade_no, 'TI')) {
+                //购券
+                if(in_array('wap',$outTradeNo)) {
+                    header('Location:' . config('site.url') . '/h5/pages/addons/ticketing/order');
+                }
+                if(in_array('web',$outTradeNo)) {
+                    header('Location:' . config('site.url') . '/addons/ticketing/index.order/index.html');
+                }
+            } elseif (str_contains($data->out_trade_no, 'TS')) {
+                //票务
+                if(in_array('wap',$outTradeNo)) {
+                    header('Location:' . config('site.url') . '/h5/pages/addons/tickets/order');
+                }
+                if(in_array('web',$outTradeNo)) {
+                    header('Location:' . config('site.url') . '/addons/tickets/index.order/index.html');
+                }
+            } else {
+                //充值、VIP等
+                if(in_array('wap',$outTradeNo)) {
+                    header('Location:' . config('site.url') . '/h5/pages/user/index');
+                }
+                if(in_array('web',$outTradeNo)) {
+                    header('Location:' . config('site.url') . '/index/user/index.html');
+                }
             }
         }
     }
