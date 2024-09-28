@@ -963,8 +963,8 @@ CREATE TABLE `{PREFIX}visit` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='访问日志';
 
-DROP TABLE IF EXISTS `idea_card`;
-CREATE TABLE `idea_card` (
+DROP TABLE IF EXISTS `{PREFIX}card`;
+CREATE TABLE `{PREFIX}card` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序号',
     `tenant_id` int(10) unsigned DEFAULT '0' COMMENT '租户ID',
     `title` varchar(50) DEFAULT NULL COMMENT '名称',
@@ -975,8 +975,8 @@ CREATE TABLE `idea_card` (
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='卡密/网盘';
 
-DROP TABLE IF EXISTS `idea_card_detail`;
-CREATE TABLE `idea_card_detail` (
+DROP TABLE IF EXISTS `{PREFIX}card_detail`;
+CREATE TABLE `{PREFIX}card_detail` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序号',
     `card_id` int(10) unsigned DEFAULT '0' COMMENT '卡密ID',
     `account` varchar(200) DEFAULT NULL COMMENT '账号',
