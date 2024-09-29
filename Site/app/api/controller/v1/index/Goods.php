@@ -101,4 +101,26 @@ class Goods extends Base
         return json($res);
     }
 
+    /**
+     * 获取小程序太阳码(商品)
+     * @return Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getMiniappQrcode() : Json
+    {
+        $res = $this->setParam(Request::param());
+        if($res['code'] == 0) {
+            $param = $res['data'];
+            if(!empty($param['user_id'])) {
+                $logic = new GoodsLogic();
+                $res = $logic->getMiniappQrcode($param);
+            } else {
+                $res = fail('请先登录',401);
+            }
+        }
+        return json($res);
+    }
+
 }

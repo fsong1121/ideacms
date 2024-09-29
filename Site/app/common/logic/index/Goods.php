@@ -16,6 +16,7 @@ use app\common\model\GoodsPrice as GoodsPriceModel;
 use app\common\model\GoodsComment as GoodsCommentModel;
 use app\common\logic\index\Coupon as CouponLogic;
 use app\common\logic\index\Discount as DiscountLogic;
+use app\common\service\Wechat as WechatService;
 use think\facade\Db;
 
 class Goods extends BaseLogic
@@ -229,5 +230,50 @@ class Goods extends BaseLogic
             'count' => $list['total'],
             'data' => $list['data']
         ];
+    }
+
+    /**
+     * 获取小程序太阳码(商品)
+     * @param array $param
+     * @return array
+     */
+    public function getMiniappQrcode(array $param = []) : array
+    {
+        try {
+            $wechat = new WechatService();
+            $accessToken = $wechat->getAccessToken('miniapp','GoodsQrcode');
+            $qrcodePath = 'qrcode/miniapp_' . $param['user_id'] . '_' . $param['id'] . '.png';  //二维码地址
+            $postUrl = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=" . $accessToken;
+            $res = $this->postUrl($postUrl,[
+                'scene' => $param['user_id'] . '_' . $param['id'],
+                'page' => 'pages/goods/detail'
+            ]);
+            file_put_contents(public_path() . 'upload' . DIRECTORY_SEPARATOR . 'pic' . DIRECTORY_SEPARATOR . 'qrcode' . DIRECTORY_SEPARATOR . 'miniapp_' . $param['user_id'] . '_' . $param['id'] . '.png', $res);
+            return success(['qrcode'=>getPic($qrcodePath)]);
+        } catch (\Exception $e) {
+            return fail($e->getMessage());
+        }
+    }
+
+    /**
+     * @param string $url
+     * @param array $postData
+     * @return bool|string
+     */
+    public function postUrl(string $url = '', array $postData = [])
+    {
+        // 发送post请求
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData, JSON_UNESCAPED_UNICODE));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 }
