@@ -95,7 +95,7 @@ INSERT INTO `{PREFIX}admin_menu` VALUES (56, 52, 'PC端装修', NULL, 'setting',
 INSERT INTO `{PREFIX}admin_menu` VALUES (57, 0, '插件扩展', '插件', NULL, NULL, NULL, 'senior', 1, 11, 0, 0, 0, 0);
 INSERT INTO `{PREFIX}admin_menu` VALUES (58, 0, '应用中心', '应用', NULL, NULL, NULL, 'app', 1, 12, 0, 0, 0, 1);
 INSERT INTO `{PREFIX}admin_menu` VALUES (59, 58, '本地应用', NULL, 'local_app', NULL, 'get_list,install,up,down,uninstall', NULL, 2, 1, 0, 0, 0, 1);
-INSERT INTO `{PREFIX}admin_menu` VALUES (60, 1, '卡密网盘', NULL, 'card', NULL, 'create,edit,save,delete,get_list', NULL, 2, 4, 0, 0, 0, 1);
+INSERT INTO `{PREFIX}admin_menu` VALUES (60, 1, '卡密网盘', NULL, 'card', NULL, 'create,edit,save,delete,get_list,detail,create_detail,edit_detail,get_detail_list,save_detail,delete_detail', NULL, 2, 4, 0, 0, 0, 1);
 
 DROP TABLE IF EXISTS `{PREFIX}admin_role`;
 CREATE TABLE `{PREFIX}admin_role` (
