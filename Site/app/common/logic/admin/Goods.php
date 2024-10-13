@@ -426,7 +426,6 @@ class Goods extends Base
     {
         $goodsSpec = GoodsSpecModel::where('id','>','0')
             ->order('sequence','desc')
-            ->cache('goodsSpec',60)
             ->select()
             ->toArray();
         return fail('获取成功',200,$goodsSpec);
@@ -446,7 +445,6 @@ class Goods extends Base
         $data = ['spec' => []];
         $goodsSpecItem = GoodsSpecItemModel::where('spec_id',$specId)
             ->order('sequence','desc')
-            ->cache('goodsSpecItem',60)
             ->select()
             ->toArray();
         foreach ($goodsSpecItem as $key => $value) {
