@@ -94,7 +94,7 @@ class Cash extends Base
                 $cash->cash_date = time();
                 $cash->save();
                 //失败要返还佣金
-                $res = self::saveUserAccount($userId,$fee,2,'提现失败:' . $param['m_info']);
+                $res = self::saveUserAccount($userId,-1*$fee,2,'提现失败:' . $param['m_info']);
                 if($res['code'] > 0) {
                     return fail($res['msg']);
                 }
