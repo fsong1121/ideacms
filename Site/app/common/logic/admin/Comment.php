@@ -38,7 +38,11 @@ class Comment extends Base
         try {
             $list = GoodsCommentModel::where('id', '>', '0');
             if($param['keys'] != '') {
-                $list = $list->where('user_name','like','%'.$param['keys'].'%');
+                $goodsIds = Db::name('goods')->where('title','like','%'.$param['keys'].'%')->column('id');
+                $list = $list->where('goods_id','in',$goodsIds);
+            }
+            if($param['k3'] != '' && $param['k4'] != ''){
+                $list = $list->where('add_date','>=',strtotime($param['k3']))->where('add_date','<=',strtotime($param['k4']));
             }
             $list = $list->order(['id'=>'desc'])
                 ->paginate($param['limit'])

@@ -85,8 +85,12 @@ class Comment extends Base
         $param = Request::param();
         $perPage = Request::has('limit', 'get') ? $param['limit'] : $this->perPage;
         $keys = trimStr(Request::has('keys','get') ? $param['keys'] : '');
+        $k3 = Request::has('k3','get') ? $param['k3'] : '';
+        $k4 = Request::has('k4','get') ? $param['k4'] : '';
         $param['limit'] = $perPage;
         $param['keys'] = $keys;
+        $param['k3'] = $k3;
+        $param['k4'] = $k4;
         $logic = new CommentLogic();
         return json($logic->readList($param));
     }

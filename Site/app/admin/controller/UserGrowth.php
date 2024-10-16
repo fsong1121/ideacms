@@ -34,9 +34,14 @@ class UserGrowth extends Base
         $param = Request::param();
         $perPage = Request::has('limit', 'get') ? $param['limit'] : $this->perPage;
         $keys = trimStr(Request::has('keys','get') ? $param['keys'] : '');
+        $k3 = Request::has('k3','get') ? $param['k3'] : '';
+        $k4 = Request::has('k4','get') ? $param['k4'] : '';
         $list = GrowthDetailModel::where('id', '>', '0');
         if($keys != '') {
             $list = $list->where('user_id', 'in' , Db::name('user')->where('uid|mobile|nickname', 'like' , '%' . $keys . '%')->column('id'));
+        }
+        if($k3 != '' && $k4 != '') {
+            $list = $list->where('add_date','>=',strtotime($k3))->where('add_date','<=',strtotime($k4));
         }
         $list = $list->order('id', 'desc')
             ->paginate($perPage)

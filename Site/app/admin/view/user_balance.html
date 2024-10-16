@@ -18,12 +18,17 @@
 					<div class="layui-table-title">余额明细</div>
 					<div class="layui-form search_ctr">
 						<div class="layui-form-item">
-							<div class="layui-inline">
-								<div class="layui-input-inline">
-									<input type="text" name="keys" placeholder="输入用户名/手机/昵称查询" class="layui-input">
-								</div>
-								<button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-search">查询</button>
+							<div class="layui-input-inline w160">
+								<input type="text" name="k3" id="k3" class="layui-input" placeholder="开始时间" autocomplete="off" value="">
 							</div>
+							<div class="layui-form-mid layui-word-aux">-</div>
+							<div class="layui-input-inline w160">
+								<input type="text" name="k4" id="k4" class="layui-input" placeholder="结束时间" autocomplete="off" value="">
+							</div>
+							<div class="layui-input-inline w200">
+								<input type="text" name="keys" placeholder="输入用户名/手机/昵称查询" class="layui-input">
+							</div>
+							<button class="layui-btn layui-btn-normal" lay-submit lay-filter="LAY-search">查询</button>
 						</div>
 					</div>
 				</div>
@@ -45,9 +50,23 @@
 <script>
 	layui.config({
 		base: '{__STATIC__}/layuiAdmin/' // 静态资源所在路径
-	}).use(['index', 'table', 'form'], function(){
+	}).use(['index', 'table', 'form', 'laydate'], function(){
 		let table = layui.table;
 		let form = layui.form;
+		let laydate = layui.laydate;
+
+		//搜索日期
+		laydate.render({
+			elem: '#k3'
+			,type: 'datetime'
+			,trigger: 'click'
+		});
+
+		laydate.render({
+			elem: '#k4'
+			,type: 'datetime'
+			,trigger: 'click'
+		});
 
 		//初始化列表
 		table.render({

@@ -68,7 +68,7 @@ class Console extends Base
         $user['total'] = Db::name('user')->count();
         $user['today'] = Db::name('user')->where('add_date','between',[$today['b_time'],$today['e_time']])->count();
         $user['yesterday'] = Db::name('user')->where('add_date','between',[$yesterday['b_time'],$yesterday['e_time']])->count();
-        $user['comparedYesterday'] = empty($user['user']) ? 0 : 100;
+        $user['comparedYesterday'] = empty($user['today']) ? 0 : 100;
         if(!empty($user['yesterday'])) {
             $user['comparedYesterday'] = formatPrice(($user['today'] - $user['yesterday']) / $user['yesterday']) * 100;
         }
