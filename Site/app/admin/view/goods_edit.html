@@ -101,7 +101,7 @@
 								<div class="layui-input-block">
 									<div id="slide_ctr">
 										{volist name="data.slide" id="slide"}
-										<div class="slide_ctr" id="span_slide{$key}"><img src="{:getPic($slide)}"><div class="pic_del" onClick="delPic('{$key}')"><i class='layui-icon layui-icon-delete'></i></div><input type="hidden" name="m_slide[]" value="{$slide}"></div>
+										<div class="slide_ctr" id="span_slide{$key}"><img src="{$slide}"><div class="pic_del" onClick="delPic('{$key}')"><i class='layui-icon layui-icon-delete'></i></div><input type="hidden" name="m_slide[]" value="{$slide}"></div>
 										{/volist}
 									</div>
 									<div class="upload_btn" id="upload_btn"></div>
@@ -393,8 +393,13 @@
 			let	m_item_card = [];
 			let	m_item_spec_key = [];
 			let	m_item_spec_key_name = [];
+			let tempSlide = [];
 			$.each(field, function(key, val) {
 				if(key.indexOf("m_slide") != -1){
+					tempSlide = val.split('upload/pic/');
+					if(tempSlide.length > 1) {
+						val = tempSlide[1];
+					}
 					m_slide.push(val);
 				}
 				if(key.indexOf("m_service") != -1){

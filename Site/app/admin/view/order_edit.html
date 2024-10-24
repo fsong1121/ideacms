@@ -216,7 +216,7 @@
 						<td align="right"><span>优惠券抵扣:</span></td>
 						<td>-{$data.coupon_price}</td>
 						<td align="right"><span>分佣金额:</span></td>
-						<td>-{$data.user_commission}</td>
+						<td>-{$data.commission_price}</td>
 					</tr>
 					<tr>
 						<td align="right"><span>积分抵扣:</span></td>
@@ -230,7 +230,7 @@
 					</tr>
 					<tr>
 						<td colspan="8" align="right">
-							商品总价：¥{$data.price}&emsp;用户支付：¥{$data.pay_price}&emsp;实际到账：¥{:sprintf("%.2f",$data.pay_price - $data.refund_price - $data.user_commission)}
+							商品总价：¥{$data.price}&emsp;用户支付：¥{$data.pay_price}&emsp;实际到账：¥{:sprintf("%.2f",$data.pay_price - $data.refund_price - $data.commission_price)}
 							{eq name="$data.order_type" value="integral"}&emsp;实付积分：{$data.exchange_integral}{/eq}
 						</td>
 					</tr>
