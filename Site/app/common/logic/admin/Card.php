@@ -187,7 +187,7 @@ class Card extends Base
                 $pwdArr = explode(',',$param['m_pwd']);
                 foreach ($accountArr as $key => $value) {
                     $data[$key] = [
-                        'card_id' => $param['cart_id'],
+                        'card_id' => $param['card_id'],
                         'account' => $value,
                         'pwd' => $pwdArr[$key],
                         'add_date' => time()

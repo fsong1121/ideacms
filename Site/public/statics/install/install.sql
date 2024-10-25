@@ -583,7 +583,7 @@ CREATE TABLE `{PREFIX}goods_price` (
   `price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '价格',
   `market_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '市场价',
   `cost_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '成本价',
-  `weight` smallint(6) unsigned DEFAULT '0' COMMENT '重量:克',
+  `weight` int(10) unsigned DEFAULT '0' COMMENT '重量:克',
   `volume` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '体积:平方米',
   `stock` int(10) unsigned DEFAULT '0' COMMENT '库存',
   `card_id` int(10) unsigned DEFAULT '0' COMMENT '卡密ID',
