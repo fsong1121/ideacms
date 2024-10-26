@@ -10,7 +10,7 @@
 
 </div>
 
-<h3 align="center">轻量级、全开源、高性能</h3>
+<h3 align="center">轻量级、全开源、高性能、超好用</h3>
 <div align="center">
 
 ```shell
