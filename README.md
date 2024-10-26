@@ -10,7 +10,7 @@
 
 </div>
 
-<h3 align="center">小而美、全开源</h3>
+<h3 align="center">小而美商城系统</h3>
 <div align="center">
 
 ```shell
