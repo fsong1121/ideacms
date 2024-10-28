@@ -19,6 +19,7 @@ use app\common\logic\index\Coupon as CouponLogic;
 use app\common\logic\index\Discount as DiscountLogic;
 use think\facade\Event;
 use think\facade\Cache;
+use think\facade\Session;
 use think\facade\Db;
 use think\api\Client;
 
@@ -180,11 +181,15 @@ class Order extends BaseLogic
             $buyType = $param['buy_type'] ?? 0;
             $orderType = $param['order_type'] ?? '';  //如果是活动订单，价格根据activityId设置的优惠计算
             $activityId = $param['activity_id'] ?? 0;
+            $groupId = $param['group_id'] ?? 0;       //团长ID
             $goodsId = $param['goods_id'] ?? 0;
             $specKey = $param['spec_key'] ?? '';
             $amount = $param['amount'] ?? 1;
             $cartIds = $param['cart_id'] ?? [];
             $goodsTotalPrice = 0;  //商品金额
+            $totalCommission = 0;  //订单佣金
+            $totalIntegral = 0;    //订单积分
+            $totalGrowth = 0;      //订单成长值
             $sendPrice = 0;        //运费
             $rebatePrice = 0;      //会员折扣
             $discountPrice = 0;    //满减优惠
@@ -196,16 +201,25 @@ class Order extends BaseLogic
             $goodsList = [];
             if($buyType == 0) {
                 //直接购买
-                $goods = getGoodsInfo($goodsId,$specKey,'id,title,pic,type,is_sale,is_delete,express_type,express_price,express_template_id,is_full_free');
+                $goods = getGoodsInfo($goodsId,$specKey,'id,title,pic,type,is_sale,is_delete,express_type,express_price,express_template_id,is_full_free,commission,integral,growth');
                 if(!empty($goods) && $goods['is_sale'] == 1 && $goods['is_delete'] == 0) {
                     $amount = $amount > $goods['stock'] ? $goods['stock'] : $amount;
                     $goodsTotalPrice = $goodsTotalPrice + $amount * $goods['price'];
+                    $totalCommission = $totalCommission + $amount * $goods['commission'];
+                    $totalIntegral = $totalIntegral + $amount * $goods['integral'];
+                    $totalGrowth = $totalGrowth + $amount * $goods['growth'];
                     $goodsList[0]['id'] = $goods['id'];
                     $goodsList[0]['title'] = $goods['title'];
                     $goodsList[0]['pic'] = getPic($goods['pic']);
                     $goodsList[0]['price'] = $goods['price'];
                     $goodsList[0]['amount'] = $amount;
+                    $goodsList[0]['goods_id'] = $goodsId;
+                    $goodsList[0]['spec_key'] = $specKey;
                     $goodsList[0]['spec_key_name'] = $goods['spec_key_name'];
+                    $goodsList[0]['rebate_price'] = formatPrice($amount * $goods['price'] * (1 - $userRebate));
+                    $goodsList[0]['commission'] = $amount * $goods['commission'];
+                    $goodsList[0]['integral'] = $amount * $goods['integral'];
+                    $goodsList[0]['growth'] = $amount * $goods['growth'];
                     $goodsList[0]['total_price'] = $amount * $goods['price'];
                     $weightTotal = $amount * $goods['weight'];
                     $volumeTotal = $amount * $goods['volume'];
@@ -267,16 +281,25 @@ class Order extends BaseLogic
                     ->toArray();
                 $i = 0;
                 foreach ($cart as $value) {
-                    $goods = getGoodsInfo($value['goods_id'],$value['spec_key'],'id,title,pic,type,is_sale,is_delete,express_type,express_price,express_template_id,is_full_free');
+                    $goods = getGoodsInfo($value['goods_id'],$value['spec_key'],'id,title,pic,type,is_sale,is_delete,express_type,express_price,express_template_id,is_full_free,commission,integral,growth');
                     if(!empty($goods) && $goods['type'] == 0 && $goods['is_sale'] == 1 && $goods['is_delete'] == 0) {
                         $amount = $value['amount'] > $goods['stock'] ? $goods['stock'] : $value['amount'];
                         $goodsTotalPrice = $goodsTotalPrice + $amount * $goods['price'];
+                        $totalCommission = $totalCommission + $amount * $goods['commission'];
+                        $totalIntegral = $totalIntegral + $amount * $goods['integral'];
+                        $totalGrowth = $totalGrowth + $amount * $goods['growth'];
                         $goodsList[$i]['id'] = $goods['id'];
                         $goodsList[$i]['title'] = $goods['title'];
                         $goodsList[$i]['pic'] = getPic($goods['pic']);
                         $goodsList[$i]['price'] = $goods['price'];
                         $goodsList[$i]['amount'] = $amount;
+                        $goodsList[$i]['goods_id'] = $value['goods_id'];
+                        $goodsList[$i]['spec_key'] = $value['spec_key'];
                         $goodsList[$i]['spec_key_name'] = $goods['spec_key_name'];
+                        $goodsList[$i]['rebate_price'] = formatPrice($amount * $goods['price'] * (1 - $userRebate));
+                        $goodsList[$i]['commission'] = $amount * $goods['commission'];
+                        $goodsList[$i]['integral'] = $amount * $goods['integral'];
+                        $goodsList[$i]['growth'] = $amount * $goods['growth'];
                         $goodsList[$i]['total_price'] = $amount * $goods['price'];
                         $weightTotal = $amount * $goods['weight'];
                         $volumeTotal = $amount * $goods['volume'];
@@ -342,18 +365,29 @@ class Order extends BaseLogic
             //会员折扣
             $rebatePrice = $goodsTotalPrice * (1 - $userRebate);
             //自动选择最大优惠券和满减
+            $res['data']['couponId'] = '';
             $logic = new CouponLogic();
             $coupon = $logic->getMaxCoupon($goodsList,$userId);
             if(!empty($coupon)) {
                 $couponPrice = $coupon['price'];
+                $res['data']['couponId'] = $coupon['id'];
             }
             //满减优惠
+            $res['data']['discountCouponIds'] = '';
+            $res['data']['discountIntegral'] = 0;
             $discountLogic = new DiscountLogic();
             $discount = $discountLogic->getMaxDiscount($goodsList);
-            $discountPrice = $discount['price'];
+            if(!empty($discount)) {
+                $discountPrice = $discount['price'];
+                $res['data']['discountCouponIds'] = $discount['coupon_ids'];
+                $res['data']['discountIntegral'] = $discount['integral'];
+            }
 
             $res['data']['goodsList'] = $goodsList;
             $res['data']['goodsPrice'] = formatPrice($goodsTotalPrice);
+            $res['data']['totalCommission'] = formatPrice($totalCommission);
+            $res['data']['totalIntegral'] = $totalIntegral;
+            $res['data']['totalGrowth'] = $totalGrowth;
             $res['data']['sendPrice'] = formatPrice($sendPrice);
             $res['data']['rebatePrice'] = formatPrice($rebatePrice);
             $res['data']['discountPrice'] = formatPrice($discountPrice);
@@ -361,6 +395,18 @@ class Order extends BaseLogic
             $payPrice = $goodsTotalPrice + $sendPrice - $rebatePrice - $discountPrice - $couponPrice;
             $payPrice = $payPrice > 0 ? $payPrice : 0;
             $res['data']['payPrice'] = formatPrice($payPrice);
+
+            //参数保存
+            $res['data']['params'] = [
+                'buyType' => $buyType,
+                'orderType' => $orderType,
+                'activityId' => $activityId,
+                'groupId' => $groupId,
+                'goodsId' => $goodsId,
+                'specKey' => $specKey,
+                'amount' => $amount,
+                'cartIds' => $cartIds
+            ];
 
             //积分订单
             $res1 = Event::trigger('fillIntegralData',[
@@ -417,7 +463,7 @@ class Order extends BaseLogic
                 $res['data'] = $res1[0]['data'];
                 return $res;
             }
-
+            Session::set('order_' . $userId,$res);
             return $res;
         } catch (\Exception $e) {
             return fail($e->getMessage());
@@ -436,225 +482,53 @@ class Order extends BaseLogic
             $userId = $param['user_id'];
             $data = [];
             $time = time();
-            $buyType = $param['buy_type'] ?? 0;               //0:直接购买 1:购物车提交
-            $orderType = $param['order_type'] ?? '';          //如果是活动订单，价格根据activityId设置的优惠计算
-            $activityId = $param['activity_id'] ?? 0;         //活动ID
-            $groupId = $param['group_id'] ?? 0;               //团长ID
-            $goodsId = $param['goods_id'] ?? 0;               //商品ID
-            $specKey = $param['spec_key'] ?? '';              //商品规格
-            $amount = $param['amount'] ?? 1;                  //购买数量
-            $cartIds = $param['cart_id'] ?? [];               //购物车ID
-            $name = $param['name'];                           //姓名
-            $tel = $param['tel'];                             //电话
-            $address = $param['address'];                     //地址
-            $sendType = $param['send_type'] ?? 1;             //配送方式
-            $info = $param['info'] ?? '';                     //备注
-            $terminal = $param['terminal'] ?? 1;              //来源
-            $goodsTotalPrice = 0;  //商品金额
-            $totalCommission = 0;  //订单佣金
-            $totalIntegral = 0;    //订单积分
-            $totalGrowth = 0;      //订单成长值
-            $sendPrice = 0;        //运费
-            $rebatePrice = 0;      //会员折扣
-            $discountPrice = 0;    //满减优惠
-            $couponPrice = 0;      //优惠券抵扣
+            $fillData = Session::get('order_' . $userId,'');
+            if(empty($fillData)) {
+                return fail('订单提交失败');
+            }
+            $fillData = $fillData['data'];
+
+            $buyType = $fillData['params']['buyType'];            //0:直接购买 1:购物车提交
+            $orderType = $fillData['params']['orderType'];        //如果是活动订单，价格根据activityId设置的优惠计算
+            $activityId = $fillData['params']['activityId'];      //活动ID
+            $groupId = $fillData['params']['groupId'];            //团长ID
+            $goodsId = $fillData['params']['goodsId'];            //商品ID
+            $specKey = $fillData['params']['specKey'];            //商品规格
+            $amount = $fillData['params']['amount'];              //购买数量
+            $cartIds = $fillData['params']['cartIds'];            //购物车ID
+            $name = $param['name'];                               //姓名
+            $tel = $param['tel'];                                 //电话
+            $address = $param['address'];                         //地址
+            $sendType = $param['send_type'] ?? 1;                 //配送方式
+            $info = $param['info'] ?? '';                         //备注
+            $terminal = $param['terminal'] ?? 1;                  //来源
+            $goodsTotalPrice = $fillData['goodsPrice'];           //商品金额
+            $totalCommission = $fillData['totalCommission'];      //订单佣金
+            $totalIntegral = $fillData['totalIntegral'];          //订单积分
+            $totalGrowth = $fillData['totalGrowth'];              //订单成长值
+            $sendPrice = $fillData['sendPrice'];                  //运费
+            $rebatePrice = $fillData['rebatePrice'];              //会员折扣
+            $discountPrice = $fillData['discountPrice'];          //满减优惠
+            $discountCouponIds = $fillData['discountCouponIds'];  //满减优惠
+            $discountIntegral = $fillData['discountIntegral'];    //满减优惠
+            $couponPrice = $fillData['couponPrice'];              //优惠券抵扣
+            $couponId = $fillData['couponId'];                    //优惠券ID
             $exchangeIntegral = 0; //兑换积分
             $exchangePrice = 0;    //积分抵扣费用
             $activityState = 1;    //活动订单状态
-            $freeTotal = 0;        //参与满额包邮总金额
-            $weightTotal = 0;      //总重量
-            $volumeTotal = 0;      //总体积
-            $userRebate = getUserLevel($userId)['rebate'] / 100;
+
             $orderSn = makeOrderSn();
-            $goodsList = [];
-            $couponId = 0;
+            $goodsList = $fillData['goodsList'];
             // 启动事务
             Db::startTrans();
             try {
-                //获取商品列表
-                if ($buyType == 0) {
-                    //直接购买
-                    $goods = getGoodsInfo($goodsId, $specKey, 'type,commission,integral,growth,is_sale,is_delete,express_type,express_price,express_template_id,is_full_free');
-                    if (!empty($goods) && $goods['is_sale'] == 1 && $goods['is_delete'] == 0) {
-                        $amount = $amount > $goods['stock'] ? $goods['stock'] : $amount;
-                        $goodsTotalPrice = $goodsTotalPrice + $amount * $goods['price'];
-                        $totalCommission = $totalCommission + $amount * $goods['commission'];
-                        $totalIntegral = $totalIntegral + $amount * $goods['integral'];
-                        $totalGrowth = $totalGrowth + $amount * $goods['growth'];
-                        if ($amount > 0) {
-                            $goodsList[0]['id'] = $goodsId;
-                            $goodsList[0]['goods_id'] = $goodsId;
-                            $goodsList[0]['spec_key'] = $specKey;
-                            $goodsList[0]['spec_key_name'] = $goods['spec_key_name'];
-                            $goodsList[0]['price'] = $goods['price'];
-                            $goodsList[0]['amount'] = $amount;
-                            $goodsList[0]['rebate_price'] = formatPrice($amount * $goods['price'] * (1 - $userRebate));
-                            $goodsList[0]['commission'] = $amount * $goods['commission'];
-                            $goodsList[0]['integral'] = $amount * $goods['integral'];
-                            $goodsList[0]['growth'] = $amount * $goods['growth'];
-                            $goodsList[0]['total_price'] = $amount * $goods['price'];
-                            $weightTotal = $amount * $goods['weight'];
-                            $volumeTotal = $amount * $goods['volume'];
-                            if($goods['is_full_free'] == 1) {
-                                $freeTotal = $freeTotal + $amount * $goods['price'];
-                            }
-                            //运费(普通商品才计算运费)
-                            $province = $param['province'] ?? '';
-                            if($goods['type'] == 0 && !empty($province)) {
-                                if ($goods['express_type'] == 1) {
-                                    $sendPrice = $sendPrice + $goods['express_price'];
-                                }
-                                if ($goods['express_type'] == 2) {
-                                    //模板运费
-                                    $expressTemplate = Db::name('express_template')
-                                        ->where('id',$goods['express_template_id'])
-                                        ->find();
-                                    if(!empty($expressTemplate)) {
-                                        $expressTemplatePrice = Db::name('express_template_price')
-                                            ->whereFindInSet('area_names',$province)
-                                            ->find();
-                                        $firstNum = empty($expressTemplatePrice) ? $expressTemplate['first_num'] : $expressTemplatePrice['first_num'];
-                                        $firstPrice = empty($expressTemplatePrice) ? $expressTemplate['first_price'] : $expressTemplatePrice['first_price'];
-                                        $secondNum = empty($expressTemplatePrice) ? $expressTemplate['second_num'] : $expressTemplatePrice['second_num'];
-                                        $secondPrice = empty($expressTemplatePrice) ? $expressTemplate['second_price'] : $expressTemplatePrice['second_price'];
-                                        if($expressTemplate['type'] == 0) {
-                                            //按重量
-                                            if($weightTotal > $firstNum * 1000) {
-                                                $sendPrice = $firstPrice + ceil(($weightTotal / 1000 - $firstNum) / $secondNum) * $secondPrice;
-                                            } else {
-                                                $sendPrice = $firstPrice;
-                                            }
-                                        }
-                                        if($expressTemplate['type'] == 1) {
-                                            //按体积
-                                            if($volumeTotal > $firstNum) {
-                                                $sendPrice = $firstPrice + ceil(($volumeTotal - $firstNum) / $secondNum) * $secondPrice;
-                                            } else {
-                                                $sendPrice = $firstPrice;
-                                            }
-                                        }
-                                        if($expressTemplate['type'] == 2) {
-                                            //按件数
-                                            if($amount > $firstNum) {
-                                                $sendPrice = $firstPrice + ceil(($amount - $firstNum) / $secondNum) * $secondPrice;
-                                            } else {
-                                                $sendPrice = $firstPrice;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    //购物车提交
-                    $cart = CartModel::where('user_id', $userId)
-                        ->where('id', 'in', $cartIds)
-                        ->select()
-                        ->toArray();
-                    $i = 0;
-                    foreach ($cart as $value) {
-                        $goods = getGoodsInfo($value['goods_id'], $value['spec_key'], 'type,commission,integral,growth,is_sale,is_delete,express_type,express_price,express_template_id,is_full_free');
-                        if (!empty($goods) && $goods['type'] == 0 && $goods['is_sale'] == 1 && $goods['is_delete'] == 0) {
-                            $amount = $value['amount'] > $goods['stock'] ? $goods['stock'] : $value['amount'];
-                            $goodsTotalPrice = $goodsTotalPrice + $amount * $goods['price'];
-                            $totalCommission = $totalCommission + $amount * $goods['commission'];
-                            $totalIntegral = $totalIntegral + $amount * $goods['integral'];
-                            $totalGrowth = $totalGrowth + $amount * $goods['growth'];
-                            if ($amount > 0) {
-                                $goodsList[$i]['id'] = $value['goods_id'];
-                                $goodsList[$i]['goods_id'] = $value['goods_id'];
-                                $goodsList[$i]['spec_key'] = $value['spec_key'];
-                                $goodsList[$i]['spec_key_name'] = $goods['spec_key_name'];
-                                $goodsList[$i]['price'] = $goods['price'];
-                                $goodsList[$i]['amount'] = $amount;
-                                $goodsList[$i]['rebate_price'] = formatPrice($amount * $goods['price'] * (1 - $userRebate));
-                                $goodsList[$i]['commission'] = $amount * $goods['commission'];
-                                $goodsList[$i]['integral'] = $amount * $goods['integral'];
-                                $goodsList[$i]['growth'] = $amount * $goods['growth'];
-                                $goodsList[$i]['total_price'] = $amount * $goods['price'];
-                                $weightTotal = $amount * $goods['weight'];
-                                $volumeTotal = $amount * $goods['volume'];
-                                if($goods['is_full_free'] == 1) {
-                                    $freeTotal = $freeTotal + $amount * $goods['price'];
-                                }
-                                //运费(普通商品才计算运费)
-                                $province = $param['province'] ?? '';
-                                if($goods['type'] == 0 && !empty($province)) {
-                                    if ($goods['express_type'] == 1) {
-                                        $sendPrice = $sendPrice + $goods['express_price'];
-                                    }
-                                    if ($goods['express_type'] == 2) {
-                                        //模板运费
-                                        $expressTemplate = Db::name('express_template')
-                                            ->where('id',$goods['express_template_id'])
-                                            ->find();
-                                        if(!empty($expressTemplate)) {
-                                            $expressTemplatePrice = Db::name('express_template_price')
-                                                ->whereFindInSet('area_names',$province)
-                                                ->find();
-                                            $firstNum = empty($expressTemplatePrice) ? $expressTemplate['first_num'] : $expressTemplatePrice['first_num'];
-                                            $firstPrice = empty($expressTemplatePrice) ? $expressTemplate['first_price'] : $expressTemplatePrice['first_price'];
-                                            $secondNum = empty($expressTemplatePrice) ? $expressTemplate['second_num'] : $expressTemplatePrice['second_num'];
-                                            $secondPrice = empty($expressTemplatePrice) ? $expressTemplate['second_price'] : $expressTemplatePrice['second_price'];
-                                            if($expressTemplate['type'] == 0) {
-                                                //按重量
-                                                if($weightTotal > $firstNum * 1000) {
-                                                    $sendPrice = $sendPrice + $firstPrice + ceil(($weightTotal / 1000 - $firstNum) / $secondNum) * $secondPrice;
-                                                } else {
-                                                    $sendPrice = $sendPrice + $firstPrice;
-                                                }
-                                            }
-                                            if($expressTemplate['type'] == 1) {
-                                                //按体积
-                                                if($volumeTotal > $firstNum) {
-                                                    $sendPrice = $sendPrice + $firstPrice + ceil(($volumeTotal - $firstNum) / $secondNum) * $secondPrice;
-                                                } else {
-                                                    $sendPrice = $sendPrice + $firstPrice;
-                                                }
-                                            }
-                                            if($expressTemplate['type'] == 2) {
-                                                //按件数
-                                                if($amount > $firstNum) {
-                                                    $sendPrice = $sendPrice + $firstPrice + ceil(($amount - $firstNum) / $secondNum) * $secondPrice;
-                                                } else {
-                                                    $sendPrice = $sendPrice + $firstPrice;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                $i = $i + 1;
-                            }
-                        }
-                    }
-                }
                 if (!empty($goodsList)) {
-                    //开启了满额包邮
-                    if(config('shop.is_free_shipping') == 1) {
-                        if(config('shop.free_price') <= $freeTotal) {
-                            $sendPrice = 0;
-                        }
-                    }
-                    //会员折扣
-                    $rebatePrice = formatPrice($goodsTotalPrice * (1 - $userRebate));
-                    //自动选择最大优惠券和满减
-                    $logic = new CouponLogic();
-                    $coupon = $logic->getMaxCoupon($goodsList,$userId);
-                    if(!empty($coupon)) {
-                        $couponPrice = $coupon['price'];
-                        $couponId = $coupon['id'];
-                    }
-                    //满减优惠
-                    $discountLogic = new DiscountLogic();
-                    $discount = $discountLogic->getMaxDiscount($goodsList);
-                    $discountPrice = $discount['price'];
                     //实付款
                     $payPrice = formatPrice($goodsTotalPrice + $sendPrice - $rebatePrice - $discountPrice - $couponPrice);
                     $payPrice = $payPrice > 0 ? $payPrice : 0;
                     $orderState = $payPrice > 0 ? 1 : 2;
                     //实付款为0的非普通商品直接发货
-                    if($buyType == 0 && $goods['type'] > 0 && $orderState == 2) {
+                    if($buyType == 0 && getGoodsInfo($goodsId,'','type')['type'] > 0 && $orderState == 2) {
                         $orderState = 3;
                         $data['express_type'] = 2;
                         $data['express_date'] = time();
@@ -679,8 +553,8 @@ class Order extends BaseLogic
                     $data['coupon_price'] = $couponPrice;
                     $data['rebate_price'] = $rebatePrice;
                     $data['discount_price'] = $discountPrice;
-                    $data['discount_integral'] = $discount['integral'];
-                    $data['discount_coupon_ids'] = $discount['coupon_ids'];
+                    $data['discount_integral'] = $discountIntegral;
+                    $data['discount_coupon_ids'] = $discountCouponIds;
                     $data['exchange_integral'] = $exchangeIntegral;
                     $data['exchange_price'] = $exchangePrice;
                     $data['user_commission'] = $totalCommission;
