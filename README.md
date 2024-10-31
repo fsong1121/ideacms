@@ -35,6 +35,11 @@ MySQL 5.6+
 账号：cx  
 密码：cx321  
 
+### 下载地址
+
+Gitee：https://gitee.com/ideacms/ideacms  
+GitCode：https://gitcode.com/ideacms/ideacms  
+
 ### 交流咨询
 
 官方网站：https://www.ideacms.net
