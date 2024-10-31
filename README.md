@@ -4,6 +4,7 @@
 
 <div align="center">
 
+[![Star](https://gitcode.com/ideacms/ideacms/star/badge.svg)](https://gitcode.com/ideacms/ideacms/overview)
 [![Gitee star](https://gitee.com/ideacms/shop/badge/star.svg?theme=gvp)](https://gitee.com/ideacms/shop/stargazers)
 [![Gitee fork](https://gitee.com/ideacms/shop/badge/fork.svg?theme=gvp)](https://gitee.com/ideacms/shop/members)
 [![License](https://img.shields.io/badge/license-Apache2.0-green)](https://gitee.com/ideacms/shop/blob/master/LICENSE)
