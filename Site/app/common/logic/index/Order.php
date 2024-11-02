@@ -691,6 +691,11 @@ class Order extends BaseLogic
                         Event::trigger('SendMessage',[
                             'sn' => $orderSn,
                             'type' => 'order',
+                            'state' => 'pay'
+                        ]);
+                        Event::trigger('SendMessage',[
+                            'sn' => $orderSn,
+                            'type' => 'order',
                             'state' => 'send'
                         ]);
                     }
