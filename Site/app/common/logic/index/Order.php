@@ -464,6 +464,7 @@ class Order extends BaseLogic
                 return $res;
             }
             Session::set('order_' . $userId,$res);
+            Cache::set('order_' . $userId,$res,600);
             return $res;
         } catch (\Exception $e) {
             return fail($e->getMessage());
@@ -484,7 +485,10 @@ class Order extends BaseLogic
             $time = time();
             $fillData = Session::get('order_' . $userId,'');
             if(empty($fillData)) {
-                return fail('订单提交失败');
+                $fillData = Cache::get('order_' . $userId,'');
+                if(empty($fillData)) {
+                    return fail('订单提交失败');
+                }
             }
             $fillData = $fillData['data'];
 

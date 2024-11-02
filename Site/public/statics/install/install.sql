@@ -770,7 +770,7 @@ CREATE TABLE `{PREFIX}order_goods` (
   `order_id` int(10) unsigned DEFAULT '0' COMMENT '订单ID',
   `goods_id` int(10) unsigned DEFAULT '0' COMMENT '商品ID',
   `spec_key` varchar(100) DEFAULT NULL COMMENT '规格key(暂时没用)',
-  `spec_key_name` varchar(255) DEFAULT '0' COMMENT '规格',
+  `spec_key_name` varchar(255) DEFAULT NULL COMMENT '规格',
   `price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '商品单价',
   `amount` int(10) unsigned DEFAULT '0' COMMENT '购买数量',
   `rebate_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '会员折扣',
