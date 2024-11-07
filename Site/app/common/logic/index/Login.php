@@ -10,10 +10,12 @@
 // +----------------------------------------------------------------------
 namespace app\common\logic\index;
 
-use app\common\service\JwtAuth as AuthService;
+use app\common\service\Auth as AuthService;
+use app\common\service\JwtAuth as JwtAuthService;
 use app\common\service\Wechat as WechatService;
 use app\common\logic\BaseLogic;
 use think\facade\Cache;
+use think\facade\Cookie;
 use think\facade\Event;
 use think\facade\Db;
 use think\api\Client;
@@ -41,7 +43,11 @@ class Login extends BaseLogic
                 ->where('pwd',makePassword($param['m_pwd']))
                 ->find();
             if (!empty($user)) {
-                return $this->setLogin($user['id']);
+                if ($user['is_work'] == 0) {
+                    return fail('此用户已被锁定');
+                } else {
+                    return $this->setLogin($user['id']);
+                }
             } else {
                 return fail('用户账号或密码错误');
             }
@@ -291,7 +297,7 @@ class Login extends BaseLogic
      */
     public function loginOut(string $token = '') : array
     {
-        $auth = new AuthService();
+        $auth = new JwtAuthService();
         return $auth->loginOut($token);
     }
 
@@ -353,11 +359,23 @@ class Login extends BaseLogic
      * 登录后获取token
      * @param int $user_id
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     private function setLogin(int $user_id) : array
     {
+        //普通登录
+        $user = Db::name('user')
+            ->where('id', $user_id)
+            ->find();
         $auth = new AuthService();
-        $res = $auth->login(['id'=>$user_id,'type'=>'user']);
+        $auth->setLogin('user',$user);
+        Cookie::set('user_uid', $user['uid'], 86400);
+        Cookie::set('user_pwd', $user['pwd'], 86400);
+        //jwt登录
+        $jwtAuth = new JwtAuthService();
+        $res = $jwtAuth->login(['id'=>$user_id,'type'=>'user']);
         if($res['code'] == 0) {
             header('token:' . $res['access_token']);
         }
