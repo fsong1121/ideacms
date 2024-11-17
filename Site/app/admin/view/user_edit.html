@@ -94,7 +94,7 @@
         </div>
         <input type="hidden" name="m_id" id="m_id" value="{$data.id}">
         <input type="hidden" name="m_uid" value="{$data.uid}">
-        <input type="hidden" name="m_pwd" value="{$data.pwd}">
+        <input type="hidden" name="m_pwd" value="{:empty($data.pwd) ? 0 : $data.pwd}">
         <div class="layui-form-item layui-hide">
             <input type="button" lay-submit lay-filter="LAY-submit" id="LAY-submit" value="确认">
         </div>
