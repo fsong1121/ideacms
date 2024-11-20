@@ -190,18 +190,26 @@ class Idea extends TagLib
     public function tagCategory(array $tag, string $content) : string
     {
         $name = $tag['name']; //必填,标签前缀
+        $size = empty($tag['size']) ? 10 : $tag['size'];  //显示条数
         $field = empty($tag['field']) ? "*" : $tag['field'];  //查询字段
         $id = empty($tag['id']) ? 0 : $tag['id'];  //查询ID,可以是多个
         $type = empty($tag['type']) ? 'goods' : $tag['type'];  //类型 article:文章 goods:商品
-        $parent = empty($tag['parent']) ? 0 : $tag['parent'];  //上级
+        $parent = empty($tag['parent']) ? 0 : $tag['parent'];  //上级(可以是数字，也可以是变量(嵌套))
 
-        $sql = "select ".$field." from ".env('DB_PREFIX', 'idea_'). $type . "_category where is_show = 1 and parent_id = " . $parent;
+        $sql = "select " . $field . " from " . env('DB_PREFIX', 'idea_') . $type . "_category where is_show = 1";
+        if(is_numeric($parent)) {
+            $sql = $sql . " and parent_id = " . $parent;
+        } else {
+            $parent = $this->autoBuildVar($parent);
+            $sql = $sql . " and parent_id = \".".$parent.".\"";
+        }
         //所属ID
         if (!empty($id)) {
             $sql = $sql . " and id in(".$id.")";
         }
         //排序
         $sql = $sql . " order by is_top desc,sequence desc,id desc";
+        $sql = $sql . " limit " . $size;
         //没有找到显示的内容
         $empty  = $tag['empty'] ?? '';
 

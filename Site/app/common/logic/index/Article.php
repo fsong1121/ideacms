@@ -31,6 +31,12 @@ class Article extends BaseLogic
             if(!empty($data)) {
                 $data->save(['hits'=>$data['hits']+1]);
                 $data['y_cat_id'] = $data->getData('cat_id');
+                $articleCategory = Db::name('article_category')
+                    ->where('id',$data['y_cat_id'])
+                    ->find();
+                $topCatId = $articleCategory['parent_id'] > 0 ? $articleCategory['parent_id'] : $articleCategory['id'];
+                $data['top_cat_id'] = $topCatId;
+                $data['top_cat_title'] = Db::name('article_category')->where('id',$topCatId)->value('title');
                 $res['data'] = $data;
             } else {
                 $res = fail('文章不存在');
@@ -49,21 +55,21 @@ class Article extends BaseLogic
     {
         try {
             $list = ArticleModel::where('is_show', 1);
-            if($param['keys'] != '') {
+            if(isset($param['keys']) && $param['keys'] != '') {
                 $list = $list->where('title','like','%'.$param['keys'].'%');
             }
             //所属ID
-            if (!empty($param['id'])) {
+            if (isset($param['id']) && !empty($param['id'])) {
                 $list = $list->where('id','in',$param['id']);
             }
             //所属分类
-            if (!empty($param['cat'])) {
+            if (isset($param['cat']) && !empty($param['cat'])) {
                 $childCat = Db::name('article_category')->where('parent_id',$param['cat'])->column('id');
                 array_push($childCat,$param['cat']);
                 $list = $list->where('cat_id','in',$childCat);
             }
             //字段
-            if (!empty($param['field'])) {
+            if (isset($param['field']) && !empty($param['field'])) {
                 $list = $list->field($param['field']);
             }
             $list = $list->order(['is_top'=>'desc','sequence'=>'desc','id'=>'desc'])
@@ -78,12 +84,18 @@ class Article extends BaseLogic
                 'code' => 0,
                 'msg' => 'success',
                 'count' => $list['total'],
+                'per_page' => $list['per_page'],
+                'current_page' => $list['current_page'],
                 'data' => $list['data']
             ];
             if (!empty($param['cat'])) {
-                $data['cat_title'] = Db::name('article_category')
+                $articleCategory = Db::name('article_category')
                     ->where('id',$param['cat'])
-                    ->value('title');
+                    ->find();
+                $data['cat_title'] = $articleCategory['title'];
+                $topCatId = $articleCategory['parent_id'] > 0 ? $articleCategory['parent_id'] : $articleCategory['id'];
+                $data['top_cat_id'] = $topCatId;
+                $data['top_cat_title'] = Db::name('article_category')->where('id',$topCatId)->value('title');
             }
             return $data;
         } catch (\Exception $e) {

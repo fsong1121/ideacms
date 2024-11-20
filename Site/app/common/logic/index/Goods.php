@@ -41,7 +41,33 @@ class Goods extends BaseLogic
             $data['y_cat_id'] = $data->getData('cat_id');
             $data['sales'] = $data['sales'] + $data['initial_sales'];
             //规格
-            $data['spec_str'] = json_decode($data['spec_str'], true);
+            $specKeyArr = [];
+            $specStrArr = json_decode($data['spec_str'], true);
+            //多规格
+            if($data['multi_spec'] == 1) {
+                foreach ($specStrArr as $key => $value) {
+                    foreach ($value['items'] as $k => $v) {
+                        if($v['select'] == 0) {
+                            unset($specStrArr[$key]['items'][$k]);
+                        } else {
+                            if(!isset($specKeyArr[$key])) {
+                                $specKeyArr[$key] = $v['title'];
+                            }
+                        }
+                    }
+                }
+            }
+            $data['spec_str'] = $specStrArr;
+            $data['spec_key'] = implode('-',$specKeyArr);
+            //根据规格初始化价格，库存
+            $goodsPrice = GoodsPriceModel::where('goods_id',$data['id'])
+                ->where('spec_key',$data['spec_key'])
+                ->find();
+            if(!empty($goodsPrice)) {
+                $data['price'] = $goodsPrice['price'];
+                $data['market_price'] = $goodsPrice['market_price'];
+                $data['stock'] = $goodsPrice['stock'];
+            }
             //服务
             $data['service'] = Db::name('service')
                 ->field('id,title,info')
@@ -106,55 +132,65 @@ class Goods extends BaseLogic
     public function readList(array $param = []) : array
     {
         try {
+            $catTitle = '';
+            $parentCatId = 0;
             $list = GoodsModel::where('is_delete',0)
                 ->where('is_sale', 1);
-            if($param['keys'] != '') {
+            if(isset($param['keys']) && $param['keys'] != '') {
                 $list = $list->where('title','like','%'.$param['keys'].'%');
             }
             //所属ID
-            if (!empty($param['id'])) {
+            if (isset($param['id']) && !empty($param['id'])) {
                 $list = $list->where('id','in',$param['id']);
             }
             //所属分类
-            if (!empty($param['cat'])) {
+            if (isset($param['cat']) && !empty($param['cat'])) {
                 $childCat = Db::name('goods_category')->where('parent_id',$param['cat'])->column('id');
+                $parentCatId = !empty($childCat) ? $param['cat'] : Db::name('goods_category')->where('id',$param['cat'])->value('parent_id');
                 foreach ($childCat as $v) {
                     $childCat = array_merge($childCat,Db::name('goods_category')->where('parent_id',$v)->column('id'));
                 }
                 array_push($childCat,$param['cat']);
                 $list = $list->where('cat_id','in',$childCat);
+                $catTitle = Db::name('goods_category')
+                    ->where('id',$param['cat'])
+                    ->value('title');
             }
             //所属品牌
-            if (!empty($param['brand'])) {
+            if (isset($param['brand']) && !empty($param['brand'])) {
                 $list = $list->where('brand_id','in',$param['brand']);
             }
             //商品类型
-            if (!empty($param['type'])) {
+            if (isset($param['type']) && !empty($param['type'])) {
                 $list = $list->where('type','in',$param['type']);
             }
             //活动类型
-            if(!empty($param['activity_type'])) {
+            if(isset($param['activity_type']) && !empty($param['activity_type'])) {
                 switch ($param['activity_type']) {
                     case "free" :
                         $list = $list->where('express_type',0);
+                        $catTitle = '包邮商品';
                         break;
                     case "top" :
                         $list = $list->where('is_top',1);
+                        $catTitle = '精品推荐';
                         break;
                     case "new" :
                         $list = $list->where('is_new',1);
+                        $catTitle = '新品推荐';
                         break;
                     case "hot" :
                         $list = $list->where('is_hot',1);
+                        $catTitle = '热卖商品';
                         break;
                 }
             }
             //字段
-            if (!empty($param['field'])) {
+            if (isset($param['field']) && !empty($param['field'])) {
                 $list = $list->field($param['field']);
             }
             //排序
-            if (!empty($param['order'])) {
+            if (isset($param['order']) && !empty($param['order'])) {
                 $list = $list->order($param['order'],$param['order_type']);
             }
             $list = $list->order('sequence', 'desc')
@@ -164,13 +200,12 @@ class Goods extends BaseLogic
                 'code' => 0,
                 'msg' => '',
                 'count' => $list['total'],
+                'per_page' => $list['per_page'],
+                'current_page' => $list['current_page'],
                 'data' => $list['data']
             ];
-            if (!empty($param['cat'])) {
-                $data['cat_title'] = Db::name('goods_category')
-                    ->where('id',$param['cat'])
-                    ->value('title');
-            }
+            $data['cat_title'] = $catTitle;
+            $data['parent_cat_id'] = $parentCatId;
             return $data;
         } catch (\Exception $e) {
             return fail($e->getMessage());
@@ -228,6 +263,8 @@ class Goods extends BaseLogic
             'code' => 0,
             'msg' => '',
             'count' => $list['total'],
+            'per_page' => $list['per_page'],
+            'current_page' => $list['current_page'],
             'data' => $list['data']
         ];
     }

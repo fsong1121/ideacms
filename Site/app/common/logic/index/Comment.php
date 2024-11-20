@@ -97,6 +97,8 @@ class Comment extends BaseLogic
                 'code' => 0,
                 'msg' => '',
                 'count' => $list['total'],
+                'per_page' => $list['per_page'],
+                'current_page' => $list['current_page'],
                 'data' => $list['data']
             ];
         } catch (\Exception $e) {
