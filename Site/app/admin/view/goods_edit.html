@@ -48,7 +48,7 @@
 									<select name="m_cat" lay-verify="required">
 										<option value="">请选择分类</option>
 										{volist name="catList" id="cat"}
-										<option value="{$cat.id}" {eq name="$data->getData('cat_id')" value="$cat.id"}selected{/eq}>{gt name="$cat.deep" value="1"}{gt name="$cat.deep" value="2"}&ensp;{/gt}&ensp;└&ensp;{/gt}{$cat.title}</option>
+										<option value="{$cat.id}" {eq name="$data->getData('cat_id')" value="$cat.id"}selected{/eq}>{gt name="$cat.deep" value="1"}{for start="1" end="$cat.deep"}└{/for}&ensp;{/gt}{$cat.title}</option>
 										{/volist}
 									</select>
 								</div>

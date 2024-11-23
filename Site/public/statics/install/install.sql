@@ -450,7 +450,7 @@ CREATE TABLE `{PREFIX}goods` (
   `initial_sales` int(10) unsigned DEFAULT '0' COMMENT '原始销量',
   `sales` int(10) unsigned DEFAULT '0' COMMENT '总销量',
   `multi_spec` tinyint(1) unsigned DEFAULT '0' COMMENT '是否多规格',
-  `spec_str` varchar(500) DEFAULT NULL COMMENT '规格JSON字符串',
+  `spec_str` text COMMENT '规格JSON字符串',
   `service_ids` varchar(200) DEFAULT NULL COMMENT '服务承诺',
   `info` text COMMENT '商品介绍',
   `other_info` text COMMENT '包装等说明',
