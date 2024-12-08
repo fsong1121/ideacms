@@ -17,6 +17,8 @@
 				<div style="padding-bottom: 10px;">
 					<a class="layui-btn layui-btn-normal btn-top" href="{:url('admin/goods/create')}">添加商品</a>
 					<button class="layui-btn layui-btn-info btn-top" data-type="batchDel">批量删除</button>
+					<button class="layui-btn layui-btn-info btn-top" data-type="batchUp">批量上架</button>
+					<button class="layui-btn layui-btn-info btn-top" data-type="batchDown">批量下架</button>
 					<div class="layui-form search_ctr">
 						<div class="layui-form-item">
 							<div class="layui-inline">
@@ -305,6 +307,84 @@
 							layer.closeAll();
 							if(res.code == 0){
 								let msg = res.msg == 'success' ? '删除成功' : res.msg;
+								layer.msg(msg, {
+									time: 2000
+								}, function(){
+									table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+								});
+							}
+							else {
+								layer.msg(res.msg);
+							}
+						}
+					});
+				});
+			},
+			batchUp: function(){
+				let checkStatus = table.checkStatus('LAY-table');
+				let checkData = checkStatus.data //得到选中的数据
+				let ids = "0";
+				if(checkData.length === 0){
+					return layer.msg('请选择数据');
+				}
+				$.each(checkData,function(key,value){
+					ids = ids + "," + checkData[key]['id'];
+				});
+				layer.confirm('确定要批量上架吗？', function(index) {
+					$.ajax({
+						type:"post",
+						url:"{:url('setSale')}",
+						data: {
+							m_id:ids,
+							m_sale:1
+						},
+						dataType:"json",
+						beforeSend: function () {
+							layer.load(1);
+						},
+						success:function(res){
+							layer.closeAll();
+							if(res.code == 0){
+								let msg = res.msg == 'success' ? '批量上架成功' : res.msg;
+								layer.msg(msg, {
+									time: 2000
+								}, function(){
+									table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+								});
+							}
+							else {
+								layer.msg(res.msg);
+							}
+						}
+					});
+				});
+			},
+			batchDown: function(){
+				let checkStatus = table.checkStatus('LAY-table');
+				let checkData = checkStatus.data //得到选中的数据
+				let ids = "0";
+				if(checkData.length === 0){
+					return layer.msg('请选择数据');
+				}
+				$.each(checkData,function(key,value){
+					ids = ids + "," + checkData[key]['id'];
+				});
+				layer.confirm('确定要批量下架吗？', function(index) {
+					$.ajax({
+						type:"post",
+						url:"{:url('setSale')}",
+						data: {
+							m_id:ids,
+							m_sale:0
+						},
+						dataType:"json",
+						beforeSend: function () {
+							layer.load(1);
+						},
+						success:function(res){
+							layer.closeAll();
+							if(res.code == 0){
+								let msg = res.msg == 'success' ? '批量下架成功' : res.msg;
 								layer.msg(msg, {
 									time: 2000
 								}, function(){
