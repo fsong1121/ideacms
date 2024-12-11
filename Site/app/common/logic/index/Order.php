@@ -199,6 +199,8 @@ class Order extends BaseLogic
             $freeTotal = 0;        //参与满额包邮总金额
             $weightTotal = 0;      //总重量
             $volumeTotal = 0;      //总体积
+            $exchangeIntegral = 0; //可使用积分
+            $exchangePrice = 0;    //积分抵扣费用
             $userRebate = getUserLevel($userId)['rebate'] / 100;
             $goodsList = [];
             if($buyType == 0) {
@@ -397,6 +399,19 @@ class Order extends BaseLogic
             $payPrice = $goodsTotalPrice + $sendPrice - $rebatePrice - $discountPrice - $couponPrice;
             $payPrice = $payPrice > 0 ? $payPrice : 0;
             $res['data']['payPrice'] = formatPrice($payPrice);
+            //积分抵扣
+            $user = Db::name('user')->where('id',$userId)->find();
+            if($payPrice > 0) {
+                if(config('shop.is_exchange') == 1 && $user['integral'] >= config('shop.mini_integral')) {
+                    $userIntegralPrice = formatPrice($user['integral'] / config('shop.exchange_ratio'));
+                    $maxExchangePrice = formatPrice($goodsTotalPrice * config('shop.use_ratio') / 100);
+                    $exchangePrice = $maxExchangePrice > $payPrice ? $payPrice : $maxExchangePrice;
+                    $exchangePrice = $exchangePrice > $userIntegralPrice ? $userIntegralPrice : $exchangePrice;
+                    $exchangeIntegral = ceil($exchangePrice * config('shop.exchange_ratio'));
+                }
+            }
+            $res['data']['exchangeIntegral'] = $exchangeIntegral;
+            $res['data']['exchangePrice'] = formatPrice($exchangePrice);
 
             //参数保存
             $res['data']['params'] = [
@@ -508,6 +523,7 @@ class Order extends BaseLogic
             $sendType = $param['send_type'] ?? 1;                 //配送方式
             $info = $param['info'] ?? '';                         //备注
             $terminal = $param['terminal'] ?? 1;                  //来源
+            $isExchange = $param['is_exchange'] ?? 0;             //是否积分抵扣
             $goodsTotalPrice = $fillData['goodsPrice'];           //商品金额
             $totalCommission = $fillData['totalCommission'];      //订单佣金
             $totalIntegral = $fillData['totalIntegral'];          //订单积分
@@ -519,9 +535,9 @@ class Order extends BaseLogic
             $discountIntegral = $fillData['discountIntegral'];    //满减优惠
             $couponPrice = $fillData['couponPrice'];              //优惠券抵扣
             $couponId = $fillData['couponId'];                    //优惠券ID
-            $exchangeIntegral = 0; //兑换积分
-            $exchangePrice = 0;    //积分抵扣费用
-            $activityState = 1;    //活动订单状态
+            $exchangeIntegral = $fillData['exchangeIntegral'];    //兑换积分
+            $exchangePrice = $fillData['exchangePrice'];          //积分抵扣费用
+            $activityState = 1;                                   //活动订单状态
 
             $orderSn = makeOrderSn();
             $goodsList = $fillData['goodsList'];
@@ -531,6 +547,9 @@ class Order extends BaseLogic
                 if (!empty($goodsList)) {
                     //实付款
                     $payPrice = formatPrice($goodsTotalPrice + $sendPrice - $rebatePrice - $discountPrice - $couponPrice);
+                    if($isExchange > 0) {
+                        $payPrice = formatPrice($goodsTotalPrice + $sendPrice - $rebatePrice - $discountPrice - $couponPrice - $exchangePrice);
+                    }
                     $payPrice = $payPrice > 0 ? $payPrice : 0;
                     $orderState = $payPrice > 0 ? 1 : 2;
                     //实付款为0的非普通商品直接发货
@@ -652,6 +671,16 @@ class Order extends BaseLogic
                                 'use_date' => time(),
                                 'order_sn' => $orderSn
                             ]);
+                    }
+                    //如果普通订单使用积分抵扣
+                    if($orderType != 'integral' && $isExchange > 0 && $data['exchange_integral'] > 0) {
+                        $res1 = self::saveUserAccount($userId,$data['exchange_integral'] * -1,0,'订单:'.$orderSn.'积分抵扣');
+                        if($res1['code'] != 0) {
+                            // 回滚事务
+                            Db::rollback();
+                            $res['code'] = 500;
+                            $res['msg'] = $res1['msg'];
+                        }
                     }
                     //如果是积分订单就扣积分
                     if($orderType == 'integral') {
