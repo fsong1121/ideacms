@@ -456,6 +456,12 @@ if (!function_exists('getGoodsInfo')) {
                 ->where('goods_id', $goods_id)
                 ->where('spec_key', $spec_key)
                 ->find();
+            if (empty($specGoods)) {
+                $specGoods = Db::name('goods_price')
+                    ->where('goods_id', $goods_id)
+                    ->where('stock','>',0)
+                    ->find();
+            }
             if (!empty($specGoods)) {
                 $data['price'] = $specGoods['price'];
                 $data['market_price'] = $specGoods['market_price'];
