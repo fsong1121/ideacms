@@ -44,6 +44,9 @@
 					<div class="pic"><img src="{{d.pic}}" title="点击放大" lay-event="show"></div>
 					<div class="show_pic" id="pic{{d.id}}"><img src="{{d.pic}}"></div>
 				</script>
+				<script type="text/html" id="title">
+					<div class="order_goods_title">{{d.title}}</div>
+				</script>
 				<script type="text/html" id="type">
 					{{#  if(d.type == 0){ }}普通商品{{#  } }}
 					{{#  if(d.type == 1){ }}卡密/网盘{{#  } }}
@@ -84,7 +87,7 @@
 				{type: 'checkbox', fixed: 'left'}
 				,{field: 'id', width: 80, title: 'ID', sort: true}
 				,{field: 'pic', width: 90, title: '图片', templet: '#pic', align:'center'}
-				,{field: 'title', minWidth:220, title: '标题'}
+				,{field: 'title', minWidth:220, title: '标题', templet: '#title'}
 				,{field: 'cat_id', width: 140, title: '分类'}
 				,{field: 'type', width: 100, title: '类型', templet: '#type'}
 				,{field: 'price', width: 100, title: '价格', sort: true}
