@@ -440,7 +440,7 @@ CREATE TABLE `{PREFIX}goods` (
   `express_template_id` int(10) unsigned DEFAULT '0' COMMENT '运费模板ID(非免邮商品使用)',
   `spu` varchar(200) DEFAULT NULL COMMENT '商品编码',
   `pic` varchar(200) DEFAULT NULL COMMENT '图片',
-  `slide` varchar(500) DEFAULT NULL COMMENT '幻灯片',
+  `slide` text COMMENT '幻灯片',
   `video` varchar(200) DEFAULT NULL COMMENT '视频地址',
   `video_pic` varchar(200) DEFAULT NULL COMMENT '视频图片',
   `price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '价格',
