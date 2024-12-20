@@ -372,7 +372,7 @@ class Login extends BaseLogic
         $auth = new AuthService();
         $auth->setLogin('user',$user);
         Cookie::set('user_uid', $user['uid'], 86400);
-        Cookie::set('user_pwd', $user['pwd'], 86400);
+        Cookie::set('user_pwd', empty($user['pwd']) ? '' : $user['pwd'], 86400);
         //jwt登录
         $jwtAuth = new JwtAuthService();
         $res = $jwtAuth->login(['id'=>$user_id,'type'=>'user']);
