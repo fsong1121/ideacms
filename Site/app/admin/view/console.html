@@ -99,6 +99,14 @@
                 </div>
             </div>
         </div>
+        <!--官网动态，不需要可以删除-->
+        <div class="m_ctr">
+            <div class="home_news_ctr">
+                <div class="home_news_title">官网动态：</div>
+                <div class="home_news_ctt" id="news"></div>
+                <div class="home_news_more"><a href="https://www.ideacms.net" target="_blank">更多></a></div>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -359,6 +367,21 @@
                     option.series[0].data = res.data;
 
                     option && myChart.setOption(option);
+                }
+            });
+            //获取官网动态
+            let url = window.location.hostname;
+            $.ajax({
+                type:"post",
+                url:"https://www.ideacms.net/api/v1.index.news/getNewsList.html",
+                data: {
+                    url:url
+                },
+                dataType:"json",
+                success:function(res){
+                    if(res.code == 0 && $('#news')) {
+                        $('#news').html('<a href="https://www.ideacms.net/index/article/detail.html?id='+res.data[0]['id']+'" target="_blank">'+res.data[0]['title']+'</a>');
+                    }
                 }
             });
         });

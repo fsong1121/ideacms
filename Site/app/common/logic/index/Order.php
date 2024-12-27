@@ -611,6 +611,27 @@ class Order extends BaseLogic
                         }
                     }
 
+                    //抽奖订单
+                    $res1 = Event::trigger('raffleOrder',[
+                        'goods_id' => $goodsId,
+                        'amount' => $amount,
+                        'data' => $data,
+                        'goods_list' => $goodsList
+                    ]);
+                    if(!empty($res1)) {
+                        if($res1[0]['code'] == 0) {
+                            $data = $res1[0]['data'];
+                            $goodsList = $res1[0]['goods_list'];
+                            $orderState = $data['order_state'];
+                            $discountPrice = $data['discount_price'];
+                            $couponPrice = $data['coupon_price'];
+                            $exchangeIntegral = $data['exchange_integral'];
+                            $exchangePrice = $data['exchange_price'];
+                        } else {
+                            return fail($res1[0]['msg']);
+                        }
+                    }
+
                     //添加订单
                     $orderId = Db::name('order')->insertGetId($data);
                     //添加订单明细
