@@ -666,13 +666,12 @@ class Order extends BaseLogic
                             ->inc('version')
                             ->update();
                         if ($update > 0) {
-                            if (!empty($v['spec_key'])) {
-                                Db::name('goods_price')
-                                    ->where(['goods_id' => $v['goods_id'], 'spec_key' => $v['spec_key']])
-                                    ->inc('sales', $v['amount'])
-                                    ->dec('stock', $v['amount'])
-                                    ->update();
-                            }
+                            //更新规格销量库存
+                            Db::name('goods_price')
+                                ->where(['goods_id' => $v['goods_id'], 'spec_key' => $v['spec_key']])
+                                ->inc('sales', $v['amount'])
+                                ->dec('stock', $v['amount'])
+                                ->update();
                             //如果是购物车提交就删除已购买商品
                             if ($buyType == 1) {
                                 Db::name('cart')->where(['user_id' => $userId, 'goods_id' => $v['goods_id'], 'spec_key' => $v['spec_key']])->delete();
