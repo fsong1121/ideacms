@@ -23,6 +23,52 @@ use think\api\Client;
 class Login extends BaseLogic
 {
     /**
+     * 账号注册
+     * @param array $param
+     * @return array
+     */
+    public function register(array $param) : array
+    {
+        try {
+            if(empty($param['m_uid']) || empty($param['m_pwd'])) {
+                return fail('账号或密码为空');
+            }
+            if(isset($param['m_captcha'])) {
+                if(!captcha_check($param['m_captcha'])){
+                    return fail('验证码错误');
+                }
+            }
+            $user = Db::name('user')
+                ->where('uid', $param['m_uid'])
+                ->find();
+            if (empty($user)) {
+                //添加会员
+                $pid = $param['pid'];
+                $parentUser = Db::name('user')->where('id', $pid)->find();
+                if (!empty($parentUser) && $parentUser['is_fx'] == 0) {
+                    $pid = 0;
+                }
+                $data = [
+                    'uuid' => makeUuid(),
+                    'uid' => $param['m_uid'],
+                    'pwd' => makePassword($param['m_pwd']),
+                    'pid' => $pid,
+                    'is_work' => 1,
+                    'add_date' => time()
+                ];
+                $userId = Db::name('user')->insertGetId($data);
+                //注册成功后事件
+                Event::trigger('RegSuccess',['user_id' => $userId]);
+                return $this->setLogin($userId);
+            } else {
+                return fail('此账号已存在');
+            }
+        } catch (\Exception $e) {
+            return fail($e->getMessage());
+        }
+    }
+
+    /**
      * 账号登录
      * @param array $param
      * @return array

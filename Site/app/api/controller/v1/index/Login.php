@@ -38,6 +38,27 @@ class Login extends Base
     }
 
     /**
+     * 保存账号注册
+     * @return Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function saveRegister() : Json
+    {
+        if(Request::isPost()) {
+            $res = $this->setParam(Request::param(),0);
+            if($res['code'] == 0) {
+                $logic = new LoginLogic();
+                $res = $logic->register($res['data']);
+            }
+            return json($res);
+        } else {
+            return json(fail('非法提交被禁止'));
+        }
+    }
+
+    /**
      * 发送手机验证码
      * @return Json
      * @throws \think\api\Exception
