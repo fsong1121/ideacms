@@ -91,10 +91,31 @@ class UserLabel extends Base
     {
         $ids = explode(",", $ids);
         try {
-            Db::name('user')->where('label_id','in',$ids)->update(['label_id' => 0]);
-            Db::name('coupon')->where('white_label_id','in',$ids)->update(['white_label_id' => 0]);
-            Db::name('coupon')->where('black_label_id','in',$ids)->update(['black_label_id' => 0]);
-            UserLabelModel::destroy($ids);
+            foreach ($ids as $value) {
+                if(!empty($value)) {
+                    //先更新会员标签
+                    $userList = Db::name('user')
+                        ->whereFindInSet('label_id', $value)
+                        ->select()
+                        ->toArray();
+                    foreach ($userList as $v) {
+                        $labelArr = explode(',', $v['label_id']);
+                        foreach ($labelArr as $k1 => $v1) {
+                            if ($value == $v1) {
+                                unset($labelArr[$k1]);
+                            }
+                        }
+                        Db::name('user')
+                            ->where('id', $v['id'])
+                            ->update(['label_id' => implode(',', $labelArr)]);
+                    }
+                    //更新其他数据
+                    Db::name('coupon')->where('white_label_id', $value)->update(['white_label_id' => 0]);
+                    Db::name('coupon')->where('black_label_id', $value)->update(['black_label_id' => 0]);
+                    //删除标签
+                    UserLabelModel::where('id', $value)->delete();
+                }
+            }
             return success();
         }
         catch (\Exception $e){
