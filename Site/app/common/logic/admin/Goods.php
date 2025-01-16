@@ -128,10 +128,6 @@ class Goods extends Base
             $list->save($data);
             $goodsId = $list->id;
             //添加规格价格
-            if(isset($param['m_id'])) {
-                //如果是编辑先删除现有规格，暂时这样处理
-                GoodsPriceModel::destroy(['goods_id' => $goodsId]);
-            }
             $allStock = 0;
             $specList = [];
             $item_picture = explode(",", $param['m_item_picture']);
@@ -145,6 +141,12 @@ class Goods extends Base
             $item_card = explode(",", $param['m_item_card']);
             $item_spec_key = explode(",", $param['m_item_spec_key']);
             $item_spec_key_name = explode(",", $param['m_item_spec_key_name']);
+            //如果是编辑先删除原来无效的规格
+            if(isset($param['m_id'])) {
+                GoodsPriceModel::where('goods_id',$goodsId)
+                    ->where('spec_key','not in',$item_spec_key)
+                    ->delete();
+            }
             //如果是卡密商品
             if($param['m_type'] == 1) {
                 foreach ($item_card as $value) {
@@ -167,9 +169,24 @@ class Goods extends Base
                 $specList[$key]['pic'] = str_replace(request()->domain(),'',str_replace('/upload/pic/','',$item_picture[$key]));
                 $specList[$key]['stock'] = $item_stock[$key];
                 $allStock = $allStock + $specList[$key]['stock'];
+                if(isset($param['m_id'])) {
+                    //编辑
+                    $yGoodsPrice = GoodsPriceModel::where('goods_id',$goodsId)
+                        ->where('spec_key',$value)
+                        ->find();
+                    if(!empty($yGoodsPrice)) {
+                        //更新
+                        GoodsPriceModel::update($specList[$key],['id'=>$yGoodsPrice['id']]);
+                    } else {
+                        //新增
+                        GoodsPriceModel::create($specList[$key]);
+                    }
+
+                } else {
+                    //新增
+                    GoodsPriceModel::create($specList[$key]);
+                }
             }
-            $specPrice = new GoodsPriceModel();
-            $specPrice->saveAll($specList);
             $goodsPrice = GoodsPriceModel::where('goods_id',$goodsId)
                 ->order('price','asc')
                 ->find()
