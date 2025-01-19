@@ -113,12 +113,8 @@ class Goods extends Base
         $res = $this->setParam(Request::param());
         if($res['code'] == 0) {
             $param = $res['data'];
-            if(!empty($param['user_id'])) {
-                $logic = new GoodsLogic();
-                $res = $logic->getMiniappQrcode($param);
-            } else {
-                $res = fail('请先登录',401);
-            }
+            $logic = new GoodsLogic();
+            $res = $logic->getMiniappQrcode($param);
         }
         return json($res);
     }
