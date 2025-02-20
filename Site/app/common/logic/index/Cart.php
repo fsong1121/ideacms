@@ -72,6 +72,8 @@ class Cart extends BaseLogic
                 if (!empty($goodsPrice)) {
                     if ($goodsPrice['stock'] > 0) {
                         $amount = $param['amount'] > $goodsPrice['stock'] ? $goodsPrice['stock'] : $param['amount'];
+                        $amount = is_numeric($amount) ? $amount : 1;
+                        $amount = $amount > 0 ? ceil($amount) : 1;
                         $cart = CartModel::where('user_id', $param['user_id'])
                             ->where('goods_id', $param['goods_id'])
                             ->where('spec_key', $param['spec_key'])
@@ -126,6 +128,8 @@ class Cart extends BaseLogic
                     ->where('spec_key',$cart['spec_key'])
                     ->find();
                 $amount = $param['amount'] > $goodsPrice['stock'] ? $goodsPrice['stock'] : $param['amount'];
+                $amount = is_numeric($amount) ? $amount : 1;
+                $amount = $amount > 0 ? ceil($amount) : 1;
                 CartModel::update(['amount' => $amount], ['user_id' => $param['user_id'], 'id' => $param['id']]);
             } else {
                 $res['code'] = 500;

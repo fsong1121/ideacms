@@ -205,6 +205,8 @@ class Order extends BaseLogic
             $goodsList = [];
             if($buyType == 0) {
                 //直接购买
+                $amount = is_numeric($amount) ? $amount : 1;
+                $amount = $amount > 0 ? ceil($amount) : 1;
                 $goods = getGoodsInfo($goodsId,$specKey,'id,title,pic,type,is_sale,is_delete,express_type,express_price,express_template_id,is_full_free,commission,integral,growth');
                 if(!empty($goods) && $goods['is_sale'] == 1 && $goods['is_delete'] == 0) {
                     $amount = $amount > $goods['stock'] ? $goods['stock'] : $amount;
