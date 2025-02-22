@@ -24,8 +24,12 @@ class Ads extends BaseLogic
     {
         try {
             $list = AdsModel::where('type',$param['type'])
-                ->where('is_show', 1)
-                ->order('sequence,id', 'desc')
+                ->where('is_show', 1);
+            //所属ID
+            if (isset($param['id']) && !empty($param['id'])) {
+                $list = $list->where('id','in',$param['id']);
+            }
+            $list = $list->order('sequence,id', 'desc')
                 ->paginate($param['size'])
                 ->toArray();
             return [
