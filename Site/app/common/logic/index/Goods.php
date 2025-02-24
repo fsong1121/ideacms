@@ -186,8 +186,11 @@ class Goods extends BaseLogic
                 }
             }
             //字段
-            if (isset($param['field']) && !empty($param['field'])) {
-                $list = $list->field($param['field']);
+            if (isset($param['field'])) {
+                $param['field'] = preg_replace('/[^a-zA-Z0-9_,]/', '', $param['field']);
+                if(!empty($param['field'])) {
+                    $list = $list->field($param['field']);
+                }
             }
             //排序
             if (isset($param['order']) && !empty($param['order'])) {

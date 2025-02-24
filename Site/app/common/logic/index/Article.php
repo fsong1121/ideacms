@@ -69,8 +69,11 @@ class Article extends BaseLogic
                 $list = $list->where('cat_id','in',$childCat);
             }
             //字段
-            if (isset($param['field']) && !empty($param['field'])) {
-                $list = $list->field($param['field']);
+            if (isset($param['field'])) {
+                $param['field'] = preg_replace('/[^a-zA-Z0-9_,]/', '', $param['field']);
+                if(!empty($param['field'])) {
+                    $list = $list->field($param['field']);
+                }
             }
             $list = $list->order(['is_top'=>'desc','sequence'=>'desc','id'=>'desc'])
                 ->paginate($param['size'])
