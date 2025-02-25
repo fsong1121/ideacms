@@ -19,13 +19,16 @@ location /h5 {
 <IfModule mod_rewrite.c>
   Options +FollowSymlinks -Multiviews
   RewriteEngine On
-
-  RewriteCond %{REQUEST_URI} ^/(h5|h5/.*)$
-  RewriteRule ^/h5/index.html$ - [L,NC]
-
-  RewriteCond %{REQUEST_FILENAME} !-d
+  # H5前端路由（Vue/React等）
+  RewriteCond %{REQUEST_URI} ^/h5(/.*)?$
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ /h5/index.html [L]
+  
+  # ThinkPHP入口文件处理
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ index.php/$1 [L]
 </IfModule>
 
 
