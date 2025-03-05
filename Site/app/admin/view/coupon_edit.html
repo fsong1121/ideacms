@@ -33,6 +33,9 @@
             </div>
             <div class="layui-form-mid layui-word-aux">元</div>
         </div>
+        {eq name="$data.type" value="4"}
+        <input type="hidden" name="m_amount" value="{$data.send_amount}">
+        {else}
         <div class="layui-form-item">
             <label class="layui-form-label"><span>*</span> 发放数量：</label>
             <div class="layui-input-inline w150">
@@ -40,6 +43,7 @@
             </div>
             <div class="layui-form-mid layui-word-aux">正整数且>={$data.send_amount}</div>
         </div>
+        {/eq}
         <div class="layui-form-item">
             <label class="layui-form-label"><span>*</span> 领取上限：</label>
             <div class="layui-input-inline w150">
