@@ -185,7 +185,7 @@ class Coupon extends Base
     }
 
     /**
-     * 指定发放
+     * 导入优惠券
      * @return string
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -206,7 +206,7 @@ class Coupon extends Base
     }
 
     /**
-     * 保存发放
+     * 保存导入
      * @return Json
      */
     public function saveImport() : Json
