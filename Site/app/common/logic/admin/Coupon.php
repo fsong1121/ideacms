@@ -268,4 +268,81 @@ class Coupon extends Base
         }
     }
 
+    /**
+     * 执行导入
+     * @param array $param
+     * @return array
+     */
+    public function saveImport(array $param = []) : array
+    {
+        // 启动事务
+        Db::startTrans();
+        try {
+            $dataListArr = explode(',',$param['m_data']);
+            $saveData = [];
+            $coupon = Db::name('coupon')
+                ->where('id',$param['m_coupon_id'])
+                ->find();
+            if(!empty($coupon)) {
+                foreach ($dataListArr as $value) {
+                    $data = Db::name('coupon_user')
+                        ->where('coupon_sn', $value)
+                        ->find();
+                    if (empty($data) && !empty($value)) {
+                        array_push($saveData, [
+                            'coupon_sn' => $value,
+                            'coupon_id' => $param['m_coupon_id']
+                        ]);
+                    }
+                }
+                //新增发放量
+                Db::name('coupon')
+                    ->where('id', $coupon['id'])
+                    ->inc('send_amount',count($saveData))
+                    ->update();
+                //新增优惠券明细
+                Db::name('coupon_user')
+                    ->limit(200)
+                    ->insertAll($saveData);
+            }
+            // 提交事务
+            Db::commit();
+            return success();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            return fail($e->getMessage());
+        }
+    }
+
+    /**
+     * 删除优惠券明细
+     * @param $ids
+     * @return array
+     */
+    public function delInfoData($ids) : array
+    {
+        $ids = explode(",", $ids);
+        try {
+            foreach ($ids as $id) {
+                $couponUser = CouponUserModel::where('id',$id)
+                    ->where('user_id',0)
+                    ->find();
+                if(!empty($couponUser)) {
+                    //减少发放量
+                    Db::name('coupon')
+                        ->where('id', $couponUser['coupon_id'])
+                        ->dec('send_amount')
+                        ->update();
+                    //删除
+                    CouponUserModel::where('id',$id)->delete();
+                }
+            }
+            return success();
+        }
+        catch (\Exception $e){
+            return fail($e->getMessage());
+        }
+    }
+
 }

@@ -183,4 +183,58 @@ class Coupon extends Base
             return json(fail('非法提交被禁止'));
         }
     }
+
+    /**
+     * 指定发放
+     * @return string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function import() : string
+    {
+        $param = Request::param();
+        $logic = new CouponLogic();
+        $data = $logic->readData($param['coupon_id']);
+        if (!empty($data)) {
+            $this->assign('data', $data);
+            return $this->fetch('/coupon_import');
+        }
+        else {
+            return $this->fetch('statics/404.html');
+        }
+    }
+
+    /**
+     * 保存发放
+     * @return Json
+     */
+    public function saveImport() : Json
+    {
+        if (Request::isPost() && Request::isAjax()){
+            $param = Request::param();
+            $logic = new CouponLogic();
+            $data = $logic->saveImport($param);
+            return json($data);
+        }
+        else {
+            return json(fail('非法提交被禁止'));
+        }
+    }
+
+    /**
+     * 删除优惠券详情(适用于线下券，还没有领取的券可以删除)
+     */
+    public function deleteInfo() : Json
+    {
+        if (Request::isPost() && Request::isAjax()) {
+            $ids = Request::has('m_id') ? Request::param('m_id') : '0';
+            $ids = "0," . $ids;
+            $logic = new CouponLogic();
+            $data = $logic->delInfoData($ids);
+            return json($data);
+        } else {
+            return json(fail('非法提交被禁止'));
+        }
+    }
 }

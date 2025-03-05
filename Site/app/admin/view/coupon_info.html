@@ -46,6 +46,13 @@
                     <span class="layui-badge-dot layui-bg-blue"></span>未使用
                     {{#  } }}
                 </script>
+                <script type="text/html" id="tableBar">
+                    {{#  if(d.user_id > 0){ }}
+                    <a class="no-link-text">删除</a>
+                    {{#  } else { }}
+                    <a class="link-text" lay-event="del">删除</a>
+                    {{#  } }}
+                </script>
             </div>
         </div>
     </div>
@@ -68,12 +75,13 @@
             ,cols: [[
                 {type: 'checkbox', fixed: 'left'}
                 ,{field: 'id', width: 80, title: 'ID', sort: true}
-                ,{field: 'coupon_sn', width: 200, title: '优惠券编号'}
-                ,{field: 'user_name', minWidth: 200, title: '领取人'}
-                ,{field: 'order_sn', width: 200, title: '使用订单'}
-                ,{field: 'use_date', width: 200, title: '使用时间'}
-                ,{field: 'add_date', width: 200, title: '领取时间'}
-                ,{field: 'is_use', width: 120, title: '状态', align:'center', sort: true, templet: '#state'}
+                ,{field: 'coupon_sn', minWidth: 200, title: '优惠券编号'}
+                ,{field: 'user_name', width: 180, title: '领取人'}
+                ,{field: 'order_sn', width: 180, title: '使用订单'}
+                ,{field: 'use_date', width: 180, title: '使用时间'}
+                ,{field: 'add_date', width: 180, title: '领取时间'}
+                ,{field: 'is_use', width: 100, title: '状态', align:'center', sort: true, templet: '#state'}
+                ,{title: '操作', width: 56, align:'center', fixed: 'right', toolbar: '#tableBar'}
             ]]
             ,page: true
             ,limit: 20
@@ -92,6 +100,41 @@
                     curr: 1 //重新从第 1 页开始
                 }
             });
+        });
+
+        //监听编辑+单个删除
+        table.on('tool(LAY-table)', function(obj){
+            let data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    $.ajax({
+                        type:"post",
+                        url:"{:url('deleteInfo')}",
+                        data: {
+                            m_id:data.id
+                        },
+                        dataType:"json",
+                        beforeSend: function () {
+                            layer.load(1);
+                        },
+                        success:function(res){
+                            layer.closeAll();
+                            if(res.code == 0){
+                                if(res.msg == 'success') {
+                                    obj.del();
+                                    layer.msg('删除成功');
+                                } else {
+                                    layer.msg(res.msg);
+                                }
+                            }
+                            else {
+                                layer.msg(res.msg);
+                            }
+                        }
+                    });
+
+                });
+            }
         });
 
         //头部操作按钮
@@ -159,6 +202,50 @@
                 layer.confirm('确定导出吗？', function(index) {
                     layer.closeAll();
                     location.href = "export.html?coupon_id={$data.id}&m_id=" + ids;
+                });
+            }
+            ,import: function(){
+                layer.open({
+                    type: 2
+                    ,title: '导入优惠券'
+                    ,content: "{:url('import')}?coupon_id={$data.id}"
+                    ,maxmin: true
+                    ,area: ['700px', '300px']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        let iframeWindow = window['layui-layer-iframe'+ index];
+                        let submitID = 'LAY-submit';
+                        let submit = layero.find('iframe').contents().find('#'+ submitID);
+
+                        //监听提交
+                        iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+                            let field = data.field; //获取提交的字段
+                            //提交 Ajax 成功后，静态更新表格中的数据
+                            $.ajax({
+                                type:"post",
+                                url:"{:url('saveImport')}",
+                                data: {
+                                    m_data:field.m_data,
+                                    m_coupon_id:field.m_coupon_id
+                                },
+                                dataType:"json",
+                                beforeSend: function () {
+                                    layer.load(1);
+                                },
+                                success:function(res){
+                                    layer.close(layer.index);
+                                    if(res.code == 0){
+                                        layer.closeAll();
+                                        table.reload('LAY-table',{where: {time:new Date()}}); //数据刷新
+                                    }
+                                    else {
+                                        layer.msg(res.msg);
+                                    }
+                                }
+                            });
+                        });
+                        submit.trigger('click');
+                    }
                 });
             }
         };

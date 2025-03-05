@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>导入优惠券</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
+    <link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+    <style>
+        html {background: #fff;padding-top: 20px;}
+    </style>
+</head>
+<body>
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属优惠券：</label>
+            <div class="layui-form-mid layui-word-aux">{$data.title}</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span>*</span> 上传文件：</label>
+            <div class="layui-input-inline">
+                <input type="text" id="m_file" name="m_file" lay-verify="required" placeholder="请上传优惠券文件" class="layui-input">
+            </div>
+            <input type="hidden" id="m_data" name="m_data">
+            <button class="layui-btn layui-btn-normal" type="button" onclick="importFile()">上传</button>
+            <input type="file" id="file" style="display: none;">
+            <div style="width: 100%;padding-top:10px;box-sizing: border-box;padding-left: 136px;color: #999;">每次导入数量不超过2000条，<a href="/statics/coupon.xlsx" target="_blank">优惠券模板</a>。</div>
+        </div>
+        <input type="hidden" name="m_coupon_id" value="{$data.id}">
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit lay-filter="LAY-submit" id="LAY-submit" value="确认">
+        </div>
+    </div>
+</body>
+</html>
+<script src="{__STATIC__}/sheetjs/xlsx.core.min.js"></script>
+<script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script>
+    //js导入数据
+    function importFile(){
+        document.getElementById('file').click();
+    }
+
+    // 读取本地excel文件
+    function readWorkbookFromLocalFile(file, callback) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var data = e.target.result;
+            var workbook = XLSX.read(data, {type: 'binary'});
+            if(callback) callback(workbook);
+        };
+        reader.readAsBinaryString(file);
+    }
+
+    function readWorkbook(workbook) {
+        var sheetNames = workbook.SheetNames; // 工作表名称集合
+        var worksheet = workbook.Sheets[sheetNames[0]]; // 这里我们只读取第一张sheet
+        var arr = XLSX.utils.sheet_to_json(worksheet);
+        if(arr.length > 2000) {
+            layer.msg('每次导入数据请不超过2000条');
+            return;
+        } else {
+            // 把数据构造成用逗号链接的字符串
+            let result = [];
+            for(var i=0;i<arr.length;i++) {
+                result.push(arr[i].优惠券号);
+            }
+            //console.log(result.join(','));
+            document.getElementById('m_data').value = result.join(',');
+        }
+    }
+
+    // 增加上传文件监听事件
+    document.getElementById('file').addEventListener('change', function(e) {
+        var files = e.target.files;
+        if (files.length === 0) {
+            return;
+        }
+        var f = files[0];
+        if(!f.name.includes('.xls')){
+            //alert('只支持xlsx或者xls文件');
+            layer.msg('只支持xlsx或者xls文件');
+            return;
+        }
+        document.getElementById('m_file').value = f.name;
+        readWorkbookFromLocalFile(f, function(workbook) {
+            readWorkbook(workbook);
+        });
+    });
+</script>
