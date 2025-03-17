@@ -86,6 +86,13 @@ class Index
                     ->update(['is_comment' => 1]);
             }
         }
+        //删除无效token
+        $res = Db::name('token')->where('expires_time','<',$time)->delete();
+        if($res > 0) {
+            $logic->setToken();
+            $logic->setToken('admin');
+            $logic->setToken('shop');
+        }
         //结束
         $run_time = time() - $time;
         return '任务完成，用时：' . $run_time . '秒！';
