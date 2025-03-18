@@ -89,10 +89,9 @@
 
         /* 监听类型 */
         form.on('select(m_type)',function (data) {
-            if(data.value == 3){
+            if(data.value == 2){
                 $("#span_url").html('如：/pages/index/index');
-            }
-            else {
+            } else {
                 $("#span_url").html('如：http://www.aaa.com');
             }
         });
