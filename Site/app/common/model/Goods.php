@@ -53,6 +53,17 @@ class Goods extends BaseModel
     }
 
     /**
+     * 获取原始幻灯片列表
+     * @param $value
+     * @param $data
+     * @return array|string[]
+     */
+    public function getYSlideAttr($value,$data)
+    {
+        return empty($data['slide']) ? [] : explode(',',$data['slide']);
+    }
+
+    /**
      * 获取服务列表
      * @param $value
      * @return array|string[]

@@ -100,8 +100,8 @@
 								<label class="layui-form-label"><span>*</span> 可拖动顺序<br>第一张为主图</label>
 								<div class="layui-input-block">
 									<div id="slide_ctr">
-										{volist name="data.slide" id="slide"}
-										<div class="slide_ctr" id="span_slide{$key}"><img src="{$slide}"><div class="pic_del" onClick="delPic('{$key}')"><i class='layui-icon layui-icon-delete'></i></div><input type="hidden" name="m_slide[]" value="{$slide}"></div>
+										{volist name="data.y_slide" id="slide"}
+										<div class="slide_ctr" id="span_slide{$key}"><img src="{:getPic($slide)}"><div class="pic_del" onClick="delPic('{$key}')"><i class='layui-icon layui-icon-delete'></i></div><input type="hidden" name="m_slide[]" value="{$slide}"></div>
 										{/volist}
 									</div>
 									<div class="upload_btn" id="upload_btn"></div>
