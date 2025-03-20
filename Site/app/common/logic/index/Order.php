@@ -58,7 +58,13 @@ class Order extends BaseLogic
             $res = ['code' => 0,'msg' => 'success'];
             $data = OrderModel::where('user_id',$param['user_id']);
             if(isset($param['id'])) {
-                $data = $data->where('id', $param['id']);
+                if (is_int($param['id'])) {
+                    $data = $data->where('id', $param['id']);
+                } else {
+                    if(!isset($param['sn'])) {
+                        $param['sn'] = explode('_',$param['id'])[0];
+                    }
+                }
             }
             if(isset($param['sn'])) {
                 $data = $data->where('order_sn', $param['sn']);
