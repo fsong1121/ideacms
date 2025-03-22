@@ -194,9 +194,11 @@ class JwtAuth
         $status['code'] = 500;
         try {
             $user_type = Db::name('token')->where('access_token',$token)->value('type');
-            Db::name('token')->where('access_token',$token)->delete();
-            $baseLogic = new BaseLogic();
-            $baseLogic->setToken($user_type);
+            $res = Db::name('token')->where('access_token',$token)->delete();
+            if($res > 0) {
+                $baseLogic = new BaseLogic();
+                $baseLogic->setToken($user_type);
+            }
             $status['code'] = 0;
             $status['msg'] = 'success';
         } catch (\Exception $e) {
