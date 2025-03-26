@@ -123,7 +123,7 @@ class BaseLogic
                 if($all) $this->newCat($list,$value['id'],$scene);
             }
         }
-        return $newList;
+        return empty($newList) ? [] : $newList;
     }
 
     /**
