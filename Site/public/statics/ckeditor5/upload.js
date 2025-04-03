@@ -45,8 +45,12 @@ class MyUploadAdapter {
                 return reject( response && response.code ? response.msg : genericErrorText );
             }
             //上传成功，从后台获取图片的url地址
+            let fileUrl = response.data.file;
+            if(!fileUrl.startsWith('http')) {
+                fileUrl = '/upload/pic/' + fileUrl;
+            }
             resolve( {
-                default: '/upload/pic/' + response.data.file
+                default: fileUrl
             } );
         } );
 
