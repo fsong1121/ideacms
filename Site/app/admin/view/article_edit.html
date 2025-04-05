@@ -9,6 +9,7 @@
 	<link href="{__STATIC__}/layuiAdmin/layui/css/layui.css" rel="stylesheet">
 	<link href="{__STATIC__}/layuiAdmin/adminui/dist/css/admin.css" rel="stylesheet">
 	<link href="{__STATIC__}/layuiAdmin/style/style.css" rel="stylesheet">
+	<link href="{__STATIC__}/aiEditor/style.css" rel="stylesheet">
 	<style>
 		html {background: #fff;padding-top: 20px;}
 	</style>
@@ -86,7 +87,7 @@
 		<div class="layui-form-item">
 			<label class="layui-form-label">内容：</label>
 			<div class="layui-input-block">
-				<textarea id="editor">{$data.info}</textarea>
+				<div id="aiEditor" style="height: 500px;"></div>
 				<textarea id="m_info" name="m_info" style="display: none;">{$data.info}</textarea>
 			</div>
 		</div>
@@ -135,34 +136,18 @@
 	</div>
 </body>
 </html>
-<script src="{__STATIC__}/ckeditor5/ckeditor.js"></script>
-<script src="{__STATIC__}/ckeditor5/upload.js"></script>
 <script src="{__STATIC__}/layuiAdmin/layui/layui.js"></script>
+<script type="module">
+	import { InitAiEditor } from '{__STATIC__}/aiEditor/config.js';
+	const aiEditor = new InitAiEditor({
+		content:document.getElementById("m_info").value,
+		onChange:(aiEditor)=>{
+			// 监听到编辑器内容发生变化了
+			document.getElementById("m_info").value = aiEditor.getHtml();
+		}
+	});
+</script>
 <script>
-	ClassicEditor
-		.create(document.querySelector('#editor'), {
-			placeholder:"在这里输入或粘贴内容",
-			extraPlugins: [ MyCustomUploadAdapterPlugin ]
-		})
-		.then(editor => {
-			window.editor = editor;
-			//监听内容变化
-			editor.model.document.on('change:data', function () {
-				document.getElementById("m_info").value = editor.getData();
-			});
-		})
-		.catch(error => {
-			console.error(error);
-		});
-
-	function MyCustomUploadAdapterPlugin( editor ) {
-		editor.plugins.get( 'FileRepository' ).createUploadAdapter = ( loader ) => {
-			// 在这里将URL配置为后端上载脚本
-			let url = "{:url('upload/index')}?dir=article";
-			return new MyUploadAdapter( loader,url );
-		};
-	}
-
 	layui.use(function(){
 		let $ = layui.$;
 		let upload = layui.upload;
