@@ -40,7 +40,7 @@ class Order extends BaseLogic
             $data[1] = OrderModel::where('user_id',$userId)->where('activity_state',1)->where('order_state',2)->count();
             $data[2] = OrderModel::where('user_id',$userId)->where('activity_state',1)->where('order_state',3)->count();
             $data[3] = OrderGoodsModel::where('order_id','in',$commentOrderIds)->where('is_comment',0)->count();
-            $data[4] = OrderRefundModel::where('user_id',$userId)->count();
+            $data[4] = OrderRefundModel::where('user_id',$userId)->where('state','in','0,-1')->count();
             $res['data'] = $data;
             return $res;
         } catch (\Exception $e) {
