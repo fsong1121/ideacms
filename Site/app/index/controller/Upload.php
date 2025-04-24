@@ -9,7 +9,7 @@
 // | 程序开源并非等于免费,商业使用务必购买正版授权,以免引起不必要的法律纠纷.
 // +----------------------------------------------------------------------
 
-namespace app\admin\controller;
+namespace app\index\controller;
 
 use app\common\service\Auth as AuthLogic;
 use Qcloud\Cos\Client;
@@ -31,7 +31,7 @@ class Upload
         $config = config('upload');
         $auth = new AuthLogic();
         $result = ["code" => 500, "data" => [], "msg" => "请先登录"];
-        if($auth->checkLogin('admin')) {
+        if($auth->checkLogin()) {
             $result = ["code" => 0, "data" => [], "msg" => "上传成功"];
             $file = Request::file('file');
             $type = Request::has('type') ? Request::param('type') : 'pic';
