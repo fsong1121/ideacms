@@ -43,8 +43,7 @@ class Upload extends Base
                     $ext = strtolower($file->getOriginalExtension());
                     $allowExt = ["jpg","jpeg","png","gif","bmp","webp","ico","psd","pdf","doc","docx","xls","xlsx","ppt","pptx","mp3","mp4","avi","mov","zip","rar","7z","gz"];
                     if(!in_array($ext,$allowExt)) {
-                        $res['code'] = 500;
-                        $res['msg'] = '非法文件被禁止';
+                        return json(["code" => 500, "data" => [], "msg" => "非法文件被禁止"]);
                     }
                     $path = $type . '/' . $dir . '/' . md5(microtime(true) . mt_rand(1, 1e9)) . '.' . $ext;
                     if($config['uplocation'] == 1) {
