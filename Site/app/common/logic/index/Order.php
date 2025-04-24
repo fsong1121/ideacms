@@ -251,6 +251,7 @@ class Order extends BaseLogic
                                 ->find();
                             if(!empty($expressTemplate)) {
                                 $expressTemplatePrice = Db::name('express_template_price')
+                                    ->where('express_template_id',$goods['express_template_id'])
                                     ->whereFindInSet('area_names',$province)
                                     ->find();
                                 $firstNum = empty($expressTemplatePrice) ? $expressTemplate['first_num'] : $expressTemplatePrice['first_num'];
@@ -331,6 +332,7 @@ class Order extends BaseLogic
                                     ->find();
                                 if(!empty($expressTemplate)) {
                                     $expressTemplatePrice = Db::name('express_template_price')
+                                        ->where('express_template_id',$goods['express_template_id'])
                                         ->whereFindInSet('area_names',$province)
                                         ->find();
                                     $firstNum = empty($expressTemplatePrice) ? $expressTemplate['first_num'] : $expressTemplatePrice['first_num'];
