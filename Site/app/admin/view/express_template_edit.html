@@ -37,7 +37,7 @@
             <div class="layui-input-inline w180">
                 <input type="text" name="m_first_num" lay-verify="number" value="{$data.first_num}" placeholder="请输入首重" class="layui-input">
             </div>
-            <div class="layui-form-mid layui-word-aux"><label id="span_first_num">{eq name="$data.type" value="0"}KG{/eq}{eq name="$data.type" value="1"}m³{/eq}{eq name="$data.type" value="2"}件{/eq}</label></div>
+            <div class="layui-form-mid layui-word-aux"><label id="span_first_num">{eq name="$data.type" value="0"}KG{/eq}{eq name="$data.type" value="1"}m³{/eq}{eq name="$data.type" value="2"}件{/eq}</label>，首重可以为0</div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label"><span>*</span> 首重运费：</label>
@@ -51,7 +51,7 @@
             <div class="layui-input-inline w180">
                 <input type="text" name="m_second_num" lay-verify="number" value="{$data.second_num}" placeholder="请输入续重" class="layui-input">
             </div>
-            <div class="layui-form-mid layui-word-aux"><label id="span_second_num">{eq name="$data.type" value="0"}KG{/eq}{eq name="$data.type" value="1"}m³{/eq}{eq name="$data.type" value="2"}件{/eq}</label></div>
+            <div class="layui-form-mid layui-word-aux"><label id="span_second_num">{eq name="$data.type" value="0"}KG{/eq}{eq name="$data.type" value="1"}m³{/eq}{eq name="$data.type" value="2"}件{/eq}</label>，续重不能为0</div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label"><span>*</span> 续重运费：</label>

@@ -257,6 +257,7 @@ class Order extends BaseLogic
                                 $firstNum = empty($expressTemplatePrice) ? $expressTemplate['first_num'] : $expressTemplatePrice['first_num'];
                                 $firstPrice = empty($expressTemplatePrice) ? $expressTemplate['first_price'] : $expressTemplatePrice['first_price'];
                                 $secondNum = empty($expressTemplatePrice) ? $expressTemplate['second_num'] : $expressTemplatePrice['second_num'];
+                                $secondNum = empty($secondNum) ? 1 : $secondNum;
                                 $secondPrice = empty($expressTemplatePrice) ? $expressTemplate['second_price'] : $expressTemplatePrice['second_price'];
                                 if($expressTemplate['type'] == 0) {
                                     //按重量
@@ -338,6 +339,7 @@ class Order extends BaseLogic
                                     $firstNum = empty($expressTemplatePrice) ? $expressTemplate['first_num'] : $expressTemplatePrice['first_num'];
                                     $firstPrice = empty($expressTemplatePrice) ? $expressTemplate['first_price'] : $expressTemplatePrice['first_price'];
                                     $secondNum = empty($expressTemplatePrice) ? $expressTemplate['second_num'] : $expressTemplatePrice['second_num'];
+                                    $secondNum = empty($secondNum) ? 1 : $secondNum;
                                     $secondPrice = empty($expressTemplatePrice) ? $expressTemplate['second_price'] : $expressTemplatePrice['second_price'];
                                     if($expressTemplate['type'] == 0) {
                                         //按重量
