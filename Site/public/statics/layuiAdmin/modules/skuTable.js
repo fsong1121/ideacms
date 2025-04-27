@@ -111,7 +111,7 @@ layui.define(['jquery', 'form', 'upload', 'layer', 'sortable'], function (export
                     return false;
                 }
 
-                var index = Util.msg.loading('加载中');
+                //var index = Util.msg.loading('加载中');
                 $.ajax({
                     url: option.url,
                     type: type,
@@ -120,7 +120,7 @@ layui.define(['jquery', 'form', 'upload', 'layer', 'sortable'], function (export
                     data: option.data,
                     timeout: 60000,
                     success: function (res) {
-                        Util.msg.close(index);
+                        //Util.msg.close(index);
                         if (res[option.statusName] == option.statusCode) {
                             return ok(res);
                         } else {
