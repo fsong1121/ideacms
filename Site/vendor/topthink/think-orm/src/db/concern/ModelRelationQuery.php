@@ -58,12 +58,13 @@ trait ModelRelationQuery
      * 设置需要隐藏的输出属性.
      *
      * @param array $hidden 属性列表
+     * @param bool $merge 是否合并
      *
      * @return $this
      */
-    public function hidden(array $hidden = [])
+    public function hidden(array $hidden, bool $merge = false)
     {
-        $this->options['hidden'] = $hidden;
+        $this->options['hidden'] = [$hidden, $merge];
 
         return $this;
     }
@@ -71,13 +72,14 @@ trait ModelRelationQuery
     /**
      * 设置需要输出的属性.
      *
-     * @param array $visible
+     * @param array $visible 属性列表
+     * @param bool  $merge 是否合并
      *
      * @return $this
      */
-    public function visible(array $visible = [])
+    public function visible(array $visible, bool $merge = false)
     {
-        $this->options['visible'] = $visible;
+        $this->options['visible'] = [$visible, $merge];
 
         return $this;
     }
@@ -86,12 +88,27 @@ trait ModelRelationQuery
      * 设置需要附加的输出属性.
      *
      * @param array $append 属性列表
+     * @param bool  $merge  是否合并
      *
      * @return $this
      */
-    public function append(array $append = [])
+    public function append(array $append, bool $merge = false)
     {
-        $this->options['append'] = $append;
+        $this->options['append'] = [$append, $merge];
+
+        return $this;
+    }
+
+    /**
+     * 设置模型的输出映射.
+     *
+     * @param array $mapping 映射列表
+     *
+     * @return $this
+     */
+    public function mapping(array $mapping)
+    {
+        $this->options['mapping'] = $mapping;
 
         return $this;
     }
@@ -110,8 +127,7 @@ trait ModelRelationQuery
         array_unshift($args, $this);
 
         if ($scope instanceof Closure) {
-            call_user_func_array($scope, $args);
-
+            $this->options['scope'][] = [$scope, $args];
             return $this;
         }
 
@@ -123,8 +139,9 @@ trait ModelRelationQuery
             // 检查模型类的查询范围方法
             foreach ($scope as $name) {
                 $method = 'scope' . trim($name);
-
-                $this->options['scope'][$name] = [$method, $args];
+                if (method_exists($this->model, $method)) {
+                    $this->options['scope'][$name] = [[$this->model, $method], $args];
+                }
             }
         }
 
@@ -138,12 +155,10 @@ trait ModelRelationQuery
      */
     protected function scopeQuery()
     {
-        if ($this->model && !empty($this->options['scope'])) {
-            foreach ($this->options['scope'] as $name => $val) {
-                [$method, $args] = $val;
-                if (method_exists($this->model, $method)) {
-                    call_user_func_array([$this->model, $method], $args);
-                }
+        if (!empty($this->options['scope'])) {
+            foreach ($this->options['scope'] as $val) {
+                [$call, $args] = $val;
+                call_user_func_array($call, $args);
             }
         }
 
@@ -196,11 +211,11 @@ trait ModelRelationQuery
      *
      * @param string|array $fields 搜索字段
      * @param mixed        $data   搜索数据
-     * @param string       $prefix 字段前缀标识
+     * @param bool         $strict 是否严格检查数据
      *
      * @return $this
      */
-    public function withSearch($fields, $data = [], string $prefix = '')
+    public function withSearch($fields, $data = [], bool $strict = true)
     {
         if (is_string($fields)) {
             $fields = explode(',', $fields);
@@ -210,14 +225,17 @@ trait ModelRelationQuery
 
         foreach ($fields as $key => $field) {
             if ($field instanceof Closure) {
-                $field($this, $data[$key] ?? null, $data, $prefix);
+                $field($this, $data[$key] ?? null, $data);
             } elseif ($this->model) {
-                // 检测搜索器
+                // 检查字段是否有数据
+                if ($strict && (!isset($data[$field]) || (empty($data[$field]) && !in_array($data[$field], ['0', 0])))) {
+                    continue;
+                }
+
                 $fieldName = is_numeric($key) ? $field : $key;
                 $method    = 'search' . Str::studly($fieldName) . 'Attr';
-
                 if (method_exists($this->model, $method)) {
-                    $this->model->$method($this, $data[$field] ?? null, $data, $prefix);
+                    $this->model->$method($this, $data[$field], $data);
                 } elseif (isset($data[$field])) {
                     $this->where($fieldName, in_array($fieldName, $likeFields) ? 'like' : '=', in_array($fieldName, $likeFields) ? '%' . $data[$field] . '%' : $data[$field]);
                 }
@@ -270,6 +288,19 @@ trait ModelRelationQuery
     }
 
     /**
+     * 设置关联模型的动态绑定
+     *
+     * @param array $attr 绑定数据
+     *
+     * @return $this
+     */
+    public function withBind(array $attr)
+    {
+        $this->options['bind_attr'] = $attr;
+        return $this;
+    }
+
+    /**
      * 设置数据字段获取器.
      *
      * @param string|array $name     字段名
@@ -277,7 +308,7 @@ trait ModelRelationQuery
      *
      * @return $this
      */
-    public function withAttr(string | array $name, callable $callback = null)
+    public function withAttr(string | array $name, ?callable $callback = null)
     {
         if (is_array($name)) {
             foreach ($name as $key => $val) {
@@ -408,7 +439,7 @@ trait ModelRelationQuery
      *
      * @return $this
      */
-    public function withCache(string | array | bool $relation = true, $key = true, $expire = null, string $tag = null)
+    public function withCache(string | array | bool $relation = true, $key = true, $expire = null, ?string $tag = null)
     {
         if (empty($this->model)) {
             return $this;
@@ -557,6 +588,9 @@ trait ModelRelationQuery
             }
 
             $jsonData = json_decode($result[$name], true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                continue;
+            }
 
             if (isset($withAttr[$name])) {
                 foreach ($withAttr[$name] as $key => $closure) {
@@ -635,6 +669,10 @@ trait ModelRelationQuery
             $this->options
         );
 
+        if ($this->suffix) {
+            $result->setSuffix($this->suffix);
+        }
+            
         // 模型数据处理
         foreach ($this->options['filter'] as $filter) {
             call_user_func_array($filter, [$result, $this->options]);
@@ -668,12 +706,17 @@ trait ModelRelationQuery
 
         // 动态获取器
         if (!empty($this->options['with_attr'])) {
-            $result->withAttr($this->options['with_attr']);
+            $result->withFieldAttr($this->options['with_attr']);
+        }
+
+        if (!empty($this->options['mapping'])) {
+            $result->mapping($this->options['mapping']);
         }
 
         foreach (['hidden', 'visible', 'append'] as $name) {
             if (!empty($this->options[$name])) {
-                $result->$name($this->options[$name]);
+                [$value, $merge] = $this->options[$name];
+                $result->$name($value, $merge);
             }
         }
 

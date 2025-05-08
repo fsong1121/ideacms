@@ -320,7 +320,7 @@ abstract class Connection implements ConnectionInterface
     protected function getCacheKey(BaseQuery $query, string $method = ''): string
     {
         if (!empty($query->getOptions('key')) && empty($method)) {
-            $key = 'think_' . $this->getConfig('database') . '.' . $query->getTable() . '|' . $query->getOptions('key');
+            $key = 'think_' . $this->getConfig('database') . '.' . var_export($query->getTable(), true) . '|' . $query->getOptions('key');
         } else {
             $key = $query->getQueryGuid();
         }
@@ -389,7 +389,10 @@ abstract class Connection implements ConnectionInterface
             // 判断占位符
             $sql = is_numeric($key) ?
             substr_replace($sql, $value, strpos($sql, '?'), 1) :
-            substr_replace($sql, $value, strpos($sql, ':' . $key), strlen(':' . $key));
+            str_replace(
+                [':' . $key . ' ', ':' . $key . ',', ':' . $key . ')'],
+                [$value . ' ', $value . ',', $value . ')'],
+                $sql);
         }
 
         return rtrim($sql);
