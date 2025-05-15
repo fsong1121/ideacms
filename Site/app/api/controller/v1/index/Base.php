@@ -73,6 +73,7 @@ class Base extends BaseController
                 if ($res['code'] == 0) {
                     //返回最新accessToken
                     header('token:' . $res['access_token']);
+                    header('uid:' . $res['payload']['id']);
                     $param['token'] = $res['access_token'];
                     $this->accessToken = $res['access_token'];
                     $param['user_id'] = $res['payload']['id'];
