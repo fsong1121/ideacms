@@ -33,38 +33,38 @@
 								<label class="layui-form-label">短信接口：</label>
 								<div class="layui-input-inline w120">
 									<select name="m_type">
-										<option value="0" {eq name="$sms.type" value="0"}selected{/eq}>ThinkApi</option>
+										<option value="0" {eq name="$sms.type" value="0"}selected{/eq}>腾讯云</option>
 									</select>
 								</div>
-								<div class="layui-form-mid layui-word-aux span_note"><a href="https://www.topthink.com/product/sms?cps_key=Jxbojagw" target="_blank">申请地址</a></div>
+								<div class="layui-form-mid layui-word-aux span_note"><a href="https://cloud.tencent.com/product/sms" target="_blank">申请地址</a></div>
 							</div>
 							<div class="layui-form-item">
-								<label class="layui-form-label"><span>*</span> 访问令牌：</label>
+								<label class="layui-form-label"><span>*</span> appID：</label>
 								<div class="layui-input-inline">
-									<input type="text" name="m_app_code" lay-verify="required" placeholder="请输入访问令牌" value="{$sms.appCode}" class="layui-input">
+									<input type="text" name="m_app_code" lay-verify="required" placeholder="请输入应用appID" value="{$sms.appCode}" class="layui-input">
 								</div>
-								<div class="layui-form-mid layui-word-aux span_note"><a href="https://console.topthink.com/user/token" target="_blank">个人中心-访问令牌中获取</a></div>
-							</div>
-							<div class="layui-form-item" style="display: none;">
-								<label class="layui-form-label">appSecret：</label>
-								<div class="layui-input-inline">
-									<input type="text" name="m_app_secret" placeholder="请输入appSecret" value="{$sms.appSecret}" class="layui-input">
-								</div>
-								<div class="layui-form-mid layui-word-aux"></div>
+								<div class="layui-form-mid layui-word-aux span_note"><a href="https://console.cloud.tencent.com/smsv2/app-manage" target="_blank">应用管理-应用列表中获取</a></div>
 							</div>
 							<div class="layui-form-item">
-								<label class="layui-form-label"><span>*</span> 短信签名ID：</label>
+								<label class="layui-form-label"><span>*</span> appKey：</label>
 								<div class="layui-input-inline">
-									<input type="text" name="m_sign_id" lay-verify="required" placeholder="请输入签名ID" value="{$sms.signId}" class="layui-input">
+									<input type="text" name="m_app_secret" lay-verify="required" placeholder="请输入应用appKey" value="{$sms.appSecret}" class="layui-input">
 								</div>
-								<div class="layui-form-mid layui-word-aux span_note"><a href="https://console.topthink.com/sms/sign" target="_blank">短信服务-签名管理中获取</a></div>
+								<div class="layui-form-mid layui-word-aux span_note"><a href="https://console.cloud.tencent.com/smsv2/app-manage" target="_blank">应用管理-应用列表中获取</a></div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label"><span>*</span> 短信签名：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="m_sign_id" lay-verify="required" placeholder="请输入签名" value="{$sms.signId}" class="layui-input">
+								</div>
+								<div class="layui-form-mid layui-word-aux span_note"><a href="https://console.cloud.tencent.com/smsv2/csms-sign" target="_blank">如：IdeaCMS，短信服务-签名管理中获取</a></div>
 							</div>
 							<div class="layui-form-item">
 								<label class="layui-form-label"><span>*</span> 验证码模板ID：</label>
 								<div class="layui-input-inline">
 									<input type="text" name="m_code_template_id" lay-verify="required" placeholder="请输入模板ID" value="{$sms.codeTemplateId}" class="layui-input">
 								</div>
-								<div class="layui-form-mid layui-word-aux span_note"><a href="https://console.topthink.com/sms/template" target="_blank">短信服务-模板管理中获取</a></div>
+								<div class="layui-form-mid layui-word-aux span_note"><a href="https://console.cloud.tencent.com/smsv2/csms-template" target="_blank">短信服务-模板管理中获取</a></div>
 							</div>
 						</div>
 					</div>

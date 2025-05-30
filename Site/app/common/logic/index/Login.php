@@ -13,12 +13,12 @@ namespace app\common\logic\index;
 use app\common\service\Auth as AuthService;
 use app\common\service\JwtAuth as JwtAuthService;
 use app\common\service\Wechat as WechatService;
+use app\common\service\Sms as SmsService;
 use app\common\logic\BaseLogic;
 use think\facade\Cache;
 use think\facade\Cookie;
 use think\facade\Event;
 use think\facade\Db;
-use think\api\Client;
 
 class Login extends BaseLogic
 {
@@ -105,20 +105,14 @@ class Login extends BaseLogic
     /**
      * 发送验证码
      * @param array $param
-     * @return mixed|string
-     * @throws \think\api\Exception
+     * @return mixed|void
      */
     public function sendSmsCode(array $param)
     {
         $code = makeRandStr(4);
         Cache::set('smsCode' . $param['m_tel'], $code, 300);
-        $client = new Client(config('sms.appCode'));
-        return $client->smsSend()
-            ->withSignId(config('sms.signId'))
-            ->withTemplateId(config('sms.codeTemplateId'))
-            ->withPhone($param['m_tel'])
-            ->withParams('{"code": "'.$code.'"}')
-            ->request();
+        $sms = new SmsService();
+        return $sms->sendSms($param['m_tel'],config('sms.codeTemplateId'),[$code]);
     }
 
     /**

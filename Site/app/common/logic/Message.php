@@ -11,7 +11,7 @@
 namespace app\common\logic;
 
 use app\common\service\Wechat as WechatService;
-use think\api\Client;
+use app\common\service\Sms as SmsService;
 use think\facade\Db;
 
 class Message extends BaseLogic
@@ -48,13 +48,8 @@ class Message extends BaseLogic
                     //给用户发
                     if(config('message.sms_user_pay') == 1) {
                         //手机短信
-                        $client = new Client(config('sms.appCode'));
-                        $client->smsSend()
-                            ->withSignId(config('sms.signId'))
-                            ->withTemplateId(config('message.sms_user_pay_id'))
-                            ->withPhone($order['tel'])
-                            ->withParams('{"sn": "'.$order['order_sn'].'","price": "'.$order['pay_price'].'"}')
-                            ->request();
+                        $sms = new SmsService();
+                        $sms->sendSms($order['tel'],config('message.sms_user_pay_id'),[$order['order_sn'],$order['pay_price']]);
                     }
                     if(config('message.gzh_user_pay') == 1 && !empty($user['wechat_openid'])) {
                         //公众号消息
@@ -103,13 +98,8 @@ class Message extends BaseLogic
                     //给商家发
                     if(config('message.sms_store_pay') == 1) {
                         //手机短信
-                        $client = new Client(config('sms.appCode'));
-                        $client->smsSend()
-                            ->withSignId(config('sms.signId'))
-                            ->withTemplateId(config('message.sms_store_pay_id'))
-                            ->withPhone(config('site.tel'))
-                            ->withParams('{"sn": "'.$order['order_sn'].'","price": "'.$order['pay_price'].'"}')
-                            ->request();
+                        $sms = new SmsService();
+                        $sms->sendSms(config('site.tel'),config('message.sms_store_pay_id'),[$order['order_sn'],$order['pay_price']]);
                     }
                     if(config('message.gzh_store_pay') == 1 && !empty(config('site.openid'))) {
                         //公众号消息
@@ -138,13 +128,8 @@ class Message extends BaseLogic
                     //给用户发
                     if(config('message.sms_user_send') == 1) {
                         //手机短信
-                        $client = new Client(config('sms.appCode'));
-                        $client->smsSend()
-                            ->withSignId(config('sms.signId'))
-                            ->withTemplateId(config('message.sms_user_send_id'))
-                            ->withPhone($order['tel'])
-                            ->withParams('{"sn": "'.$order['order_sn'].'"}')
-                            ->request();
+                        $sms = new SmsService();
+                        $sms->sendSms($order['tel'],config('message.sms_user_send_id'),[$order['order_sn']]);
                     }
                     if(config('message.gzh_user_send') == 1 && !empty($user['wechat_openid'])) {
                         //公众号消息
