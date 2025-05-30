@@ -152,51 +152,52 @@ class Message extends BaseLogic
                         ];
                         $wechat->sendMsg($data);
                     }
-                    if(config('message.miniapp_user_send') == 1 && !empty($user['miniapp_openid'])) {
-                        //小程序消息
+                    //小程序订单需要自动发货使用自动发货
+                    if($order['terminal'] == 4 && config('wechat.miniapp.auto_send') == 1) {
                         $data = [];
-                        if(config('wechat.miniapp.auto_send') == 1) {
-                            //自动上传发货信息
-                            $itemDesc = '';
-                            $logisticsType = 1;
-                            //商品描述
-                            $orderGoods = Db::name('order_goods')->where('order_id',$order['id'])->find();
-                            if (!empty($orderGoods)) {
-                                $goods = getGoodsInfo($orderGoods['goods_id']);
-                                $itemDesc = $goods['title'] . "*" . $orderGoods['amount'];
-                            }
-                            $data['order_key'] = [
-                                'order_number_type' => 2,
-                                'transaction_id' => $order['pay_sn']
-                            ];
-                            if($order['express_type'] == 1) {
-                                $expressCompany = '';
-                                foreach (config('express.list') as $value) {
-                                    if($value['name'] == $order['express_title']) {
-                                        $expressCompany = $value['code'];
-                                    }
+                        $itemDesc = '';
+                        $logisticsType = 1;
+                        //商品描述
+                        $orderGoods = Db::name('order_goods')->where('order_id',$order['id'])->find();
+                        if (!empty($orderGoods)) {
+                            $goods = getGoodsInfo($orderGoods['goods_id']);
+                            $itemDesc = $goods['title'] . "*" . $orderGoods['amount'];
+                        }
+                        $data['order_key'] = [
+                            'order_number_type' => 2,
+                            'transaction_id' => $order['pay_sn']
+                        ];
+                        if($order['express_type'] == 1) {
+                            $expressCompany = '';
+                            foreach (config('express.list') as $value) {
+                                if($value['name'] == $order['express_title']) {
+                                    $expressCompany = $value['code'];
                                 }
-                                $data['shipping_list'] = [
-                                    'tracking_no' => $order['express_sn'],
-                                    'express_company' => $expressCompany,
-                                    'item_desc' => $itemDesc
-                                ];
-                            } else {
-                                if($order['send_type'] == 1) {
-                                    $logisticsType = 3;
-                                } else {
-                                    $logisticsType = 4;
-                                }
-                                $data['shipping_list'] = [
-                                    'item_desc' => $itemDesc
-                                ];
                             }
-                            $data['logistics_type'] = $logisticsType; //1快递，2同城配送，3虚拟商品，4用户自提
-                            $data['payer'] = [
-                                'openid' => $user['miniapp_openid']
+                            $data['shipping_list'] = [
+                                'tracking_no' => $order['express_sn'],
+                                'express_company' => $expressCompany,
+                                'item_desc' => $itemDesc
                             ];
-                            $wechat->uploadShipping($data);
                         } else {
+                            if($order['send_type'] == 1) {
+                                $logisticsType = 3;
+                            } else {
+                                $logisticsType = 4;
+                            }
+                            $data['shipping_list'] = [
+                                'item_desc' => $itemDesc
+                            ];
+                        }
+                        $data['logistics_type'] = $logisticsType; //1快递，2同城配送，3虚拟商品，4用户自提
+                        $data['payer'] = [
+                            'openid' => $user['miniapp_openid']
+                        ];
+                        $wechat->uploadShipping($data);
+                    } else {
+                        if(config('message.miniapp_user_send') == 1 && !empty($user['miniapp_openid'])) {
+                            //小程序消息
+                            $data = [];
                             //无需上传发货信息
                             $data['template_id'] = config('message.miniapp_user_send_id');
                             $data['page'] = 'pages/order/list?state=3';
