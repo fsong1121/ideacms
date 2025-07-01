@@ -534,3 +534,23 @@ if (!function_exists('parseArrayIni')) {
         return $content;
     }
 }
+
+/**
+ * 计算活动价格
+ * @param $price
+ * @param int $type
+ * @param $rebate
+ * @return string
+ */
+if (!function_exists('activePrice')) {
+    function activePrice($price, int $type = 0, $rebate) : string
+    {
+        if($type == 0) {
+            $price = $price - $rebate;
+        }
+        if($type == 1) {
+            $price = $price * $rebate / 10;
+        }
+        return formatPrice($price);
+    }
+}
