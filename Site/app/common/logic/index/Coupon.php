@@ -125,6 +125,8 @@ class Coupon extends BaseLogic
                 default:
                     //商品页优惠券
                     $couponList = CouponModel::where('type',2)
+                        ->where('b_date','<=',time())
+                        ->where('e_date','>=',time())
                         ->whereColumn('send_amount','>','get_amount')
                         ->whereRaw('use_type = 0 or (use_type = 1 and FIND_IN_SET('.$goodsId.',goods_ids))')
                         ->order('cut_price','desc')
