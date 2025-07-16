@@ -75,10 +75,12 @@ class Goods extends Base
         $res = $this->setParam(Request::param(),0);
         if($res['code'] == 0) {
             $param = $res['data'];
-            $goodsId = $param['goods_id'];
-            $specKey = $param['spec_key'];
+            $goodsId = $param['goods_id'] ?? 0;
+            $specKey = $param['spec_key'] ?? '';
+            $orderType = $param['order_type'] ?? '';
+            $activityId = $param['activity_id'] ?? 0;
             $logic = new GoodsLogic();
-            $res = $logic->getSpec($goodsId,$specKey);
+            $res = $logic->getSpec($goodsId,$specKey,$orderType,$activityId);
         }
         return json($res);
     }

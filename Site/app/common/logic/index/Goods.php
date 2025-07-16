@@ -219,17 +219,25 @@ class Goods extends BaseLogic
      * 获取商品规格信息
      * @param int $goodsId
      * @param string $specKey
+     * @param string $orderType
+     * @param int $activityId
      * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getSpec(int $goodsId = 0, string $specKey = '') : array
+    public function getSpec(int $goodsId = 0, string $specKey = '', string $orderType = '', int $activityId = 0) : array
     {
         $data = GoodsPriceModel::where('goods_id',$goodsId)
             ->where('spec_key',$specKey)
             ->find();
         if(!empty($data)) {
+            if($orderType != '') {
+                $activityData = Db::name($orderType)->where('id',$activityId)->find();
+                if(!empty($activityData)) {
+                    $data['price'] = activePrice($data['price'],$activityData['type'],$activityData['rebate']);
+                }
+            }
             return ['code' => 0,'data' => $data];
         } else {
             return fail('商品不存在');
@@ -282,13 +290,19 @@ class Goods extends BaseLogic
         try {
             $wechat = new WechatService();
             $accessToken = $wechat->getAccessToken('miniapp','GoodsQrcode');
-            $qrcodePath = 'qrcode/miniapp_' . $param['user_id'] . '_' . $param['id'] . '.png';  //二维码地址
+            $type = $param['type'] ?? 'normal';
+            $activityId = $param['activity_id'] ?? 0;
+            $qrcodePath = 'qrcode/miniapp_' . $type . '_' . $activityId . '_' . $param['user_id'] . '_' . $param['id'] . '.png';  //二维码地址
             $postUrl = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=" . $accessToken;
+            $page = 'pages/goods/detail';
+            if($type != 'normal') {
+                $page = 'pages/addons/' . $type . '/goodsDetail';
+            }
             $res = $this->postUrl($postUrl,[
-                'scene' => $param['user_id'] . '_' . $param['id'],
-                'page' => 'pages/goods/detail'
+                'scene' => $param['user_id'] . '_' . $param['id'] . '_' . $activityId,
+                'page' => $page
             ]);
-            file_put_contents(public_path() . 'upload' . DIRECTORY_SEPARATOR . 'pic' . DIRECTORY_SEPARATOR . 'qrcode' . DIRECTORY_SEPARATOR . 'miniapp_' . $param['user_id'] . '_' . $param['id'] . '.png', $res);
+            file_put_contents(public_path() . 'upload' . DIRECTORY_SEPARATOR . 'pic' . DIRECTORY_SEPARATOR . 'qrcode' . DIRECTORY_SEPARATOR . 'miniapp_' . $type . '_' . $activityId . '_' . $param['user_id'] . '_' . $param['id'] . '.png', $res);
             return success(['qrcode'=>getPic($qrcodePath)]);
         } catch (\Exception $e) {
             return fail($e->getMessage());

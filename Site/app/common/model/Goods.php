@@ -72,4 +72,14 @@ class Goods extends BaseModel
     {
         return empty($value) ? [] : explode(',',$value);
     }
+
+    /**
+     * 获取单位
+     * @param $value
+     * @return string
+     */
+    public function getUnitAttr($value) : string
+    {
+        return empty($value) ? '件' : $value;
+    }
 }
