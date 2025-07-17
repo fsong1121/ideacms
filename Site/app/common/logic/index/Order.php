@@ -213,6 +213,43 @@ class Order extends BaseLogic
                 //直接购买
                 $amount = is_numeric($amount) ? $amount : 1;
                 $amount = $amount > 0 ? ceil($amount) : 1;
+                //活动订单
+                $res1 = Event::trigger('fillActivityAmount',[
+                    'order_type' => $orderType,
+                    'activity_id' => $activityId,
+                    'amount' => $amount
+                ]);
+                if(!empty($res1) && $res1[0]['code'] == 0) {
+                    $amount = $res1[0]['amount'];
+                }
+                //助力订单
+                $res1 = Event::trigger('fillAssistAmount',[
+                    'order_type' => $orderType,
+                    'activity_id' => $activityId,
+                    'amount' => $amount
+                ]);
+                if(!empty($res1) && $res1[0]['code'] == 0) {
+                    $amount = $res1[0]['amount'];
+                }
+                //拼团订单
+                $res1 = Event::trigger('fillCombinationAmount',[
+                    'order_type' => $orderType,
+                    'activity_id' => $activityId,
+                    'amount' => $amount
+                ]);
+                if(!empty($res1) && $res1[0]['code'] == 0) {
+                    $amount = $res1[0]['amount'];
+                }
+                //秒杀订单
+                $res1 = Event::trigger('fillSeckillAmount',[
+                    'order_type' => $orderType,
+                    'activity_id' => $activityId,
+                    'amount' => $amount
+                ]);
+                if(!empty($res1) && $res1[0]['code'] == 0) {
+                    $amount = $res1[0]['amount'];
+                }
+
                 $goods = getGoodsInfo($goodsId,$specKey,'id,title,pic,type,is_sale,is_delete,express_type,express_price,express_template_id,is_full_free,commission,integral,growth');
                 if(!empty($goods) && $goods['is_sale'] == 1 && $goods['is_delete'] == 0) {
                     $amount = $amount > $goods['stock'] ? $goods['stock'] : $amount;
@@ -446,7 +483,6 @@ class Order extends BaseLogic
             ]);
             if(!empty($res1) && $res1[0]['code'] == 0) {
                 $res['data'] = $res1[0]['data'];
-                return $res;
             }
             //活动订单
             $res1 = Event::trigger('fillActivityData',[
@@ -457,7 +493,6 @@ class Order extends BaseLogic
             ]);
             if(!empty($res1) && $res1[0]['code'] == 0) {
                 $res['data'] = $res1[0]['data'];
-                return $res;
             }
             //助力订单
             $res1 = Event::trigger('fillAssistData',[
@@ -468,7 +503,6 @@ class Order extends BaseLogic
             ]);
             if(!empty($res1) && $res1[0]['code'] == 0) {
                 $res['data'] = $res1[0]['data'];
-                return $res;
             }
             //拼团订单
             $res1 = Event::trigger('fillCombinationData',[
@@ -479,7 +513,6 @@ class Order extends BaseLogic
             ]);
             if(!empty($res1) && $res1[0]['code'] == 0) {
                 $res['data'] = $res1[0]['data'];
-                return $res;
             }
             //秒杀订单
             $res1 = Event::trigger('fillSeckillData',[
@@ -490,7 +523,6 @@ class Order extends BaseLogic
             ]);
             if(!empty($res1) && $res1[0]['code'] == 0) {
                 $res['data'] = $res1[0]['data'];
-                return $res;
             }
             Session::set('order_' . $userId,$res);
             Cache::set('order_' . $userId,$res,600);
