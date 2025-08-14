@@ -543,7 +543,7 @@ if (!function_exists('parseArrayIni')) {
  * @return string
  */
 if (!function_exists('activePrice')) {
-    function activePrice($price, int $type = 0, $rebate) : string
+    function activePrice($price, int $type = 0, $rebate = 0) : string
     {
         if($type == 0) {
             $price = $price - $rebate;
