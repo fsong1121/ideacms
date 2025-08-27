@@ -105,14 +105,19 @@ class Login extends BaseLogic
     /**
      * 发送验证码
      * @param array $param
-     * @return mixed|void
+     * @return array
      */
-    public function sendSmsCode(array $param)
+    public function sendSmsCode(array $param) : array
     {
         $code = makeRandStr(4);
         Cache::set('smsCode' . $param['m_tel'], $code, 300);
         $sms = new SmsService();
-        return $sms->sendSms($param['m_tel'],config('sms.codeTemplateId'),[$code]);
+        $res = $sms->sendSms($param['m_tel'],config('sms.codeTemplateId'),[$code]);
+        if($res['result'] == 0) {
+            return success();
+        } else {
+            return fail($res['errmsg']);
+        }
     }
 
     /**
