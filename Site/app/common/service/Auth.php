@@ -16,6 +16,7 @@ use think\facade\Session;
 use think\facade\Cookie;
 use think\facade\Request;
 use think\facade\Event;
+use think\facade\Cache;
 
 class Auth
 {
@@ -32,8 +33,7 @@ class Auth
         if(Session::has($role . '.uuid')) {
             $this->uuid = Session::get($role . '.uuid');
             $result = true;
-        }
-        else {
+        } else {
             //如果cookie存在账号就默认重新登录防止session过期频繁登录
             if (Cookie::has($role . '_uid') && Cookie::has($role . '_pwd')) {
                 $user = Db::name($role)
@@ -78,11 +78,18 @@ class Auth
      */
     public function login(string $role = 'user', array $param = []) : array
     {
+        //连续登录失败5次后临时锁定24小时
+        $loseTimes = Cache::get($role . '_login_' . $param['m_uid'],0);
+        if($loseTimes >= 5) {
+            return fail('此账号已被临时锁定，请稍后登录');
+        }
         $user = Db::name($role)
             ->where('uid', $param['m_uid'])
             ->where('pwd',makePassword($param['m_pwd']))
             ->find();
         if (!empty($user)) {
+            //删除登录失败缓存
+            Cache::delete($role . '_login_' . $param['m_uid']);
             if ($user['is_work'] == 0) {
                 return ['code' => 500, 'msg' => '用户账号被禁用'];
             } else {
@@ -103,6 +110,8 @@ class Auth
                 return ['code' => 0, 'msg' => '登录成功'];
             }
         } else {
+            $loseTimes = $loseTimes + 1;
+            Cache::set($role . '_login_' . $param['m_uid'],$loseTimes,24*60*60);
             Event::trigger('LoginLog', ['type' => $role, 'uid' => $param['m_uid'], 'ip' => Request::ip(), 'info' => '用户名或密码错误', 'data' => $param, 'state' => 0]);
             return ['code' => 500, 'msg' => '用户账号或密码错误'];
         }
