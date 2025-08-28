@@ -84,17 +84,26 @@ class Login extends BaseLogic
                     return fail('验证码错误');
                 }
             }
+            //连续登录失败5次后临时锁定24小时
+            $loseTimes = Cache::get('user_login_' . $param['m_uid'],0);
+            if($loseTimes >= 5) {
+                return fail('此账号已被临时锁定，请稍后登录');
+            }
             $user = Db::name('user')
                 ->where('uid', $param['m_uid'])
                 ->where('pwd',makePassword($param['m_pwd']))
                 ->find();
             if (!empty($user)) {
+                //删除登录失败缓存
+                Cache::delete('user_login_' . $param['m_uid']);
                 if ($user['is_work'] == 0) {
                     return fail('此用户已被锁定');
                 } else {
                     return $this->setLogin($user['id']);
                 }
             } else {
+                $loseTimes = $loseTimes + 1;
+                Cache::set('user_login_' . $param['m_uid'],$loseTimes,24*60*60);
                 return fail('用户账号或密码错误');
             }
         } catch (\Exception $e) {
@@ -131,9 +140,19 @@ class Login extends BaseLogic
             if(empty($param['m_tel']) || empty($param['m_code'])) {
                 return fail('手机号或验证码为空');
             }
+            //连续登录失败5次后临时锁定24小时
+            $loseTimes = Cache::get('user_login_' . $param['m_tel'],0);
+            if($loseTimes >= 5) {
+                return fail('手机号已被临时锁定，请稍后登录');
+            }
+            //判断短信验证码
             if($param['m_code'] != Cache::get('smsCode' . $param['m_tel'])) {
+                $loseTimes = $loseTimes + 1;
+                Cache::set('user_login_' . $param['m_tel'],$loseTimes,24*60*60);
                 return fail('手机验证码不正确');
             }
+            //删除登录失败缓存
+            Cache::delete('user_login_' . $param['m_tel']);
             $user = Db::name('user')
                 ->where('uid',$param['m_tel'])
                 ->find();
