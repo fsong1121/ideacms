@@ -113,13 +113,14 @@ class Order extends Base
         $ids = explode(",", $id);
         try {
             if(count($ids) == 1) {
-                $order = OrderModel::where('id',$id)->where('order_state', -1)->find();
+                $order = OrderModel::where('id',$id)->where('order_state', -1)->where('refund_state',0)->find();
                 if(empty($order)) {
                     return fail('当前状态不允许删除，请先取消订单！');
                 }
             }
             $orderIds = OrderModel::where('id', 'in',$ids)
                 ->where('order_state', -1)
+                ->where('refund_state',0)
                 ->column('id');
             OrderModel::where('id', 'in',$orderIds)->delete();
             OrderGoodsModel::where('order_id', 'in',$orderIds)->delete();

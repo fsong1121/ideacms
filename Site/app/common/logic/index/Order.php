@@ -872,6 +872,7 @@ class Order extends BaseLogic
             $ids = OrderModel::where('user_id',$param['user_id'])
                 ->where('id','in',$ids)
                 ->where('order_state',-1)
+                ->where('refund_state',0)
                 ->column('id');
             OrderModel::where('id','in',$ids)->delete();
             Db::name('order_goods')->where('order_id','in',$ids)->delete();

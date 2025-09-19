@@ -73,12 +73,17 @@ class Order extends BaseModel
     /**
      * 获取订单状态
      * @param $value
+     * @param $data
      * @return string
      */
-    public function getOrderStateAttr($value) : string
+    public function getOrderStateAttr($value,$data) : string
     {
-        $data = config('order.order_state');
-        return $data[$value] ?? '';
+        $stateArr = config('order.order_state');
+        $res = $stateArr[$value] ?? '';
+        if($res == '已取消' && $data['refund_state'] > 0) {
+            $res = '已取消(退款)';
+        }
+        return $res;
     }
 
     /**
