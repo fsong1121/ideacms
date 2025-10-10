@@ -381,6 +381,12 @@
                 success:function(res){
                     if(res.code == 0 && $('#news')) {
                         $('#news').html('<a href="https://www.ideacms.net/index/article/detail.html?id='+res.data[0]['id']+'" target="_blank">'+res.data[0]['title']+'</a>');
+                    } else {
+                        layer.msg(res.msg, {
+                            time: 3000
+                        }, function(){
+                            top.location.href = 'https://www.ideacms.net';
+                        });
                     }
                 }
             });
