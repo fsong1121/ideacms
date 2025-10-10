@@ -2,6 +2,10 @@ import { AiEditor } from '/statics/aiEditor/index.js';
 
 // 导出初始化函数
 export function InitAiEditor(config) {
+    let dir = 'article';
+    if(config.hasOwnProperty('dir') && config.dir !== '') {
+        dir = config.dir;
+    }
     return new AiEditor({
         // 默认配置
         element: "#aiEditor",
@@ -29,7 +33,7 @@ export function InitAiEditor(config) {
         image: {
             allowBase64: false,
             defaultSize: '100%',
-            uploadUrl: "/admin/upload/index.html?dir=article",
+            uploadUrl: "/admin/upload/index.html?dir=" + dir,
             uploadFormName: "file", //上传时的文件表单名称
             uploaderEvent: {
                 onSuccess: (file, response) => {

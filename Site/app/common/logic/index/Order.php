@@ -751,8 +751,7 @@ class Order extends BaseLogic
                         if($res1['code'] != 0) {
                             // 回滚事务
                             Db::rollback();
-                            $res['code'] = 500;
-                            $res['msg'] = $res1['msg'];
+                            return fail($res1['msg']);
                         }
                     }
                     //如果是积分订单就扣积分
@@ -761,8 +760,7 @@ class Order extends BaseLogic
                         if($res1['code'] != 0) {
                             // 回滚事务
                             Db::rollback();
-                            $res['code'] = 500;
-                            $res['msg'] = $res1['msg'];
+                            return fail($res1['msg']);
                         } else {
                             // 记录兑换日志
                             $goods = getGoodsInfo($goodsId, $specKey);
