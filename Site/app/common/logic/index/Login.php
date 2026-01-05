@@ -118,7 +118,7 @@ class Login extends BaseLogic
      */
     public function sendSmsCode(array $param) : array
     {
-        $code = makeRandStr(4);
+        $code = makeRandStr(6);
         Cache::set('smsCode' . $param['m_tel'], $code, 300);
         $sms = new SmsService();
         $res = $sms->sendSms($param['m_tel'],config('sms.codeTemplateId'),[$code]);
