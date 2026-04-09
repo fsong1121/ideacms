@@ -887,7 +887,7 @@ CREATE TABLE `{PREFIX}user` (
   `pay_pwd` varchar(255) DEFAULT NULL COMMENT '支付密码',
   `pid` int(10) unsigned DEFAULT '0' COMMENT '上级ID',
   `level_id` int(10) unsigned DEFAULT '0' COMMENT '等级ID',
-  `label_id` varchar(250) DEFAULT NULL COMMENT '标签ID',
+  `label_id` varchar(250) DEFAULT '' COMMENT '标签ID',
   `wechat_user_id` int(10) unsigned DEFAULT '0' COMMENT '微信会员ID(作废)',
   `miniapp_user_id` int(10) unsigned DEFAULT '0' COMMENT '小程序会员ID(作废)',
   `qq_user_id` int(10) unsigned DEFAULT '0' COMMENT 'QQ会员ID',

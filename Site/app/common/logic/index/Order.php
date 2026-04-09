@@ -215,6 +215,10 @@ class Order extends BaseLogic
                 $amount = $amount > 0 ? ceil($amount) : 1;
                 $goods = getGoodsInfo($goodsId,$specKey,'id,title,pic,type,is_sale,is_delete,express_type,express_price,express_template_id,is_full_free,commission,integral,growth');
                 if(!empty($goods) && $goods['is_sale'] == 1 && $goods['is_delete'] == 0) {
+                    // 库存检查
+                    if($goods['stock'] <= 0) {
+                        return fail('商品库存不足');
+                    }
                     $amount = $amount > $goods['stock'] ? $goods['stock'] : $amount;
                     $goodsTotalPrice = $goodsTotalPrice + $amount * $goods['price'];
                     $totalCommission = $totalCommission + $amount * $goods['commission'];
@@ -297,7 +301,15 @@ class Order extends BaseLogic
                 foreach ($cart as $value) {
                     $goods = getGoodsInfo($value['goods_id'],$value['spec_key'],'id,title,pic,type,is_sale,is_delete,express_type,express_price,express_template_id,is_full_free,commission,integral,growth');
                     if(!empty($goods) && $goods['type'] == 0 && $goods['is_sale'] == 1 && $goods['is_delete'] == 0) {
-                        $amount = $value['amount'] > $goods['stock'] ? $goods['stock'] : $value['amount'];
+                        // 验证数量，确保至少为1
+                        $amount = is_numeric($value['amount']) ? $value['amount'] : 1;
+                        $amount = $amount > 0 ? ceil($amount) : 1;
+                        // 库存限制
+                        $amount = $amount > $goods['stock'] ? $goods['stock'] : $amount;
+                        // 如果库存为0，跳过该商品
+                        if ($amount <= 0) {
+                            continue;
+                        }
                         $goodsTotalPrice = $goodsTotalPrice + $amount * $goods['price'];
                         $totalCommission = $totalCommission + $amount * $goods['commission'];
                         $totalIntegral = $totalIntegral + $amount * $goods['integral'];
@@ -549,6 +561,20 @@ class Order extends BaseLogic
 
             $orderSn = makeOrderSn();
             $goodsList = $fillData['goodsList'];
+            // 验证商品列表和数量
+            if (empty($goodsList)) {
+                return fail('商品不存在或库存不足');
+            }
+            $totalGoodsAmount = 0;
+            foreach ($goodsList as $item) {
+                if (!isset($item['amount']) || $item['amount'] <= 0) {
+                    return fail('商品数量必须大于0');
+                }
+                $totalGoodsAmount += $item['amount'];
+            }
+            if ($totalGoodsAmount <= 0) {
+                return fail('订单商品数量不能为0');
+            }
             // 启动事务
             Db::startTrans();
             try {
